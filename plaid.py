@@ -20,7 +20,7 @@ class Point:
         print("(" + str(self.x) + ", " + str(self.y) + ")")
         
 # Point CLASS --------------------------------------
-        
+       
 
 # SMALLBOARD CLASS --------------------------------------
 class SmallBoard:
@@ -58,7 +58,10 @@ class SmallBoard:
     
     def PlaceMark(self, point, mark):
         self.grid[point.x][point.y] = mark
-            
+    
+    def IsAvailable(self, point):
+        return self.grid[point.x][point.y] == ' '
+
     def Print(self):
         for i in range(5):
             print(self.GetRowText(i))
@@ -153,8 +156,11 @@ class UltimateTicTacToe:
     def PlaceMark(self, gridSpace1, gridSpace2, mark):
         targetSmallBoard = self.gameBoard.grid[gridSpace1.x][gridSpace1.y]
         if isinstance(targetSmallBoard, SmallBoard):
-            targetSmallBoard.PlaceMark(gridSpace2, mark)
-            return True
+            if targetSmallBoard.IsAvailable(gridSpace2):
+                targetSmallBoard.PlaceMark(gridSpace2, mark)
+                return True
+            else:
+                return False
         else:
             return False
         
@@ -169,7 +175,6 @@ class UltimateTicTacToe:
         print("\033[H\033[J") # Clears the output window
         while(self.IsComplete() == False): # While the game is not complete...
             self.Print() # Print Board
-            
             response = self.PromptPlayer()
             if response.lower() == "quit":
                 print("Quitting...")
@@ -184,6 +189,7 @@ class UltimateTicTacToe:
                     game.PlaceMark(self.nextRequiredLargeBoardSquare, response, self.player2Mark)
                     
                 self.nextRequiredLargeBoardSquare = response
+                
             else:
                 print("The point is INVALID")
                 
