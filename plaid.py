@@ -5,10 +5,27 @@ Ultimate Tic-Tac-Toe
 @authors: Keenan Barber, Brendan Bard
 """
 
-import inspect
+from enum import Enum
 import random
 
-# Point CLASS --------------------------------------
+
+
+# ACTIONTYPE ENUM --------------------------------------
+class ActionType(Enum):
+    ANYWHERE = 1
+    TARGET = 2
+# ACTIONTYPE ENUM --------------------------------------
+
+
+# PLAYERSTATE ENUM --------------------------------------
+class PlayerState(Enum):
+    PLAYER1 = 1
+    PLAYER2 = 2
+# PLAYERSTATE ENUM --------------------------------------
+
+
+
+# POINT CLASS --------------------------------------
 class Point:
     x = 0
     y = 0
@@ -19,7 +36,7 @@ class Point:
     def Print(self):
         print("(" + str(self.x) + ", " + str(self.y) + ")")
         
-# Point CLASS --------------------------------------
+# POINT CLASS --------------------------------------
         
 
 # SMALLBOARD CLASS --------------------------------------
@@ -135,12 +152,8 @@ class UltimateTicTacToe:
         self.gameBoard = LargeBoard(mark1, mark2)
         self.nextRequiredLargeBoardSquare = Point(1, 1)
         
-        # Pick Starting Player
-        self.player1Turn = random.randint(0,1)
-        if self.player1Turn == 0:
-            self.player1Turn = False
-        else:
-            self.player1Turn = True
+        # Pick Starting Player (using PlayerState enum)
+        self.playerTurn = PlayerState(random.randint(1, 2))
     
     def PrintHeader(self):
         print("*******************************************")
@@ -170,6 +183,7 @@ class UltimateTicTacToe:
         while(self.IsComplete() == False): # While the game is not complete...
             self.Print() # Print Board
             
+            # Commands!
             response = self.PromptPlayer()
             if response.lower() == "quit":
                 print("Quitting...")
@@ -178,7 +192,7 @@ class UltimateTicTacToe:
             # Convert input to point
             response = self.ConvertStringToPoint(response)
             if self.ValidateCoordinate(response):
-                if self.player1Turn:
+                if self.playerTurn == PlayerState.PLAYER1:
                     game.PlaceMark(self.nextRequiredLargeBoardSquare, response, self.player1Mark)
                 else: 
                     game.PlaceMark(self.nextRequiredLargeBoardSquare, response, self.player2Mark)
@@ -187,7 +201,11 @@ class UltimateTicTacToe:
             else:
                 print("The point is INVALID")
                 
-            self.player1Turn = not self.player1Turn
+            # Switch player state
+            if self.playerTurn == PlayerState.PLAYER1:
+                self.playerTurn = PlayerState.PLAYER2
+            else:
+                self.playerTurn = PlayerState.PLAYER1
             print("\033[H\033[J") # Clears the output window
             
     def ConvertStringToPoint(self, inputStr):   
@@ -216,7 +234,7 @@ class UltimateTicTacToe:
         return response
         
     def PromptPlayer(self):
-        if self.player1Turn:
+        if self.playerTurn == PlayerState.PLAYER1:
             print("Player 1's Turn: --------------------------")
         else:
             print("Player 2's Turn: --------------------------")
