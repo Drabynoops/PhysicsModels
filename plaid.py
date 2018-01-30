@@ -9,7 +9,6 @@ from enum import Enum
 import random
 
 
-
 # ACTIONTYPE ENUM --------------------------------------
 class ActionType(Enum):
     ANYWHERE = 1
@@ -23,8 +22,6 @@ class PlayerState(Enum):
     PLAYER2 = 2
 # PLAYERSTATE ENUM --------------------------------------
 
-
-
 # POINT CLASS --------------------------------------
 class Point:
     x = 0
@@ -33,23 +30,50 @@ class Point:
         self.x = _x
         self.y = _y
         
-    def Print(self):
+    def print(self):
         print("(" + str(self.x) + ", " + str(self.y) + ")")
-        
 # POINT CLASS --------------------------------------
         
+
+# END GAME CLASS ---------------------------------
+class GridCompletion:
+
+    def __init__(self):
+        self.win_cons = [
+            [Point(0, 0), Point(1, 0), Point(2, 0)],
+            [Point(0, 1), Point(1, 1), Point(2, 1)],
+            [Point(0, 2), Point(1, 2), Point(2, 2)],
+
+            [Point(0, 0), Point(0, 1), Point(0, 2)],
+            [Point(1, 0), Point(1, 1), Point(1, 2)],
+            [Point(2, 0), Point(2, 1), Point(2, 2)],
+
+            [Point(0, 0), Point(1, 1), Point(2, 2)],
+            [Point(0, 2), Point(1, 1), Point(2, 0)]
+        ]
+
+    def has_winner(self, board):
+        for row in self.win_cons:
+            point_one = board.grid[row[0].x][row[0].y]
+            point_two = board.grid[row[1].x][row[1].y]
+            if point_one == point_two and point_one != ' ' and isinstance(point_one, str):
+                point_three = board.grid[row[2].x][row[2].y]
+                if point_one == point_three:
+                    return True
+        return False
+
 
 # SMALLBOARD CLASS --------------------------------------
 class SmallBoard:
     def __init__(self, mark1, mark2):
-        self.player1Mark = mark1
-        self.player2Mark = mark2
+        self.player_one_mark = mark1
+        self.player_two_mark = mark2
         # 3x3 array
         self.grid = []
         for i in range(3):
             self.grid.append([' ', ' ', ' '])
             
-    def ConvertTextRowToGridRow(self, num):
+    def convert_text_row_to_grid_row(self, num):
         if num == 0:
             return 0
         elif num == 2:
@@ -59,90 +83,97 @@ class SmallBoard:
         else:
             return 0
             
-    def GetRowText(self, row):
-        rowStr = ""
+    def get_row_text(self, row):
+        row_str = ""
         if (row == 0) or (row == 2) or (row == 4):
-            gridRow = self.ConvertTextRowToGridRow(row)
+            grid_row = self.convert_text_row_to_grid_row(row)
             for col in range(3):
-                rowStr += " " + self.grid[col][gridRow] + " "
+                row_str += " " + self.grid[col][grid_row] + " "
                 if col < 2:
-                    rowStr += "|"
+                    row_str += "|"
         
         elif (row == 1) or (row == 3):                
-            rowStr += "───+───+───"
+            row_str += "───+───+───"
         
-        return rowStr
+        return row_str
     
-    def PlaceMark(self, point, mark):
+    def place_mark(self, point, mark):
         self.grid[point.x][point.y] = mark
     
-    def IsAvailable(self, point):
+    def is_available(self, point):
         return self.grid[point.x][point.y] == ' '
 
-    def Print(self):
+    def print(self):
         for i in range(5):
-            print(self.GetRowText(i))
+            print(self.get_row_text(i))
             
-    def IsComplete(self):
+    def is_complete(self):
         for y in range(3):
             for x in range(3):
                 if self.grid[x][y] == ' ':
                     return False
         return True
-    
-    def CheckForWinner(self):
-        return self.player1Mark
-        
 # SMALLBOARD CLASS --------------------------------------
+
 
 # LARGEBOARD CLASS --------------------------------------
 class LargeBoard:
     def __init__(self, mark1, mark2):
-        self.player1Mark = mark1
-        self.player2Mark = mark2
+        self.player_one_mark = mark1
+        self.player_two_mark = mark2
         # 3x3 array
         self.grid = []
         for i in range(3):
             self.grid.append([SmallBoard(mark1, mark2), SmallBoard(mark1, mark2), SmallBoard(mark1, mark2)])
 
             
-    def Print(self, targetLargeBoardSquare):
+    def print(self, target_large_board_square, action_type):
         
-        # Prints the 0   1   2 above the board to help with placing marks
-        columnIndicator = "  "
-        for i in range(targetLargeBoardSquare.x):
-            columnIndicator += "              "
-        columnIndicator += " " + " 0 " + " " + " 1 " + " " + " 2 " + " "
-        print(columnIndicator)
+        if action_type == ActionType.TARGET:
+            # Prints the 0   1   2 above the board to help with placing marks
+            column_indicator = "  "
+            for i in range(target_large_board_square.x):
+                column_indicator += "              "
+            column_indicator += " " + " 0 " + " " + " 1 " + " " + " 2 " + " "
+            print(column_indicator)
+        if action_type == ActionType.ANYWHERE:
+            print("    0   1   2     3   4   5     6   7   8")
         
-        
+        row_indicator = 0
         for row in range(3): # For each row in large board
-            rowIndicator = 0
-            for textRow in range(5): # Print 5 text rows
-                rowStr = ""
-                if (targetLargeBoardSquare.y == row) and (textRow % 2 == 0):
-                    rowStr += " " + str(rowIndicator) + " "
-                    rowIndicator += 1
-                else:
-                    rowStr += "   "
+            for text_row in range(5): # Print 5 text rows
+                row_str = ""
+                if action_type == ActionType.TARGET:
+                    if (target_large_board_square.y == row) and (text_row % 2 == 0):
+                        row_str += " " + str(row_indicator) + " "
+                        row_indicator += 1
+                    else:
+                        row_str += "   "
+                if action_type == ActionType.ANYWHERE:
+                    if text_row % 2 == 0:
+                        row_str += " " + str(row_indicator) + " "
+                        row_indicator += 1
+                    else:
+                        row_str += "   "
+
                 for col in range(3): # Loop through each column
                     if isinstance(self.grid[col][row], SmallBoard):
-                        rowStr += self.grid[col][row].GetRowText(textRow)
+                        row_str += self.grid[col][row].get_row_text(text_row)
                     else:
-                        if textRow == 2:
-                            rowStr += "     " + self.grid[col][row] + "     "
+                        if text_row == 2:
+                            row_str += "     " + self.grid[col][row] + "     "
                         else: 
-                            rowStr += "           "
+                            row_str += "           "
                     if col < 2:
-                        rowStr += " ║ "
-                print(rowStr)
+                        row_str += " ║ "
+                print(row_str)
                 
             if row < 2:
                 print("  " + "═════════════╬═════════════╬═════════════")
         print()
-                
-    def BoardComplete():
-        print("...")
+
+    def complete_small_board(self, target_large_board_square, mark):
+        self.grid[target_large_board_square.x][target_large_board_square.y] = mark
         
 # LARGEBOARD CLASS --------------------------------------
         
@@ -150,76 +181,94 @@ class LargeBoard:
 # ULTIMATETICTACTOE CLASS --------------------------------------
 class UltimateTicTacToe:
     def __init__(self, mark1, mark2):
-        self.player1Mark = mark1
-        self.player2Mark = mark2
-        self.gameBoard = LargeBoard(mark1, mark2)
-        self.nextRequiredLargeBoardSquare = Point(1, 1)
-        
+        self.player_one_mark = mark1
+        self.player_two_mark = mark2
+        self.game_board = LargeBoard(mark1, mark2)
+        self.next_required_large_board_square = Point(1, 1)
+        self.is_complete = False
+        self.grid_completion = GridCompletion()
+        self.action_type = ActionType.ANYWHERE
+
         # Pick Starting Player (using PlayerState enum)
-        self.playerTurn = PlayerState(random.randint(1, 2))
+        self.player_turn = PlayerState(random.randint(1, 2))
     
-    def PrintHeader(self):
+    def print_header(self):
         print("*******************************************")
         print("ULTIMATE TIC-TAC-TOE")
         print("*******************************************")
-        print("Player 1 -> '" + self.player1Mark + "'             Player 2 -> '" + self.player2Mark + "'")
+        print("Player 1 -> '" + self.player_one_mark + "'             Player 2 -> '" + self.player_two_mark + "'")
         print("")
         
     # This function takes in Points as parameters (the large board space, and small board space)
-    def PlaceMark(self, gridSpace1, gridSpace2, mark):
-        targetSmallBoard = self.gameBoard.grid[gridSpace1.x][gridSpace1.y]
-        if isinstance(targetSmallBoard, SmallBoard):
-            if targetSmallBoard.IsAvailable(gridSpace2):
-                targetSmallBoard.PlaceMark(gridSpace2, mark)
-                return True
+    def place_mark(self, grid_space_one, grid_space_two, mark):
+        target_small_board = self.game_board.grid[grid_space_one.x][grid_space_one.y]
+        if isinstance(target_small_board, SmallBoard):
+            if target_small_board.is_available(grid_space_two):
+                target_small_board.place_mark(grid_space_two, mark)
+                return target_small_board
             else:
                 return False
         else:
             return False
         
-    def Print(self):
-        self.PrintHeader()
-        self.gameBoard.Print(self.nextRequiredLargeBoardSquare)
-        
-    def IsComplete(self):
-        return False
+    def print(self):
+        self.print_header()
+        self.game_board.print(self.next_required_large_board_square, self.action_type)
     
-    def PlayGame(self):
-        print("\033[H\033[J") # Clears the output window
-        while(self.IsComplete() == False): # While the game is not complete...
-            self.Print() # Print Board
+    def play_game(self):
+        self.clear_screen()
+        while(self.is_complete == False): # While the game is not complete...
+            self.print() # Print Board
+
+            if self.player_turn == PlayerState.PLAYER1:
+                turn_player_mark = self.player_one_mark
+            else:
+                turn_player_mark = self.player_two_mark
 
             # Commands!
-            response = self.PromptPlayer()
+            response = self.prompt_player()
             if response.lower() == "quit":
                 print("Quitting...")
                 return
             
             # Convert input to point
-            response = self.ConvertStringToPoint(response)
-            if self.ValidateCoordinate(response):
-                if self.playerTurn == PlayerState.PLAYER1:
-                    game.PlaceMark(self.nextRequiredLargeBoardSquare, response, self.player1Mark)
-                else: 
-                    game.PlaceMark(self.nextRequiredLargeBoardSquare, response, self.player2Mark)
-                    
-                self.nextRequiredLargeBoardSquare = response
-                
+            response = self.convert_string_to_point(response)
+            if self.validate_coordinate(response):
+                if self.action_type == ActionType.ANYWHERE:
+                    response.x = response.x % 3
+                    response.y = response.y % 3
+                target_small_board = game.place_mark(self.next_required_large_board_square, response, turn_player_mark)
+                if target_small_board:
+                    # Switch player state
+                    if self.player_turn == PlayerState.PLAYER1:
+                        self.player_turn = PlayerState.PLAYER2
+                    else:
+                        self.player_turn = PlayerState.PLAYER1
+
+                    if (self.grid_completion.has_winner(target_small_board)):
+                        self.game_board.complete_small_board(self.next_required_large_board_square, turn_player_mark)
+                        if (self.grid_completion.has_winner(self.game_board)):
+                            self.is_complete = True
+                    self.next_required_large_board_square = response
+                    if isinstance(self.game_board.grid[response.x][response.y], str):
+                        self.action_type = ActionType.ANYWHERE
+                    else:
+                        self.action_type = ActionType.TARGET
+                else:
+                    print("That point is already taken!")
+                    input("Press enter to continue ->") # Wait for player to realize what has happened
             else:
                 print("The point is INVALID")
-                
-            # Switch player state
-            if self.playerTurn == PlayerState.PLAYER1:
-                self.playerTurn = PlayerState.PLAYER2
-            else:
-                self.playerTurn = PlayerState.PLAYER1
-            print("\033[H\033[J") # Clears the output window
+                input("Press enter to continue ->")
+        print("The game ends with ", turn_player_mark, " as winner!!!")
+        print("The final board!!!")
+        self.game_board.print()
             
-    def ConvertStringToPoint(self, inputStr):   
+    def convert_string_to_point(self, input_str):   
         xNum = -1
         yNum = -1
         
-        for char in inputStr:
+        for char in input_str:
             if char.isdigit():
                 if xNum == -1:
                     xNum = int(char)
@@ -229,30 +278,35 @@ class UltimateTicTacToe:
                     break 
         return Point(xNum, yNum)
         
-    def ValidateCoordinate(self, point):
-        point.Print()
-        if point.x >= 0 and point.x <= 2 and point.y >= 0 and point.y <= 2:
+    def validate_coordinate(self, point):
+        max_range = 3 if self.action_type == ActionType.TARGET else 9
+        point.print()
+        if point.x in range(max_range) and point.y in range(max_range):
             return True
         else:
             return False
     
-    def UserInput(self):
+    def user_input(self):
         response = input("   > ")
         return response
         
-    def PromptPlayer(self):
-        if self.playerTurn == PlayerState.PLAYER1:
+    def prompt_player(self):
+        if self.player_turn == PlayerState.PLAYER1:
             print("Player 1's Turn: --------------------------")
         else:
             print("Player 2's Turn: --------------------------")
         print()
-        print("Place a mark in the " + self.ConvertPointToEnglish(self.nextRequiredLargeBoardSquare) + " section.")
-        print()
-        print("Where would you like to place your mark? \nEnter two numbers 0-2. (Example: \"x, y\")", end="")
-
-        return self.UserInput()
+        if self.action_type == ActionType.TARGET:
+            print("Place a mark in the " + self.convert_point_to_english(self.next_required_large_board_square) + " section.")
+            print()
+            print("Where would you like to place your mark? \nEnter two numbers 0-2. (Example: \"x, y\")", end="")
+        if self.action_type == ActionType.ANYWHERE:
+            print("Place a mark in any spot that has not been taken.")
+            print()
+            print("Where would you like to place your mark? \nEnter two numbers 0-9. (Example: \"x, y\")", end="")
+        return self.user_input()
     
-    def ConvertPointToEnglish(self, point):
+    def convert_point_to_english(self, point):
         if point.x == 0 and point.y == 0:
             return "upper left"
         elif point.x == 0 and point.y == 1:
@@ -273,7 +327,9 @@ class UltimateTicTacToe:
             return "lower right"
         else:
             return "INVALID"
-        
+    
+    def clear_screen(self):
+        print("\033[H\033[J")
 # ULTIMATETICTACTOE CLASS --------------------------------------
 
 
@@ -289,7 +345,7 @@ class UltimateTicTacToe:
 
 game = UltimateTicTacToe('X', 'O')
 
-game.PlayGame()
+game.play_game()
 
 
 """
@@ -343,7 +399,7 @@ mark? (Format: "x, y")
 
 
 first text row
-    rowStr = ""
+    row_str = ""
     
     if(grid[0])
    
