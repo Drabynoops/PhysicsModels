@@ -99,7 +99,7 @@ class SmallBoard:
                 if col < 2:
                     row_str += "|"
         elif (row == 1) or (row == 3):
-            row_str += "───+───+───"
+            row_str += "───┼───┼───"
 
         return row_str
 
@@ -240,6 +240,7 @@ class UltimateTicTacToe:
         '''Executes the main loop of the game.'''
         self.clear_screen()
         while self.is_complete is False: # While the game is not complete...
+            self.clear_screen()
             self.print() # Print Board
 
             if self.player_turn == PlayerState.PLAYER1:
@@ -286,9 +287,11 @@ class UltimateTicTacToe:
             else:
                 print("The point is INVALID")
                 input("Press enter to continue ->")
+                
+        self.clear_screen()
         print("The game ends with ", turn_player_mark, " as winner!!!")
         print("The final board!!!")
-        self.game_board.print()
+        self.game_board.print(self.next_required_large_board_square, ActionType.ANYWHERE)
 
     def convert_string_to_point(self, input_str):
         '''Convert an input string to a numberical point.'''
