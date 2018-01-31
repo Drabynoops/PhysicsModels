@@ -212,7 +212,7 @@ class UltimateTicTacToe:
     def print_header(self):
         '''Prints the headers for the tic-tac-toe game.'''
         print("*******************************************")
-        print("          ULTIMATE TIC-TAC-TOE             ")
+        print("           ULTIMATE TIC-TAC-TOE            ")
         print("*******************************************")
         print("Player 1 -> '" + self.player_one_mark +
               "'             Player 2 -> '" + self.player_two_mark + "'")
@@ -283,10 +283,10 @@ class UltimateTicTacToe:
                         self.action_type = ActionType.TARGET
                 else:
                     print("That point is already taken!")
-                    input("Press enter to continue ->") # Wait for player to realize
+                    input("Press enter to continue...") # Wait for player to realize
             else:
-                print("The point is INVALID")
-                input("Press enter to continue ->")
+                print("The point is INVALID.")
+                input("Press enter to continue...")
                 
         self.clear_screen()
         print("The game ends with ", turn_player_mark, " as winner!!!")
@@ -311,7 +311,6 @@ class UltimateTicTacToe:
     def validate_coordinate(self, point):
         '''Confirm that the user is selecting a point that exists.'''
         max_range = 3 if self.action_type == ActionType.TARGET else 9
-        point.print()
         if point.x in range(max_range) and point.y in range(max_range):
             return True
         else:
