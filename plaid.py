@@ -7,7 +7,8 @@ Ultimate Tic-Tac-Toe
 
 from enum import Enum
 import random
-
+import subprocess
+from sys import platform
 
 # ACTIONTYPE ENUM --------------------------------------
 class ActionType(Enum):
@@ -368,7 +369,10 @@ class UltimateTicTacToe:
 
     def clear_screen(self):
         '''Print a bunch of stuff to clear the screen.'''
-        print("\033[H\033[J")
+        if platform == 'linux' or platform == 'linux2':
+            subprocess.call('clear', shell=True)
+        elif platform == 'win32':
+            subprocess.call('cls', shell=True)
 # ULTIMATETICTACTOE CLASS --------------------------------------
 
 
