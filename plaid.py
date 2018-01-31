@@ -32,11 +32,12 @@ class Point:
     def __init__(self, _x, _y):
         self.x = _x
         self.y = _y
-        
+
     def print(self):
+        '''Print the coordinates of the point.'''
         print("(" + str(self.x) + ", " + str(self.y) + ")")
 # POINT CLASS --------------------------------------
-        
+
 
 # END GAME CLASS ---------------------------------
 class GridCompletion:
@@ -77,7 +78,7 @@ class SmallBoard:
         self.grid = []
         for i in range(3):
             self.grid.append([' ', ' ', ' '])
-            
+
     def convert_text_row_to_grid_row(self, num):
         '''Provide the row in the grid to be printed relative to the text row.'''
         if num == 0:
@@ -208,7 +209,7 @@ class UltimateTicTacToe:
 
         # Pick Starting Player (using PlayerState enum)
         self.player_turn = PlayerState(random.randint(1, 2))
-    
+
     def print_header(self):
         '''Prints the headers for the tic-tac-toe game.'''
         print("*******************************************")
@@ -287,7 +288,7 @@ class UltimateTicTacToe:
             else:
                 print("The point is INVALID.")
                 input("Press enter to continue...")
-                
+
         self.clear_screen()
         print("The game ends with ", turn_player_mark, " as winner!!!")
         print("The final board!!!")
@@ -320,7 +321,7 @@ class UltimateTicTacToe:
         '''Capture the user input.'''
         response = input("   > ")
         return response
-        
+
     def prompt_player(self):
         '''Prompt the user for their next move.'''
         if self.player_turn == PlayerState.PLAYER1:
@@ -373,7 +374,6 @@ class UltimateTicTacToe:
 
 
 
-    
 
 
 
@@ -395,27 +395,27 @@ ULTIMATE TIC-TAC-TOE
 Player 1 -> 'X'          Player 2 -> 'O'
 
                 0   1   2
-    |   |    ║    |   |    ║    |   |    
- ───+───+─── ║ ───+───+─── ║ ───+───+─── 
-    |   |    ║    |   |    ║    |   |    
- ───+───+─── ║ ───+───+─── ║ ───+───+─── 
-    |   |    ║    |   |    ║    |   |    
+    |   |    ║    |   |    ║    |   |
+ ───+───+─── ║ ───+───+─── ║ ───+───+───
+    |   |    ║    |   |    ║    |   |
+ ───+───+─── ║ ───+───+─── ║ ───+───+───
+    |   |    ║    |   |    ║    |   |
 ═════════════╬═════════════╬═════════════
-    |   |    ║    |   |    ║    |   |    
- ───+───+─── ║ ───+───+─── ║ ───+───+─── 
-    |   |    ║    |   |    ║    |   |    
- ───+───+─── ║ ───+───+─── ║ ───+───+─── 
-    |   |    ║    |   |    ║    |   |    
+    |   |    ║    |   |    ║    |   |
+ ───+───+─── ║ ───+───+─── ║ ───+───+───
+    |   |    ║    |   |    ║    |   |
+ ───+───+─── ║ ───+───+─── ║ ───+───+───
+    |   |    ║    |   |    ║    |   |
 ═════════════╬═════════════╬═════════════
-    |   |    ║    |   |    ║    |   |    
- ───+───+─── ║ ───+───+─── ║ ───+───+─── 
-    |   |    ║    |   |    ║    |   |    
- ───+───+─── ║ ───+───+─── ║ ───+───+─── 
-    |   |    ║    |   |    ║    |   |    
+    |   |    ║    |   |    ║    |   |
+ ───+───+─── ║ ───+───+─── ║ ───+───+───
+    |   |    ║    |   |    ║    |   |
+ ───+───+─── ║ ───+───+─── ║ ───+───+───
+    |   |    ║    |   |    ║    |   |
 
 Player 1's Turn: -----------------------
 
-Where would you like to place your 
+Where would you like to place your
 mark? (Format: "x, y")
     > (0, 2)
 
@@ -427,46 +427,18 @@ mark? (Format: "x, y")
 
 
 ════════════╬═════════════╬═════════════
-            ║    |   |    ║    |   |    
-            ║ ───+───+─── ║ ───+───+─── 
-     X      ║    |   |    ║    |   |    
-            ║ ───+───+─── ║ ───+───+─── 
-            ║    |   |    ║    |   |    
+            ║    |   |    ║    |   |
+            ║ ───+───+─── ║ ───+───+───
+     X      ║    |   |    ║    |   |
+            ║ ───+───+─── ║ ───+───+───
+            ║    |   |    ║    |   |
 
 
 
 
 first text row
     row_str = ""
-    
+
     if(grid[0])
-   
+
 """
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
