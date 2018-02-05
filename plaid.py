@@ -8,6 +8,7 @@ Ultimate Tic-Tac-Toe
 from enum import Enum
 import random
 import subprocess
+import pygame
 from sys import platform
 
 # ACTIONTYPE ENUM --------------------------------------
