@@ -14,8 +14,14 @@ BLUE     = (   0,   0, 255)
 GRAY     = ( 127, 127, 127)
 
 SEGMENT_COLOR = GREEN
-SEGMENT_SIZE = 20
+SEGMENT_SIZE = 10
+STEP_SIZE = 10
 BACKGROUND_COLOR = WHITE
+
+BORDER_COLOR = BLACK
+GAME_SPACE_WIDTH = 400
+GAME_SPACE_HEIGHT = 400
+GAME_SPACE_PADDING = 20
 
 
 
@@ -68,7 +74,7 @@ class SnakeBody:
         while i > 0:
             self.segments[i].update_position(self.segments[i-1].position)
             i -= 1
-        self.segments[0].update_position(self.segments[0].position + (self.movementDirection * SEGMENT_SIZE))
+        self.segments[0].update_position(self.segments[0].position + (self.movementDirection * STEP_SIZE))
 
 
     def draw_segments(self, screen):
@@ -84,7 +90,7 @@ def main():
     height = 600
     screen = pygame.display.set_mode([width,height])
     
-    mySnake = SnakeBody(Vector2D(50, 50), 5)
+    mySnake = SnakeBody(Vector2D(100, 100), 5)
     
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
@@ -95,19 +101,16 @@ def main():
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: # If user clicked close
                 done = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    mySnake.movementDirection = Vector2D(0, -1)
+                elif event.key == pygame.K_DOWN:
+                    mySnake.movementDirection = Vector2D(0, 1)
+                elif event.key == pygame.K_LEFT:
+                    mySnake.movementDirection = Vector2D(-1, 0)
+                elif event.key == pygame.K_RIGHT:
+                    mySnake.movementDirection = Vector2D(1, 0)
         
-        
-        # Move Snake
-        key = pygame.key.get_pressed()
-        if key[pygame.K_UP]:
-            mySnake.movementDirection = Vector2D(0, -1)
-        elif key[pygame.K_DOWN]:
-            mySnake.movementDirection = Vector2D(0, 1)
-        elif key[pygame.K_LEFT]:
-            mySnake.movementDirection = Vector2D(-1, 0)
-        elif key[pygame.K_RIGHT]:
-            mySnake.movementDirection = Vector2D(1, 0)
-            
             
         # --- Drawing code should go here
         # First, clear the screen
