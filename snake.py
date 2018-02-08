@@ -24,7 +24,6 @@ GAME_SPACE_HEIGHT = 400
 GAME_SPACE_PADDING = 20
 
 
-
 class Vector2D:
     '''Creates a 2D point that can work with mathimatical operations.'''
 
@@ -79,6 +78,8 @@ class Vector2D:
 
     def __add__(self, other):
         '''Confirm that other is a point and then create their sums.'''
+        x = 0
+        y = 0
         try:
             if isinstance(other, Vector2D):
                 x = self.x + other.x
@@ -136,6 +137,11 @@ class Vector2D:
     __rmul__ = __mul__
 
 
+def in_world(vec):
+    print("Checking: " , vec)
+    return not (vec.x <= GAME_SPACE_PADDING or vec.x >= GAME_SPACE_PADDING + GAME_SPACE_WIDTH or vec.y <= GAME_SPACE_PADDING or vec.y >= GAME_SPACE_PADDING + GAME_SPACE_HEIGHT)
+
+
 class SnakeSegment:
     # Constructor
     def __init__(self, x = 0, y = 0):
@@ -164,19 +170,18 @@ class SnakeBody:
             self.segments[i].update_position(self.segments[i-1].position)
             i -= 1
         self.segments[0].update_position(self.segments[0].position + (self.movementDirection * STEP_SIZE))
-
+        
 
     def draw_segments(self, screen):
         for i in range(len(self.segments)):
             self.segments[i].draw_segment(screen)
 
 
-
 def main():
     pygame.init()
     
-    width = 800
-    height = 600
+    width = GAME_SPACE_WIDTH + (2 * GAME_SPACE_PADDING)
+    height = GAME_SPACE_HEIGHT + (2 * GAME_SPACE_PADDING)
     screen = pygame.display.set_mode([width,height])
     
     mySnake = SnakeBody(Vector2D(100, 100), 5)
@@ -203,7 +208,8 @@ def main():
             
         # --- Drawing code should go here
         # First, clear the screen
-        screen.fill(BACKGROUND_COLOR) 
+        screen.fill(BORDER_COLOR) 
+        pygame.draw.rect(screen, BACKGROUND_COLOR, [GAME_SPACE_PADDING, GAME_SPACE_PADDING, GAME_SPACE_WIDTH, GAME_SPACE_HEIGHT])
         # Now, do your drawing.
         
         mySnake.update_segments()
@@ -216,7 +222,7 @@ def main():
         pygame.display.update()
     
         # This limits the loop to 60 frames per second (Modified to 2 fps)
-        clock.tick(2)
+        clock.tick(19)
         
     pygame.quit()
 
