@@ -4,6 +4,7 @@ Snake Game
 @author: Brendan Bard, Keenan Barber
 """
 import pygame
+import random
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -13,15 +14,17 @@ RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 GRAY     = ( 127, 127, 127)
 
-SEGMENT_COLOR = GREEN
-SEGMENT_SIZE = 10
+CELL_SIZE = 10
 STEP_SIZE = 10
-BACKGROUND_COLOR = WHITE
 
+SEGMENT_COLOR = GREEN
+BACKGROUND_COLOR = GRAY
 BORDER_COLOR = BLACK
-GAME_SPACE_WIDTH = 400
+FOOD_COLOR = RED
+
+GAME_SPACE_WIDTH = 300
 GAME_SPACE_HEIGHT = 400
-GAME_SPACE_PADDING = 20
+GAME_SPACE_PADDING = 40
 
 
 class Vector2D:
@@ -47,14 +50,13 @@ class Vector2D:
         except TypeError:
             print('Coordinates must be in integer format.')
 
+
     def __getattr__(self, name):
         '''Validates the name of an attribute the user tries to access.'''
         attr = None
         try:
-            if name == 'x':
-                attr = self.x
-            elif name == 'y':
-                attr = self.y
+            if name == 'x' or name =='y':
+                attr = super(Vector2D, self).__getattr__(name)
             else:
                 raise AttributeError
         except AttributeError:
@@ -141,6 +143,24 @@ def in_world(vec):
     print("Checking: " , vec)
     return not (vec.x <= GAME_SPACE_PADDING or vec.x >= GAME_SPACE_PADDING + GAME_SPACE_WIDTH or vec.y <= GAME_SPACE_PADDING or vec.y >= GAME_SPACE_PADDING + GAME_SPACE_HEIGHT)
 
+def snap_to_grid(vec):
+    newX = int(round(vec.x / CELL_SIZE, 0)) * CELL_SIZE
+    newY = int(round(vec.y / CELL_SIZE, 0)) * CELL_SIZE
+    return Vector2D(newX, newY)
+
+def random_game_position():
+    randX = random.randint(GAME_SPACE_PADDING, GAME_SPACE_PADDING + GAME_SPACE_WIDTH)
+    randY = random.randint(GAME_SPACE_PADDING, GAME_SPACE_PADDING + GAME_SPACE_HEIGHT)
+    return snap_to_grid(Vector2D(randX, randY))
+
+
+class Food:
+    # Constructor
+    def __init__(self, x = 0, y = 0):
+        self.position = Vector2D(x, y)
+        
+    def draw(self, screen):
+        pygame.draw.rect(screen, FOOD_COLOR, (self.position.x, self.position.y, CELL_SIZE, CELL_SIZE))
 
 class SnakeSegment:
     # Constructor
@@ -149,10 +169,9 @@ class SnakeSegment:
         
     def update_position(self, position):
         self.position = position
-        
-        
-    def draw_segment(self, screen):
-        pygame.draw.rect(screen, SEGMENT_COLOR, (self.position.x, self.position.y, SEGMENT_SIZE, SEGMENT_SIZE))
+           
+    def draw(self, screen):
+        pygame.draw.rect(screen, SEGMENT_COLOR, (self.position.x, self.position.y, CELL_SIZE, CELL_SIZE))
         
         
 class SnakeBody:
@@ -162,7 +181,7 @@ class SnakeBody:
     def __init__(self, position, initialSegments):
         self.segments = []
         for i in range(initialSegments):
-            self.segments.append(SnakeSegment(position.x - (SEGMENT_SIZE * i), position.y))
+            self.segments.append(SnakeSegment(position.x - (CELL_SIZE * i), position.y))
         
     def update_segments(self):
         i = len(self.segments) - 1
@@ -172,9 +191,9 @@ class SnakeBody:
         self.segments[0].update_position(self.segments[0].position + (self.movementDirection * STEP_SIZE))
         
 
-    def draw_segments(self, screen):
+    def draw(self, screen):
         for i in range(len(self.segments)):
-            self.segments[i].draw_segment(screen)
+            self.segments[i].draw(screen)
 
 
 def main():
@@ -183,8 +202,10 @@ def main():
     width = GAME_SPACE_WIDTH + (2 * GAME_SPACE_PADDING)
     height = GAME_SPACE_HEIGHT + (2 * GAME_SPACE_PADDING)
     screen = pygame.display.set_mode([width,height])
-    
-    mySnake = SnakeBody(Vector2D(100, 100), 5)
+        
+    mySnake = SnakeBody(snap_to_grid(Vector2D(100, 100)), 5)
+    foodPos = random_game_position()
+    food = Food(foodPos.x, foodPos.y)
     
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
@@ -213,7 +234,9 @@ def main():
         # Now, do your drawing.
         
         mySnake.update_segments()
-        mySnake.draw_segments(screen)
+        mySnake.draw(screen)
+        
+        food.draw(screen)
         
         font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
         text = font.render("My text",True,BLACK) # Creates the text (text, anti-aliased, color)
@@ -222,7 +245,7 @@ def main():
         pygame.display.update()
     
         # This limits the loop to 60 frames per second (Modified to 2 fps)
-        clock.tick(19)
+        clock.tick(4)
         
     pygame.quit()
 
