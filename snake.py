@@ -46,10 +46,8 @@ class Vector2D:
         '''Validates the name of an attribute the user tries to access.'''
         attr = None
         try:
-            if name == 'x':
-                attr = self.x
-            elif name == 'y':
-                attr = self.y
+            if name == 'x' or name == 'y':
+                attr = super(Vector2D, self).__getattr__(name)
             else:
                 raise AttributeError
         except AttributeError:
@@ -163,59 +161,72 @@ class SnakeBody:
     def draw_segments(self, screen):
         for i in range(len(self.segments)):
             self.segments[i].draw_segment(screen)
+        
 
+class SnakeGame:
+
+    def __init__(self, width, height):
+        pygame.init()
+        
+        self.width = width
+        self.height = height
+        self.screen = pygame.display.set_mode([width, height])
+        self.mySnake = SnakeBody(Vector2D(50, 50), 5)
+        self.state = self.play
+        self.done = False
+
+        # Used to manage how fast the screen updates
+        self.clock = pygame.time.Clock()
+
+    def execute_game_loop(self):
+        # -------- Main Program Loop -----------\
+        while not self.done:
+            self.state()
+            
+        pygame.quit()
+
+    def play(self):
+        # --- Main event loop
+            for event in pygame.event.get(): 
+                if event.type == pygame.QUIT: # If user clicked close
+                    self.done = True
+            
+            
+            # Move Snake
+            key = pygame.key.get_pressed()
+            if key[pygame.K_UP]:
+                self.mySnake.movementDirection = Vector2D(0, -1)
+            elif key[pygame.K_DOWN]:
+                self.mySnake.movementDirection = Vector2D(0, 1)
+            elif key[pygame.K_LEFT]:
+                self.mySnake.movementDirection = Vector2D(-1, 0)
+            elif key[pygame.K_RIGHT]:
+                self.mySnake.movementDirection = Vector2D(1, 0)
+                
+                
+            # --- Drawing code should go here
+            # First, clear the screen
+            self.screen.fill(BACKGROUND_COLOR) 
+            # Now, do your drawing.
+            
+            self.mySnake.update_segments()
+            self.mySnake.draw_segments(self.screen)
+            
+            font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
+            text = font.render("My text",True,BLACK) # Creates the text (text, anti-aliased, color)
+            self.screen.blit(text, [250, 250]) # Puts image of text on screen (textObj, location)
+            # --- Update the screen with what we've drawn.
+            pygame.display.update()
+        
+            # This limits the loop to 60 frames per second (Modified to 2 fps)
+            self.clock.tick(2)
 
 
 def main():
-    pygame.init()
-    
-    width = 800
-    height = 600
-    screen = pygame.display.set_mode([width,height])
-    
-    mySnake = SnakeBody(Vector2D(50, 50), 5)
-    
-    # Used to manage how fast the screen updates
-    clock = pygame.time.Clock()
-    # -------- Main Program Loop -----------\
-    done = False
-    while not done:
-        # --- Main event loop
-        for event in pygame.event.get(): 
-            if event.type == pygame.QUIT: # If user clicked close
-                done = True
         
-        
-        # Move Snake
-        key = pygame.key.get_pressed()
-        if key[pygame.K_UP]:
-            mySnake.movementDirection = Vector2D(0, -1)
-        elif key[pygame.K_DOWN]:
-            mySnake.movementDirection = Vector2D(0, 1)
-        elif key[pygame.K_LEFT]:
-            mySnake.movementDirection = Vector2D(-1, 0)
-        elif key[pygame.K_RIGHT]:
-            mySnake.movementDirection = Vector2D(1, 0)
-            
-            
-        # --- Drawing code should go here
-        # First, clear the screen
-        screen.fill(BACKGROUND_COLOR) 
-        # Now, do your drawing.
-        
-        mySnake.update_segments()
-        mySnake.draw_segments(screen)
-        
-        font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
-        text = font.render("My text",True,BLACK) # Creates the text (text, anti-aliased, color)
-        screen.blit(text, [250, 250]) # Puts image of text on screen (textObj, location)
-        # --- Update the screen with what we've drawn.
-        pygame.display.update()
-    
-        # This limits the loop to 60 frames per second (Modified to 2 fps)
-        clock.tick(2)
-        
-    pygame.quit()
+    game = SnakeGame(800, 600)
+
+    game.execute_game_loop()
 
 if __name__ == "__main__":
     try:
