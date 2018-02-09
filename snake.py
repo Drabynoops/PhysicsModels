@@ -37,10 +37,14 @@ class Vector2D:
             if isinstance(value, int):
                 if name == 'x' or name == 'y':
                     super(Vector2D, self).__setattr__(name, value)
+                else:
+                    raise AttributeError
             else:
                 raise TypeError
         except TypeError:
-            print('Coordinates must be in integer format.')
+            print('Coordinate {} must be in integer format.'.format(name))
+        except AttributeError:
+            print('No attribute named {}.'.format(name))
 
     def __getattr__(self, name):
         '''Validates the name of an attribute the user tries to access.'''
