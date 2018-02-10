@@ -194,18 +194,18 @@ class SnakeGame:
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: # If user clicked close
                     self.done = True
+                elif event.type == pygame.KEYDOWN:
+                    # Move Snake
+                    if event.key == pygame.K_UP:
+                        self.mySnake.movementDirection = Vector2D(0, -1)
+                    elif event.key == pygame.K_DOWN:
+                        self.mySnake.movementDirection = Vector2D(0, 1)
+                    elif event.key == pygame.K_LEFT:
+                        self.mySnake.movementDirection = Vector2D(-1, 0)
+                    elif event.key == pygame.K_RIGHT:
+                        self.mySnake.movementDirection = Vector2D(1, 0)
             
             
-            # Move Snake
-            key = pygame.key.get_pressed()
-            if key[pygame.K_UP]:
-                self.mySnake.movementDirection = Vector2D(0, -1)
-            elif key[pygame.K_DOWN]:
-                self.mySnake.movementDirection = Vector2D(0, 1)
-            elif key[pygame.K_LEFT]:
-                self.mySnake.movementDirection = Vector2D(-1, 0)
-            elif key[pygame.K_RIGHT]:
-                self.mySnake.movementDirection = Vector2D(1, 0)
                 
                 
             # --- Drawing code should go here
