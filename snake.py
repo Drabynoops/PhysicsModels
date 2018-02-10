@@ -174,6 +174,14 @@ class SnakeBody:
             i -= 1
         self.segments[0].update_position(self.segments[0].position + (self.movementDirection * CELL_SIZE))
 
+    def add_segment(self):
+        self.segments.append(SnakeSegment(self.get_tail_position().x, self.get_tail_position().y))
+
+    def get_head_position(self):
+        return self.segments[0].position
+    
+    def get_tail_position(self):
+        return self.segments[len(self.segments) - 1].position
 
     def draw(self, screen):
         for i in range(len(self.segments)):
@@ -234,8 +242,8 @@ class SnakeGame:
             self.mySnake.update_segments()
             self.wrap_snake()
             self.mySnake.draw(self.screen)
-            
             self.food.draw(self.screen)
+            self.check_food_collision()
             
             font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
             text = font.render("My text",True,BLACK) # Creates the text (text, anti-aliased, color)
@@ -258,15 +266,21 @@ class SnakeGame:
     
     def wrap_snake(self):
         # Wrap snake around x direction
-        if(self.mySnake.segments[0].position.x < self.padding):
-            self.mySnake.segments[0].position.x = self.width - self.padding - CELL_SIZE
-        if(self.mySnake.segments[0].position.x > self.width - self.padding - CELL_SIZE):
-            self.mySnake.segments[0].position.x = self.padding
+        if(self.mySnake.get_head_position().x < self.padding):
+            self.mySnake.get_head_position().x = self.width - self.padding - CELL_SIZE
+        if(self.mySnake.get_head_position().x > self.width - self.padding - CELL_SIZE):
+            self.mySnake.get_head_position().x = self.padding
         # Wrap snake around y direction
-        if(self.mySnake.segments[0].position.y < self.padding):
-            self.mySnake.segments[0].position.y = self.height - self.padding - CELL_SIZE
-        if(self.mySnake.segments[0].position.y > self.height - self.padding - CELL_SIZE):
-            self.mySnake.segments[0].position.y = self.padding
+        if(self.mySnake.get_head_position().y < self.padding):
+            self.mySnake.get_head_position().y = self.height - self.padding - CELL_SIZE
+        if(self.mySnake.get_head_position().y > self.height - self.padding - CELL_SIZE):
+            self.mySnake.get_head_position().y = self.padding
+            
+    def check_food_collision(self):
+        if(self.food.position == self.mySnake.get_head_position()):
+            self.mySnake.add_segment()
+            self.food.move(self.get_random_position())
+            print("Hit")
             
 
 def main():
