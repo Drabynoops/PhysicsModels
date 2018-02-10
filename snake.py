@@ -13,10 +13,14 @@ RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 GRAY     = ( 127, 127, 127)
 
-SEGMENT_COLOR = GREEN
-SEGMENT_SIZE = 20
-BACKGROUND_COLOR = WHITE
+SEGMENT_COLOR = BLACK
+SEGMENT_SIZE = 10
+BACKGROUND_COLOR = GRAY
+BORDER_COLOR = BLACK
 
+GAME_SPACE_PADDING = 20
+GAME_SPACE_WIDTH = 300
+GAME_SPACE_HEIGHT = 300
 
 
 class Vector2D:
@@ -171,7 +175,9 @@ class SnakeGame:
 
     def __init__(self, width, height):
         pygame.init()
-        
+
+        self.borderThickness = 5
+        self.padding = 20
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode([width, height])
@@ -211,6 +217,8 @@ class SnakeGame:
             # --- Drawing code should go here
             # First, clear the screen
             self.screen.fill(BACKGROUND_COLOR) 
+            pygame.draw.rect(self.screen, BORDER_COLOR, (self.padding - self.borderThickness, self.padding - self.borderThickness, self.width - (2 * self.padding) + (2 * self.borderThickness), self.height - (2 * self.padding) + (2 * self.borderThickness)))
+            pygame.draw.rect(self.screen, BACKGROUND_COLOR, (self.padding, self.padding, self.width - (2 * self.padding), self.height - (2 * self.padding)))
             # Now, do your drawing.
             
             self.mySnake.update_segments()
@@ -224,6 +232,8 @@ class SnakeGame:
         
             # This limits the loop to 60 frames per second (Modified to 2 fps)
             self.clock.tick(2)
+            
+
 
 
 def main():
