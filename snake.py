@@ -4,6 +4,7 @@ Snake Game
 @author: Brendan Bard, Keenan Barber
 """
 import pygame
+import random
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -14,14 +15,10 @@ BLUE     = (   0,   0, 255)
 GRAY     = ( 127, 127, 127)
 
 SEGMENT_COLOR = BLACK
-SEGMENT_SIZE = 10
+FOOD_COLOR = BLACK
+CELL_SIZE = 10
 BACKGROUND_COLOR = GRAY
 BORDER_COLOR = BLACK
-
-GAME_SPACE_PADDING = 20
-GAME_SPACE_WIDTH = 300
-GAME_SPACE_HEIGHT = 300
-
 
 class Vector2D:
     '''Creates a 2D point that can work with mathimatical operations.'''
@@ -136,6 +133,18 @@ class Vector2D:
     __rmul__ = __mul__
 
 
+class Food:
+    # Constructor
+    def __init__(self, vec):
+        self.position = vec
+        
+    def move(self, vec):
+        self.position = vec
+        
+    def draw(self, screen):
+        pygame.draw.rect(screen, FOOD_COLOR, (self.position.x, self.position.y, CELL_SIZE, CELL_SIZE))
+        
+
 class SnakeSegment:
     # Constructor
     def __init__(self, x = 0, y = 0):
@@ -145,8 +154,8 @@ class SnakeSegment:
         self.position = position
         
         
-    def draw_segment(self, screen):
-        pygame.draw.rect(screen, SEGMENT_COLOR, (self.position.x, self.position.y, SEGMENT_SIZE, SEGMENT_SIZE))
+    def draw(self, screen):
+        pygame.draw.rect(screen, SEGMENT_COLOR, (self.position.x, self.position.y, CELL_SIZE, CELL_SIZE))
         
         
 class SnakeBody:
@@ -156,19 +165,19 @@ class SnakeBody:
     def __init__(self, position, initialSegments):
         self.segments = []
         for i in range(initialSegments):
-            self.segments.append(SnakeSegment(position.x - (SEGMENT_SIZE * i), position.y))
+            self.segments.append(SnakeSegment(position.x - (CELL_SIZE * i), position.y))
         
     def update_segments(self):
         i = len(self.segments) - 1
         while i > 0:
             self.segments[i].update_position(self.segments[i-1].position)
             i -= 1
-        self.segments[0].update_position(self.segments[0].position + (self.movementDirection * SEGMENT_SIZE))
+        self.segments[0].update_position(self.segments[0].position + (self.movementDirection * CELL_SIZE))
 
 
-    def draw_segments(self, screen):
+    def draw(self, screen):
         for i in range(len(self.segments)):
-            self.segments[i].draw_segment(screen)
+            self.segments[i].draw(screen)
         
 
 class SnakeGame:
@@ -182,6 +191,7 @@ class SnakeGame:
         self.height = height
         self.screen = pygame.display.set_mode([width, height])
         self.mySnake = SnakeBody(Vector2D(50, 50), 5)
+        self.food = Food(self.get_random_position())
         self.state = self.play
         self.done = False
 
@@ -222,7 +232,10 @@ class SnakeGame:
             # Now, do your drawing.
             
             self.mySnake.update_segments()
-            self.mySnake.draw_segments(self.screen)
+            self.wrap_snake()
+            self.mySnake.draw(self.screen)
+            
+            self.food.draw(self.screen)
             
             font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
             text = font.render("My text",True,BLACK) # Creates the text (text, anti-aliased, color)
@@ -230,15 +243,35 @@ class SnakeGame:
             # --- Update the screen with what we've drawn.
             pygame.display.update()
         
-            # This limits the loop to 60 frames per second (Modified to 2 fps)
-            self.clock.tick(2)
+            # This limits the loop to 60 frames per second (Modified to 12 fps)
+            self.clock.tick(4)
             
-
-
+    def get_random_position(self):
+        newX = random.randint(self.padding, self.width - (2 * self.padding))
+        newY = random.randint(self.padding, self.height - (2 * self.padding))
+        return self.snap_to_grid(Vector2D(newX, newY))
+    
+    def snap_to_grid(self, vec):
+        newX = int(round(vec.x / CELL_SIZE)) * CELL_SIZE
+        newY = int(round(vec.y / CELL_SIZE)) * CELL_SIZE
+        return Vector2D(newX, newY)
+    
+    def wrap_snake(self):
+        # Wrap snake around x direction
+        if(self.mySnake.segments[0].position.x < self.padding):
+            self.mySnake.segments[0].position.x = self.width - self.padding - CELL_SIZE
+        if(self.mySnake.segments[0].position.x > self.width - self.padding - CELL_SIZE):
+            self.mySnake.segments[0].position.x = self.padding
+        # Wrap snake around y direction
+        if(self.mySnake.segments[0].position.y < self.padding):
+            self.mySnake.segments[0].position.y = self.height - self.padding - CELL_SIZE
+        if(self.mySnake.segments[0].position.y > self.height - self.padding - CELL_SIZE):
+            self.mySnake.segments[0].position.y = self.padding
+            
 
 def main():
         
-    game = SnakeGame(800, 600)
+    game = SnakeGame(300, 400)
 
     game.execute_game_loop()
 
