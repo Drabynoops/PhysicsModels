@@ -280,7 +280,6 @@ class SnakeGame:
         if(self.food.position == self.mySnake.get_head_position()):
             self.mySnake.add_segment()
             self.food.move(self.get_random_position())
-            print("Hit")
             
 
 def main():
