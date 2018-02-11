@@ -242,8 +242,9 @@ class SnakeGame:
             self.mySnake.update_segments()
             self.wrap_snake()
             self.mySnake.draw(self.screen)
-            self.food.draw(self.screen)
+            
             self.check_food_collision()
+            self.food.draw(self.screen)
             
             font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
             text = font.render("My text",True,BLACK) # Creates the text (text, anti-aliased, color)
