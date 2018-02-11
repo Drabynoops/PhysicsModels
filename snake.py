@@ -220,13 +220,13 @@ class SnakeGame:
                     self.done = True
                 elif event.type == pygame.KEYDOWN:
                     # Move Snake
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_UP and self.mySnake.movementDirection != Vector2D(0, 1):
                         self.mySnake.movementDirection = Vector2D(0, -1)
-                    elif event.key == pygame.K_DOWN:
+                    elif event.key == pygame.K_DOWN and self.mySnake.movementDirection != Vector2D(0, -1):
                         self.mySnake.movementDirection = Vector2D(0, 1)
-                    elif event.key == pygame.K_LEFT:
+                    elif event.key == pygame.K_LEFT and self.mySnake.movementDirection != Vector2D(1, 0):
                         self.mySnake.movementDirection = Vector2D(-1, 0)
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == pygame.K_RIGHT and self.mySnake.movementDirection != Vector2D(-1, 0):
                         self.mySnake.movementDirection = Vector2D(1, 0)
             
             
