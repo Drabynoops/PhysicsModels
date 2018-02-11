@@ -133,6 +133,41 @@ class Vector2D:
     __rmul__ = __mul__
 
 
+class MenuButton:
+    # Constructor
+    def __init__(self, buttonText, vec):
+        self.position = vec
+        self.buttonText = buttonText
+        self.font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
+        self.buttonWidth = 100
+        self.buttonHeight = 20
+        self.mouseOver = False;
+        
+    def draw(self, screen):    
+        if not self.mouse_over():
+            pygame.draw.rect(screen, RED, (self.position.x - (self.buttonWidth / 2), self.position.y - (self.buttonHeight / 2), self.buttonWidth, self.buttonHeight))
+    
+            text = self.font.render(self.buttonText, True, BLACK) # Creates the text (text, anti-aliased, color)
+            offsetX = text.get_rect().width / 2
+            offsetY = text.get_rect().height / 2
+            screen.blit(text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
+        
+        else:
+            pygame.draw.rect(screen, GREEN, (self.position.x - (self.buttonWidth / 2), self.position.y - (self.buttonHeight / 2), self.buttonWidth, self.buttonHeight))
+    
+            text = self.font.render(self.buttonText, True, BLACK) # Creates the text (text, anti-aliased, color)
+            offsetX = text.get_rect().width / 2
+            offsetY = text.get_rect().height / 2
+            screen.blit(text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
+        
+        
+    def get_rect(self):
+        return pygame.Rect(self.position.x - (self.buttonWidth / 2), self.position.y - (self.buttonHeight / 2), self.buttonWidth, self.buttonHeight)
+    
+    def mouse_over(self):
+        self.mouseOver = self.get_rect().collidepoint(pygame.mouse.get_pos())
+        return self.mouseOver
+
 class Food:
     # Constructor
     def __init__(self, vec):
@@ -200,8 +235,11 @@ class SnakeGame:
         self.screen = pygame.display.set_mode([width, height])
         self.mySnake = SnakeBody(Vector2D(50, 50), 5)
         self.food = Food(self.get_random_position())
-        self.state = self.play
+        self.state = self.menu
         self.done = False
+        
+        self.startButton = MenuButton("Start", Vector2D(int(self.width / 2), 50))
+        self.quitButton = MenuButton("Quit", Vector2D(int(self.width / 2), 100))
 
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
@@ -212,6 +250,42 @@ class SnakeGame:
             self.state()
             
         pygame.quit()
+        
+    def menu(self):
+        # --- Main event loop
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: # If user clicked close
+                self.done = True
+            elif event.type == pygame.KEYDOWN:
+                # Move Snake
+                print("Test")
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.startButton.mouse_over():
+                    print("Starting...")
+                    self.state = self.play
+                elif self.quitButton.mouse_over():
+                    print("Quitting...")
+                    self.done = True
+                    
+        # --- Drawing code should go here
+        # First, clear the screen
+        self.screen.fill(BACKGROUND_COLOR) 
+        pygame.draw.rect(self.screen, BORDER_COLOR, (self.padding - self.borderThickness, self.padding - self.borderThickness, self.width - (2 * self.padding) + (2 * self.borderThickness), self.height - (2 * self.padding) + (2 * self.borderThickness)))
+        pygame.draw.rect(self.screen, BACKGROUND_COLOR, (self.padding, self.padding, self.width - (2 * self.padding), self.height - (2 * self.padding)))
+        # Now, do your drawing.
+        
+        # Menu buttons
+        self.startButton.draw(self.screen)
+        self.quitButton.draw(self.screen)
+        
+        #if startButton.mouse_over():
+        #    print ("mouse is over newGameButton")
+        
+        # --- Update the screen with what we've drawn.
+        pygame.display.update()
+        
+        # This limits the loop to 60 frames per second (Modified to 12 fps)
+        self.clock.tick(60)
 
     def play(self):
         # --- Main event loop
@@ -231,7 +305,6 @@ class SnakeGame:
             
             
                 
-                
             # --- Drawing code should go here
             # First, clear the screen
             self.screen.fill(BACKGROUND_COLOR) 
@@ -240,15 +313,14 @@ class SnakeGame:
             # Now, do your drawing.
             
             self.mySnake.update_segments()
+            if self.check_body_collision():
+                self.state = self.menu
             self.wrap_snake()
             self.mySnake.draw(self.screen)
             
             self.check_food_collision()
             self.food.draw(self.screen)
             
-            font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
-            text = font.render("My text",True,BLACK) # Creates the text (text, anti-aliased, color)
-            self.screen.blit(text, [250, 250]) # Puts image of text on screen (textObj, location)
             # --- Update the screen with what we've drawn.
             pygame.display.update()
         
@@ -281,6 +353,15 @@ class SnakeGame:
         if(self.food.position == self.mySnake.get_head_position()):
             self.mySnake.add_segment()
             self.food.move(self.get_random_position())
+            
+    def check_body_collision(self):
+        i = len(self.mySnake.segments) - 1
+        while i > 0:
+            if self.mySnake.get_head_position() == self.mySnake.segments[i].position:
+                return True
+            i -= 1
+        return False
+        
             
 
 def main():
