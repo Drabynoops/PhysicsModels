@@ -131,7 +131,22 @@ class Vector2D:
         return Vector2D(x, y)
 
     __rmul__ = __mul__
+    
 
+
+class Label:
+    # Constructor
+    def __init__(self, labelText, vec):
+        self.position = vec
+        self.labelText = labelText
+        self.font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
+        self.text = self.font.render(self.labelText, True, BLACK) # Creates the text (text, anti-aliased, color)
+        
+    def draw(self, screen):           
+        offsetX = self.text.get_rect().width / 2
+        offsetY = self.text.get_rect().height / 2
+        screen.blit(self.text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
+    
 
 class MenuButton:
     # Constructor
@@ -159,7 +174,6 @@ class MenuButton:
             offsetX = text.get_rect().width / 2
             offsetY = text.get_rect().height / 2
             screen.blit(text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
-        
         
     def get_rect(self):
         return pygame.Rect(self.position.x - (self.buttonWidth / 2), self.position.y - (self.buttonHeight / 2), self.buttonWidth, self.buttonHeight)
@@ -238,8 +252,9 @@ class SnakeGame:
         self.state = self.menu
         self.done = False
         
-        self.startButton = MenuButton("Start", Vector2D(int(self.width / 2), 50))
-        self.quitButton = MenuButton("Quit", Vector2D(int(self.width / 2), 100))
+        self.startButton = MenuButton("Start", Vector2D(int(self.width / 2), int(self.height / 2) + 50))
+        self.quitButton = MenuButton("Quit", Vector2D(int(self.width / 2), int(self.height / 2) + 100))
+        self.title = Label("SNAKE", Vector2D(int(self.width / 2), int(self.height / 2)))
 
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
@@ -274,7 +289,8 @@ class SnakeGame:
         pygame.draw.rect(self.screen, BACKGROUND_COLOR, (self.padding, self.padding, self.width - (2 * self.padding), self.height - (2 * self.padding)))
         # Now, do your drawing.
         
-        # Menu buttons
+        # Menu Items
+        self.title.draw(self.screen)
         self.startButton.draw(self.screen)
         self.quitButton.draw(self.screen)
         
