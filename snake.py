@@ -25,9 +25,9 @@ class Vector2D:
     '''Creates a 2D point that can work with mathimatical operations.'''
 
     def __init__(self, x, y):
-        '''Initialize the x and y coordinates.'''
-        self.x = x
-        self.y = y
+      '''Initialize the x and y coordinates.'''
+      self.x = x
+      self.y = y
     
     def __repr__(self):
         '''Create the output for it Vector2D is put into print().'''
@@ -139,6 +139,7 @@ def snap_to_grid(vec):
     newY = int(round(vec.y / CELL_SIZE)) * CELL_SIZE
     return Vector2D(newX, newY)
 
+
 class Label:
     # Constructor
     def __init__(self, labelText, fontSize, vec):
@@ -152,6 +153,7 @@ class Label:
         offsetX = self.text.get_rect().width / 2
         offsetY = self.text.get_rect().height / 2
         screen.blit(self.text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
+
 
 class MenuButton:
     # Constructor
@@ -191,6 +193,7 @@ class MenuButton:
     def mouse_over(self):
         self.mouseOver = self.get_rect().collidepoint(pygame.mouse.get_pos())
         return self.mouseOver
+
 
 class Food:
     # Constructor
@@ -257,10 +260,10 @@ class SnakeGame:
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode([width, height])
-        self.mySnake = SnakeBody(Vector2D(50, 50), 5)
         self.food = Food(self.get_random_position())
         self.state = self.menu
         self.done = False
+        self.moveUpdated = True
         
         self.startButton = MenuButton("Start", Vector2D(int(self.width / 2), int(self.height / 2) + 60))
         self.quitButton = MenuButton("Quit", Vector2D(int(self.width / 2), int(self.height / 2) + 100))
@@ -287,6 +290,7 @@ class SnakeGame:
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.startButton.mouse_over():
                     print("Starting...")
+                    self.mySnake = SnakeBody(Vector2D(50, 50), 5)
                     self.state = self.play
                 elif self.quitButton.mouse_over():
                     print("Quitting...")
@@ -318,7 +322,7 @@ class SnakeGame:
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: # If user clicked close
                     self.done = True
-                elif event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN and self.move_updated:
                     # Move Snake
                     if event.key == pygame.K_UP and self.mySnake.movementDirection != Vector2D(0, 1):
                         self.mySnake.movementDirection = Vector2D(0, -1)
@@ -328,6 +332,7 @@ class SnakeGame:
                         self.mySnake.movementDirection = Vector2D(-1, 0)
                     elif event.key == pygame.K_RIGHT and self.mySnake.movementDirection != Vector2D(-1, 0):
                         self.mySnake.movementDirection = Vector2D(1, 0)
+                    self.move_updated = False
             
             
                 
@@ -339,6 +344,7 @@ class SnakeGame:
             # Now, do your drawing.
             
             self.mySnake.update_segments()
+            self.move_updated = True
             if self.check_body_collision():
                 self.state = self.menu
             self.wrap_snake()
@@ -379,12 +385,12 @@ class SnakeGame:
         i = len(self.mySnake.segments) - 1
         while i > 0:
             if self.mySnake.get_head_position() == self.mySnake.segments[i].position:
+                pygame.
                 return True
             i -= 1
         return False
         
             
-
 def main():
         
     game = SnakeGame(400, 300)
