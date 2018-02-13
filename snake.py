@@ -264,9 +264,15 @@ class SnakeGame:
         self.state = self.menu
         self.done = False
         self.moveUpdated = True
+        self.ending_screenshot = None
         
+        # Start menu
         self.startButton = MenuButton("Start", Vector2D(int(self.width / 2), int(self.height / 2) + 60))
         self.quitButton = MenuButton("Quit", Vector2D(int(self.width / 2), int(self.height / 2) + 100))
+        # End game menu
+        self.restartButton = MenuButton("Restart", Vector2D(int(self.width / 2), int(self.height / 2) + 60))
+        self.menuButton = MenuButton("Menu", Vector2D(int(self.width / 2), int(self.height / 2) + 100)) 
+        
         self.title = Label("SNAKE", 40, Vector2D(int(self.width / 2), int(self.height / 2)))
 
         # Used to manage how fast the screen updates
@@ -345,20 +351,44 @@ class SnakeGame:
             
             self.mySnake.update_segments()
             self.move_updated = True
-            if self.check_body_collision():
-                self.state = self.menu
             self.wrap_snake()
-            self.mySnake.draw(self.screen)
+            self.mySnake.draw(self.screen)          
             
             self.check_food_collision()
             self.food.draw(self.screen)
+
+            if self.check_body_collision():
+                self.ending_screenshot = pygame.Surface.copy(self.screen)
+                self.state = self.end_screen
             
             # --- Update the screen with what we've drawn.
             pygame.display.update()
         
             # This limits the loop to 60 frames per second (Modified to 12 fps)
             self.clock.tick(4)
-            
+
+    def end_screen(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.done = True
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.menuButton.mouse_over():
+                    self.state = self.menu
+                elif self.restartButton.mouse_over():
+                    self.mySnake = SnakeBody(Vector2D(50, 50), 5)
+                    self.state = self.play
+        
+            self.screen.fill(BACKGROUND_COLOR) 
+            self.screen.blit(self.ending_screenshot, (0,0))
+
+            self.menuButton.draw(self.screen)
+            self.restartButton.draw(self.screen)
+
+            pygame.display.update()
+            self.clock.tick(60)
+
+
+    
     def get_random_position(self):
         newX = random.randint(self.padding, self.width - (2 * self.padding))
         newY = random.randint(self.padding, self.height - (2 * self.padding))
@@ -385,7 +415,6 @@ class SnakeGame:
         i = len(self.mySnake.segments) - 1
         while i > 0:
             if self.mySnake.get_head_position() == self.mySnake.segments[i].position:
-                pygame.
                 return True
             i -= 1
         return False
