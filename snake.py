@@ -13,6 +13,7 @@ GREEN    = (   0, 255,   0)
 RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 GRAY     = ( 127, 127, 127)
+GRAY2     = ( 180, 180, 180)
 
 SEGMENT_COLOR = BLACK
 FOOD_COLOR = BLACK
@@ -133,20 +134,24 @@ class Vector2D:
     __rmul__ = __mul__
     
 
+def snap_to_grid(vec):
+    newX = int(round(vec.x / CELL_SIZE)) * CELL_SIZE
+    newY = int(round(vec.y / CELL_SIZE)) * CELL_SIZE
+    return Vector2D(newX, newY)
 
 class Label:
     # Constructor
-    def __init__(self, labelText, vec):
+    def __init__(self, labelText, fontSize, vec):
         self.position = vec
         self.labelText = labelText
-        self.font = pygame.font.SysFont('Calibri', 25, True, False) # Gets a font (font, size, bold, italics)
+        self.fontSize = fontSize
+        self.font = pygame.font.SysFont('Calibri', self.fontSize, True, False) # Gets a font (font, size, bold, italics)
         self.text = self.font.render(self.labelText, True, BLACK) # Creates the text (text, anti-aliased, color)
         
     def draw(self, screen):           
         offsetX = self.text.get_rect().width / 2
         offsetY = self.text.get_rect().height / 2
         screen.blit(self.text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
-    
 
 class MenuButton:
     # Constructor
@@ -160,15 +165,20 @@ class MenuButton:
         
     def draw(self, screen):    
         if not self.mouse_over():
-            pygame.draw.rect(screen, RED, (self.position.x - (self.buttonWidth / 2), self.position.y - (self.buttonHeight / 2), self.buttonWidth, self.buttonHeight))
+            # Button Background
+            pygame.draw.rect(screen, BACKGROUND_COLOR, (self.position.x - (self.buttonWidth / 2), self.position.y - (self.buttonHeight / 2), self.buttonWidth, self.buttonHeight))
     
-            text = self.font.render(self.buttonText, True, BLACK) # Creates the text (text, anti-aliased, color)
+            text = self.font.render(self.buttonText, True, GRAY2) # Creates the text (text, anti-aliased, color)
             offsetX = text.get_rect().width / 2
             offsetY = text.get_rect().height / 2
             screen.blit(text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
         
         else:
-            pygame.draw.rect(screen, GREEN, (self.position.x - (self.buttonWidth / 2), self.position.y - (self.buttonHeight / 2), self.buttonWidth, self.buttonHeight))
+            # Button Background
+            pygame.draw.rect(screen, BACKGROUND_COLOR, (self.position.x - int(self.buttonWidth / 2), self.position.y - (self.buttonHeight / 2), self.buttonWidth, self.buttonHeight))
+            
+            highlightPos = Vector2D(self.position.x - int(self.buttonWidth / 2) - int(CELL_SIZE / 2), self.position.y - int(CELL_SIZE / 2))
+            pygame.draw.rect(screen, SEGMENT_COLOR, (highlightPos.x, highlightPos.y, CELL_SIZE, CELL_SIZE))
     
             text = self.font.render(self.buttonText, True, BLACK) # Creates the text (text, anti-aliased, color)
             offsetX = text.get_rect().width / 2
@@ -252,9 +262,9 @@ class SnakeGame:
         self.state = self.menu
         self.done = False
         
-        self.startButton = MenuButton("Start", Vector2D(int(self.width / 2), int(self.height / 2) + 50))
+        self.startButton = MenuButton("Start", Vector2D(int(self.width / 2), int(self.height / 2) + 60))
         self.quitButton = MenuButton("Quit", Vector2D(int(self.width / 2), int(self.height / 2) + 100))
-        self.title = Label("SNAKE", Vector2D(int(self.width / 2), int(self.height / 2)))
+        self.title = Label("SNAKE", 40, Vector2D(int(self.width / 2), int(self.height / 2)))
 
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
@@ -346,12 +356,7 @@ class SnakeGame:
     def get_random_position(self):
         newX = random.randint(self.padding, self.width - (2 * self.padding))
         newY = random.randint(self.padding, self.height - (2 * self.padding))
-        return self.snap_to_grid(Vector2D(newX, newY))
-    
-    def snap_to_grid(self, vec):
-        newX = int(round(vec.x / CELL_SIZE)) * CELL_SIZE
-        newY = int(round(vec.y / CELL_SIZE)) * CELL_SIZE
-        return Vector2D(newX, newY)
+        return snap_to_grid(Vector2D(newX, newY))
     
     def wrap_snake(self):
         # Wrap snake around x direction
@@ -382,7 +387,7 @@ class SnakeGame:
 
 def main():
         
-    game = SnakeGame(300, 400)
+    game = SnakeGame(400, 300)
 
     game.execute_game_loop()
 
