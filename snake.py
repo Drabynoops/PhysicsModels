@@ -106,7 +106,7 @@ class Vector2D:
 
     def __rsub__(self, other):
         '''Confirm that other is a point.
-        
+
         Then subtract with other on the left side.
         '''
         try:
@@ -358,7 +358,7 @@ class SnakeGame:
             self.food.draw(self.screen)
 
             if self.check_body_collision():
-                self.ending_screenshot = pygame.Surface.copy(self.screen)
+                self.ending_screenshot = pygame.Surface.copy(self.screen) # Last game state screen shot
                 self.state = self.end_screen
             
             # --- Update the screen with what we've drawn.
@@ -379,7 +379,7 @@ class SnakeGame:
                     self.state = self.play
         
             self.screen.fill(BACKGROUND_COLOR) 
-            self.screen.blit(self.ending_screenshot, (0,0))
+            self.screen.blit(self.ending_screenshot, (0,0)) # Draw endgame screenshot to (0,0)
 
             self.menuButton.draw(self.screen)
             self.restartButton.draw(self.screen)
