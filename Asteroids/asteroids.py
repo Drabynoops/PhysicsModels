@@ -13,10 +13,28 @@ ASTEROID_VERTEX_COUNT_MIN = 7
 ASTEROID_VERTEX_COUNT_MAX = 14
 ASTEROID_RADIUS_NOISE = 10
 
-BACKGROUND_COLOR = BLACK
-LINE_COLOR = WHITE
+BACKGROUND_COLOR = Color.BLACK
+LINE_COLOR = Color.WHITE
 LINE_THICKNESS = 2
 
+
+class Player(pygame.sprite.Sprite):
+
+    def __init__(self, color, radius):
+        # Call the parent class (Sprite) constructor
+        pygame.sprite.Sprite.__init__(self)
+        
+        # Assign a width an height because of the
+        self.x = 0
+        self.y = 0 
+        self.radius = radius
+        self.width = self.radius + self.radius
+        self.height = self.radius + self.radius
+
+        # Create an image of the block, and fill it with a color
+        # This could also be an image loaded from the disk.
+        self.image = pygame.Surface([self.width, self.height])
+        pygame.draw.circle(self.image, Color.WHITE, [self.width / 2, self.height / 2], self.radius)
 
 class Asteroid:
     # Constructor
@@ -57,9 +75,13 @@ class Game:
         self.screen_center = Vec2d(width/2, height/2)
         self.coords = Coords(self.screen_center.copy(), 1, True)
 
+    def run(self):
+        pass
+
 def main():
     input()
-
+    # asteroids_game = Game()
+    # asteroids_game.run()
     
 if __name__ == "__main__":
     try:
