@@ -13,8 +13,8 @@ ASTEROID_VERTEX_COUNT_MIN = 7
 ASTEROID_VERTEX_COUNT_MAX = 14
 ASTEROID_RADIUS_NOISE = 10
 
-BACKGROUND_COLOR = Color.BLACK
-LINE_COLOR = Color.WHITE
+BACKGROUND_COLOR = (0, 0, 0)
+LINE_COLOR = (255, 255, 255)
 LINE_THICKNESS = 2
 
 
@@ -52,13 +52,13 @@ class Game:
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode([width,height])
-        self.draw_screen = self.screen.copy()
-        self.draw_screen.fill(( 255, 255, 255))
         self.screen_center = Vec2d(width/2, height/2)
         self.coords = Coords(self.screen_center.copy(), 1, True)
         
         self.state = self.play # The game state
         self.done = False
+        
+        self.testAsteroid = Asteroid(100, 100)
         
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
@@ -78,10 +78,10 @@ class Game:
             
         # --- Drawing code should go here
         # First, clear the screen
-        self.screen.fill(( 255, 255, 255)) 
+        self.screen.fill(( 0, 0, 0)) 
         
         # Now, do your drawing.
-
+        self.testAsteroid.draw(self.screen)
         
         # --- Update the screen with what we've drawn.
         pygame.display.update()
