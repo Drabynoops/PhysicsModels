@@ -71,17 +71,49 @@ class Game:
         self.height = height
         self.screen = pygame.display.set_mode([width,height])
         self.draw_screen = self.screen.copy()
-        self.draw_screen.fill(Color.WHITE)
+        self.draw_screen.fill(( 255, 255, 255))
         self.screen_center = Vec2d(width/2, height/2)
         self.coords = Coords(self.screen_center.copy(), 1, True)
+        
+        self.state = self.play # The game state
+        self.done = False
+        
+        # Used to manage how fast the screen updates
+        self.clock = pygame.time.Clock()
+        
+    def execute_game_loop(self):
+        # -------- Main Program Loop -----------\
+        while not self.done:
+            self.state()
+            
+        pygame.quit()
+        
+    def play(self):
+        # --- Main event loop
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: # If user clicked close
+                self.done = True           
+            
+        # --- Drawing code should go here
+        # First, clear the screen
+        self.screen.fill(( 255, 255, 255)) 
+        
+        # Now, do your drawing.
+
+        
+        # --- Update the screen with what we've drawn.
+        pygame.display.update()
+    
+        # This limits the loop to 60 frames per second (Modified to 12 fps)
+        self.clock.tick(60)
 
     def run(self):
         pass
 
 def main():
-    input()
-    # asteroids_game = Game()
-    # asteroids_game.run()
+    game = Game(400, 300)
+    game.execute_game_loop()
+
     
 if __name__ == "__main__":
     try:
