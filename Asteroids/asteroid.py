@@ -1,5 +1,7 @@
 
 import pygame
+from pygame import draw
+from color import Color
 import random
 import math
 from vec2d import Vec2d
@@ -102,4 +104,3 @@ class Asteroid(pygame.sprite.Sprite):
         
         # To visualize the collider
         #.draw.circle(screen, (0, 255, 0), self.pos.int(), self.asteroidRadius)
-
