@@ -11,6 +11,10 @@ from player import Player
 ASTEROID_MIN_RADIUS = 10
 ASTEROID_MAX_RADIUS = 30
 
+BORDER_LINE_COLOR = Color.WHITE
+BORDER_LINE_THICKNESS = 2
+BORDER_THICKNESS = 25
+
 class Game:
 
     def __init__(self, width, height):
@@ -35,8 +39,8 @@ class Game:
         self.game_objects = pygame.sprite.Group()
         
         # Testing asteroids
-        self.create_asteroid(Vec2d(100, 100), Vec2d(400, 400), 2)
-        self.create_asteroid(Vec2d(200, 300), Vec2d(-400, -400), 1)
+        self.create_asteroid(Vec2d(100, 100), Vec2d(400, 400))
+        self.create_asteroid(Vec2d(200, 300), Vec2d(-400, -400))
         
         self.player = Player(Color.WHITE, 15, [50, 50])
 
@@ -79,15 +83,20 @@ class Game:
         # Now, do your drawing.
         self.player.draw(self.screen)
         
+        # Add game border
+        pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
+        pygame.draw.rect(self.screen, BORDER_LINE_COLOR, (BORDER_THICKNESS, BORDER_THICKNESS, self.width - (2 * BORDER_THICKNESS), self.height - (2 * BORDER_THICKNESS)), BORDER_LINE_THICKNESS)
+        
         # --- Update the screen with what we've drawn.
         pygame.display.update()
     
         # This limits the loop to 60 frames per second (Modified to 12 fps)
         self.clock.tick(60)
         
-    def create_asteroid(self, pos, vel, mass):
+    def create_asteroid(self, pos, vel):
         asteroid_radius = random.randint(ASTEROID_MIN_RADIUS, ASTEROID_MAX_RADIUS) 
         asteroid_mass = asteroid_radius * asteroid_radius
+        
         new_asteroid = Asteroid(pos, vel, asteroid_mass, asteroid_radius)
         self.game_objects.add(new_asteroid)
         self.asteroid_objects.add(new_asteroid)
