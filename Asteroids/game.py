@@ -8,7 +8,8 @@ from asteroid import Asteroid
 
 from player import Player
         
-BACKGROUND_COLOR = Color.BLACK
+ASTEROID_MIN_RADIUS = 10
+ASTEROID_MAX_RADIUS = 30
 
 class Game:
 
@@ -18,6 +19,7 @@ class Game:
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode([width,height])
+        self.background_color = Color.BLACK
 
         self.draw_screen = self.screen.copy()
         self.draw_screen.fill(Color.BLACK)
@@ -33,13 +35,8 @@ class Game:
         self.game_objects = pygame.sprite.Group()
         
         # Testing asteroids
-        test_asteroid_1 = Asteroid(Vec2d(60, 60), Vec2d(100, 100), 1)
-        test_asteroid_2 = Asteroid(Vec2d(300, 300), Vec2d(-500, -500), 1)
-        
-        self.game_objects.add(test_asteroid_1)
-        self.game_objects.add(test_asteroid_2)
-        self.asteroid_objects.add(test_asteroid_1)
-        self.asteroid_objects.add(test_asteroid_2)
+        self.create_asteroid(Vec2d(100, 100), Vec2d(400, 400), 2)
+        self.create_asteroid(Vec2d(200, 300), Vec2d(-400, -400), 1)
         
         self.player = Player(Color.WHITE, 15, [50, 50])
 
@@ -70,7 +67,7 @@ class Game:
 
         # --- Drawing code should go here
         # First, clear the screen
-        self.screen.fill(Color.BLACK) 
+        self.screen.fill(self.background_color) 
         
         # Now, do your drawing.
         for obj in self.game_objects: 
@@ -88,13 +85,20 @@ class Game:
         # This limits the loop to 60 frames per second (Modified to 12 fps)
         self.clock.tick(60)
         
+    def create_asteroid(self, pos, vel, mass):
+        asteroid_radius = random.randint(ASTEROID_MIN_RADIUS, ASTEROID_MAX_RADIUS) 
+        asteroid_mass = asteroid_radius * asteroid_radius
+        new_asteroid = Asteroid(pos, vel, asteroid_mass, asteroid_radius)
+        self.game_objects.add(new_asteroid)
+        self.asteroid_objects.add(new_asteroid)
+        
     def get_random_direction(self):
         return Vec2d(random.randint(-1, 1), random.randint(-1, 1)).normalized()
     
     def check_asteroid_collisions(self):
         # For every asteroid... 
         for target_asteroid in self.asteroid_objects:
-            
+            print(target_asteroid.mass)
             # Make a list without that asteroid to check for collisions
             trimmed_asteroid_objects = pygame.sprite.Group()
             for other_asteroid in self.asteroid_objects:
