@@ -6,9 +6,15 @@ from vec2d import Vec2d
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, color, rad, pos=None):
+    def __init__(self, color, rad, target, pos=None, ):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
+
+        self.target = target
+        self.min_x = 25
+        self.min_y = 25
+        self.max_x = target.get_width()
+        self.max_y = target.get_height()
 
         # dimensions
         self.rad = rad
@@ -27,7 +33,7 @@ class Player(pygame.sprite.Sprite):
         self.local_pos = Vec2d(self.rad, self.rad)
         self.global_pos = Vec2d(self.pos.x - self.rad,
                             self.pos.y - self.rad)
-        
+
         # player draw points
         self.p1 = Vec2d(self.width // 2, 0)
         self.p2 = Vec2d(5, self.height - 5)
@@ -87,11 +93,11 @@ class Player(pygame.sprite.Sprite):
 
         if k[pygame.K_UP]:
             self.speed = self.speed + self.accel
-        elif k[pygame.K_LEFT]:
+        if k[pygame.K_LEFT]:
             self.rotation = self.rotation - 1
-        elif k[pygame.K_DOWN]:
+        if k[pygame.K_DOWN]:
             self.speed = self.speed - self.accel
-        elif k[pygame.K_RIGHT]:
+        if k[pygame.K_RIGHT]:
            self.rotation = self.rotation + 1
 
         if self.speed > self.max_speed:
@@ -102,15 +108,29 @@ class Player(pygame.sprite.Sprite):
         self.__change_pos()
         self.draw_self()
 
+    def get_real_pos(self):
+        return Vec2d(self.global_pos.x + self.local_pos.x, self.global_pos.y + self.local_pos.y)
+
     def __change_pos(self):
         mov_vec = self.rotate_point_around_pivot(
             Vec2d(0, 0 - self.speed),
             Vec2d(0, 0), self.rotation) 
         
-        print(self.speed)
-        print(mov_vec)
         self.global_pos.x = self.global_pos.x + mov_vec.x
         self.global_pos.y = self.global_pos.y + mov_vec.y
 
-    def draw(self, target):
-        target.blit(self.image, [self.global_pos.x, self.global_pos.y])
+        # wrap player
+        real_pos = self.get_real_pos()
+
+        if real_pos.x > self.max_x:
+            self.global_pos.x = self.min_x + self.local_pos.x
+        elif real_pos.x < self.min_x:
+            self.global_pos.x = self.max_x - self.local_pos.x
+        
+        if real_pos.y > self.max_y:
+            self.global_pos.y = self.min_y + self.local_pos.y
+        elif real_pos.y < self.min_y:
+            self.global_pos.y = self.max_y - self.local_pos.y
+
+    def draw(self):
+        self.target.blit(self.image, [self.global_pos.x, self.global_pos.y])

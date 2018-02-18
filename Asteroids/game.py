@@ -8,7 +8,15 @@ from asteroid import Asteroid
 
 from player import Player
         
-BACKGROUND_COLOR = Color.BLACK
+ASTEROID_MIN_RADIUS = 20
+ASTEROID_MAX_RADIUS = 40
+ASTEROID_DEATH_RADIUS = 5
+ASTEROID_WRAP_DISTANCE = 15 # The distance off from the window border that will cause an asteroid to wrap around the screen
+
+LINE_COLOR = Color.WHITE
+LINE_COLOR_BACKGROUND = Color.GRAY_2
+LINE_THICKNESS = 2
+BORDER_THICKNESS = 25
 
 class Game:
 
@@ -18,6 +26,7 @@ class Game:
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode([width,height])
+        self.background_color = Color.BLACK
 
         self.draw_screen = self.screen.copy()
         self.draw_screen.fill(Color.BLACK)
@@ -27,21 +36,20 @@ class Game:
         self.dt = 0.001
         self.state = self.play # The game state
         self.done = False
+
+        # Game variables
+        self.max_asteroid_count = 10
+        self.max_background_asteroid_count = 10
         
         # Create the sprite groups
-        self.asteroid_objects = pygame.sprite.Group()
         self.game_objects = pygame.sprite.Group()
+        self.asteroid_objects = pygame.sprite.Group()
+        self.background_objects = pygame.sprite.Group()
         
-        # Testing asteroids
-        test_asteroid_1 = Asteroid(Vec2d(60, 60), Vec2d(100, 100), 1)
-        test_asteroid_2 = Asteroid(Vec2d(300, 300), Vec2d(-500, -500), 1)
+        # Add asteroids
+        self.populate_world_with_asteroids()
         
-        self.game_objects.add(test_asteroid_1)
-        self.game_objects.add(test_asteroid_2)
-        self.asteroid_objects.add(test_asteroid_1)
-        self.asteroid_objects.add(test_asteroid_2)
-        
-        self.player = Player(Color.WHITE, 15, Vec2d(50, 50))
+        self.player = Player(Color.WHITE, 15, self.screen, Vec2d(50, 50))
 
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
@@ -61,35 +69,105 @@ class Game:
 
         # --- Drawing code should go here
         # First, clear the screen
-        self.screen.fill(Color.BLACK) 
+        self.screen.fill(self.background_color) 
         
-        # Now, do your drawing.
-        for obj in self.game_objects: 
+        # Update and draw BACKGROUND OBJECTS
+        for background_obj in self.background_objects:
+            background_obj.update(self.dt)
+            background_obj.draw(self.screen)
+        
+        # Update and draw FOREGROUND OBEJCTS
+        for obj in self.asteroid_objects: 
             obj.update(self.dt)
             obj.draw(self.screen)
         
-        self.check_asteroid_collisions()
         self.player.update()
+        self.wrap_objects()
+        self.check_asteroid_collisions(self.asteroid_objects)
+        self.check_asteroid_collisions(self.background_objects)
 
         # Now, do your drawing.
-        self.player.draw(self.screen)
+        self.player.draw()
+
+        # Add game border
+        pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
+        pygame.draw.rect(self.screen, LINE_COLOR, (BORDER_THICKNESS, BORDER_THICKNESS, self.width - (2 * BORDER_THICKNESS), self.height - (2 * BORDER_THICKNESS)), LINE_THICKNESS)
         
         # --- Update the screen with what we've drawn.
         pygame.display.update()
     
-        # This limits the loop to 60 frames per second (Modified to 12 fps)
+        # This limits the loop to 60 frames per second
         self.clock.tick(60)
         
+    # Adds new asteroids if needed to keep the world full of life!
+    def populate_world_with_asteroids(self):
+        #print("Asteroid Count: " , len(self.asteroid_objects))
+        while len(self.asteroid_objects) < self.max_asteroid_count:
+            self.create_random_asteroid()
+
+        while len(self.background_objects) < self.max_background_asteroid_count:
+            self.create_random_background_asteroid()
+        
+    # Creates an asteroid using random parameters
+    def create_random_asteroid(self):    
+        asteroid_radius = random.randint(ASTEROID_MIN_RADIUS, ASTEROID_MAX_RADIUS) 
+        asteroid_pos = self.get_random_world_point()
+        asteroid_vel = self.get_random_direction() * random.randint(200, 500)
+        
+        self.create_asteroid(self.asteroid_objects, asteroid_pos, asteroid_vel, asteroid_radius)  
+    
+    # Creates an asteroid using parameters
+    def create_asteroid(self, sprite_group, pos, vel, radius):        
+        new_asteroid = Asteroid(pos, vel, radius)
+        new_asteroid.set_visual_details(LINE_COLOR, LINE_THICKNESS, self.background_color)
+        
+        self.game_objects.add(new_asteroid)
+        sprite_group.add(new_asteroid)
+        
+    # Creates an asteroid using random parameters for the background
+    def create_random_background_asteroid(self):    
+        asteroid_radius = random.randint(ASTEROID_MIN_RADIUS, ASTEROID_MAX_RADIUS) 
+        asteroid_pos = self.get_random_world_point()
+        asteroid_vel = self.get_random_direction() * random.randint(200, 500)
+        
+        new_asteroid = Asteroid(asteroid_pos, asteroid_vel, asteroid_radius)
+        new_asteroid.set_visual_details(LINE_COLOR_BACKGROUND, LINE_THICKNESS, self.background_color)
+        
+        self.game_objects.add(new_asteroid)
+        self.background_objects.add(new_asteroid)
+        
+    # Gets a random vector on the screen
+    def get_random_world_point(self):
+        x = random.randint(0, self.width)
+        y = random.randint(0, self.height)
+        return Vec2d(x, y)
+        
+    # Gets a random direction
     def get_random_direction(self):
         return Vec2d(random.randint(-1, 1), random.randint(-1, 1)).normalized()
     
-    def check_asteroid_collisions(self):
+    # Removes asteroids that have left the screen
+    def wrap_objects(self):
         # For every asteroid... 
-        for target_asteroid in self.asteroid_objects:
-            
+        for target_asteroid in self.game_objects:
+            # If the asteroid has left the world, wrap it
+            if target_asteroid.pos.x < (-ASTEROID_WRAP_DISTANCE): 
+                target_asteroid.pos.x = self.width + ASTEROID_WRAP_DISTANCE
+            if target_asteroid.pos.x > (self.width + ASTEROID_WRAP_DISTANCE):
+                target_asteroid.pos.x = -ASTEROID_WRAP_DISTANCE
+            if target_asteroid.pos.y < (-ASTEROID_WRAP_DISTANCE):
+                target_asteroid.pos.y = self.height + ASTEROID_WRAP_DISTANCE
+            if target_asteroid.pos.y > (self.height + ASTEROID_WRAP_DISTANCE):
+                target_asteroid.pos.y = -ASTEROID_WRAP_DISTANCE
+
+    
+    # Checks to see if two asteroids are colliding
+    def check_asteroid_collisions(self, asteroid_list):
+        # For every asteroid in front layer... 
+        for target_asteroid in asteroid_list:
             # Make a list without that asteroid to check for collisions
             trimmed_asteroid_objects = pygame.sprite.Group()
-            for other_asteroid in self.asteroid_objects:
+            for other_asteroid in asteroid_list:
                 if other_asteroid != target_asteroid:
                     trimmed_asteroid_objects.add(other_asteroid)
             
@@ -98,24 +176,25 @@ class Game:
             if hits:
                 for other in hits:
                     target_asteroid.collide_with_asteroid(other)
-                    #sprite.kill()
-    
-    # Not tested yet
+                    #self.split_asteroid(other)
+
+
+    # Splits an asteroid into two smaller asteroids
     def split_asteroid(self, asteroid):
         initial_pos = asteroid.pos.copy()
         initial_vel = asteroid.vel.copy()
         initial_speed = initial_vel.get_length()
+        new_radius = int(asteroid.radius / 2)
         
         # Remove asteroid from all groups it might be in
         asteroid.kill()
         
-        new_asteroid_1 = Asteroid(initial_pos, self.get_random_direction() * initial_speed, 1)
-        new_asteroid_2 = Asteroid(initial_pos, self.get_random_direction() * initial_speed, 1)
-        
-        self.game_objects.add(new_asteroid_1)
-        self.game_objects.add(new_asteroid_2)
-        self.asteroid_objects.add(new_asteroid_1)
-        self.asteroid_objects.add(new_asteroid_2)
+        # If the new radius is large enough...
+        if new_radius > ASTEROID_DEATH_RADIUS:
+            new_pos_1 = Vec2d(initial_pos.x + 50, initial_pos.y)
+            self.create_asteroid(new_pos_1, self.get_random_direction() * initial_speed, new_radius)
+            self.create_asteroid(initial_pos, self.get_random_direction() * initial_speed, new_radius)
+
 
     def run(self):
         pass
