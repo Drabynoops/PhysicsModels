@@ -9,19 +9,20 @@ ASTEROID_VERTEX_COUNT_MIN = 7
 ASTEROID_VERTEX_COUNT_MAX = 14
 ASTEROID_RADIUS_NOISE = 4
 
-LINE_COLOR = (255, 255, 255)
-LINE_THICKNESS = 2
-
-
 class Asteroid(pygame.sprite.Sprite):
     # Constructor
-    def __init__(self, pos, vel, mass, radius):
+    def __init__(self, pos, vel, radius):
         super(Asteroid, self).__init__()
+        
+        # Visual variables
+        self.line_thickness = 2
+        self.line_color = Color.WHITE
+        self.fill_color = Color.BLACK
         
         # Physics variables
         self.pos = pos
         self.vel = vel
-        self.mass = mass # Using the asteroid's radius to determine the mass
+        self.mass = radius * radius # Using the asteroid's radius to determine the mass
         self.mom = self.vel * self.mass
         self.force = Vec2d(0,0)
         
@@ -54,6 +55,12 @@ class Asteroid(pygame.sprite.Sprite):
 
             self.vertices.append(newVertex)
             currentStep += angleStep
+            
+    # Sets the color and line thickness of asteroid
+    def set_visual_details(self, line_color, line_thickness, fill_color):
+        self.line_color = line_color
+        self.line_thickness = line_thickness
+        self.fill_color = fill_color
     
     def collide_with_asteroid(self, other):
         # Calculate the angular velocity
@@ -112,7 +119,9 @@ class Asteroid(pygame.sprite.Sprite):
         for point in self.vertices:
             updatedVertex = self.rotate_point_around_pivot(Vec2d(point[0], point[1]) + self.pos, self.pos, self.rotation_angle)
             updatedVertices.append(updatedVertex)
-        pygame.draw.lines(screen, LINE_COLOR, True, updatedVertices, LINE_THICKNESS)
+        
+        pygame.draw.polygon(screen, self.fill_color, updatedVertices, 0)
+        pygame.draw.lines(screen, self.line_color, True, updatedVertices, self.line_thickness)
         
         # To visualize the collider
         #pygame.draw.circle(screen, (0, 255, 0), [self.rect.x + self.radius, self.rect.y + self.radius], self.radius)
