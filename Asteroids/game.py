@@ -41,7 +41,7 @@ class Game:
         self.asteroid_objects.add(test_asteroid_1)
         self.asteroid_objects.add(test_asteroid_2)
         
-        self.player = Player(Color.WHITE, 15, [50, 50])
+        self.player = Player(Color.WHITE, 15, Vec2d(50, 50))
 
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
@@ -58,15 +58,6 @@ class Game:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: # If user clicked close
                 self.done = True
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    self.player.move_pos([0, -1])
-                elif event.key == pygame.K_DOWN:
-                    self.player.move_pos([0, 1])
-                elif event.key == pygame.K_LEFT:
-                    self.player.move_pos([-1, 0])
-                elif event.key == pygame.K_RIGHT:
-                    self.player.move_pos([1, 0])
 
         # --- Drawing code should go here
         # First, clear the screen
@@ -78,6 +69,7 @@ class Game:
             obj.draw(self.screen)
         
         self.check_asteroid_collisions()
+        self.player.update()
 
         # Now, do your drawing.
         self.player.draw(self.screen)
