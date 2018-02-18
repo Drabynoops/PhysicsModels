@@ -63,6 +63,11 @@ class Asteroid(pygame.sprite.Sprite):
         self.fill_color = fill_color
     
     def collide_with_asteroid(self, other):
+        # Push the other away so they don't overlap
+        total_distance = self.radius + other.radius 
+        dir_to_other = (other.pos - self.pos).normalized()
+        other.pos = self.pos + (dir_to_other * total_distance)
+        
         # Calculate the angular velocity
         r = ((other.pos - self.pos).normalized() * self.radius) - self.pos
         v = other.vel
