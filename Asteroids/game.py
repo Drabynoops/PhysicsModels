@@ -49,7 +49,7 @@ class Game:
         # Add asteroids
         self.populate_world_with_asteroids()
         
-        self.player = Player(Color.WHITE, 15, [50, 50])
+        self.player = Player(Color.WHITE, 15, self.screen, Vec2d(50, 50))
 
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
@@ -66,15 +66,6 @@ class Game:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: # If user clicked close
                 self.done = True
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    self.player.move_pos([0, -1])
-                elif event.key == pygame.K_DOWN:
-                    self.player.move_pos([0, 1])
-                elif event.key == pygame.K_LEFT:
-                    self.player.move_pos([-1, 0])
-                elif event.key == pygame.K_RIGHT:
-                    self.player.move_pos([1, 0])
 
         # --- Drawing code should go here
         # First, clear the screen
@@ -90,12 +81,13 @@ class Game:
             obj.update(self.dt)
             obj.draw(self.screen)
         
+        self.player.update()
         self.wrap_objects()
         self.check_asteroid_collisions(self.asteroid_objects)
         self.check_asteroid_collisions(self.background_objects)
 
         # Now, do your drawing.
-        self.player.draw(self.screen)
+        self.player.draw()
 
         # Add game border
         pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
