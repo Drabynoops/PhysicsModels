@@ -113,9 +113,12 @@ class Game:
                 Bullet.COUNT = Bullet.COUNT - 1
             else:
                 bullet.draw()
+                self.check_bullet_collision(bullet)
 
         # Now, do your drawing.
         self.player.draw()
+        if self.player.collision(self.asteroid_objects):
+            #TODO: Add something that happens after the player collides
 
         # Add game border
         pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
@@ -189,6 +192,17 @@ class Game:
                 target_asteroid.pos.y = -ASTEROID_WRAP_DISTANCE
 
     
+    # Check bullet + asteroid collision
+    def check_bullet_collision(self, bullet):
+        
+        hits = pygame.sprite.spritecollide(bullet, self.asteroid_objects, False, pygame.sprite.collide_circle)
+        if hits:
+            print('There are hits')
+            bullet.kill()
+            Bullet.COUNT = Bullet.COUNT - 1
+            for asteroid in hits:
+                self.split_asteroid(asteroid)
+
     # Checks to see if two asteroids are colliding
     def check_asteroid_collisions(self, asteroid_list):
         # For every asteroid in front layer... 
@@ -220,8 +234,8 @@ class Game:
         # If the new radius is large enough...
         if new_radius > ASTEROID_DEATH_RADIUS:
             new_pos_1 = Vec2d(initial_pos.x + 50, initial_pos.y)
-            self.create_asteroid(new_pos_1, self.get_random_direction() * initial_speed, new_radius)
-            self.create_asteroid(initial_pos, self.get_random_direction() * initial_speed, new_radius)
+            self.create_asteroid(self.asteroid_objects, new_pos_1, self.get_random_direction() * initial_speed, new_radius)
+            self.create_asteroid(self.asteroid_objects, initial_pos, self.get_random_direction() * initial_speed, new_radius)
 
 
     def run(self):

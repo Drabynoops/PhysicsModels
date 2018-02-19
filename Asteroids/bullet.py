@@ -17,12 +17,17 @@ class Bullet(pygame.sprite.Sprite):
         self.pos = pos
         self.move_vec = self.rotate_point_around_pivot(
             Vec2d(0 , self.speed), Vec2d(0, 0), angle)
-        self.image = pygame.Surface([3,3])
+        self.image = pygame.Surface([4,4])
         self.image.fill(color)
+        self.radius = 2
+        self.rect = self.image.get_rect()
         self.target = target
+       
 
     def update(self):
         self.pos = self.pos - self.move_vec
+        self.rect.x = self.pos.x - self.radius
+        self.rect.y = self.pos.y - self.radius
     
     def draw(self):
         self.target.blit(self.image, [self.pos.x, self.pos.y])
