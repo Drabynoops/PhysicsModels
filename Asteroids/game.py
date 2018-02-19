@@ -39,8 +39,8 @@ class Game:
         self.done = False
 
         # Game variables
-        self.max_asteroid_count = 10
-        self.max_background_asteroid_count = 10
+        self.max_asteroid_count = 6
+        self.max_background_asteroid_count = 12
         
         # Create the sprite groups
         self.game_objects = pygame.sprite.Group()
