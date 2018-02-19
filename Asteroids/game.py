@@ -64,7 +64,7 @@ class Game:
         self.fade_screen.set_alpha(self.fade_value)
 
         # Game variables
-        self.max_asteroid_count = 20
+        self.max_asteroid_count = 8
         self.max_background_asteroid_count = 20
         
         # Create the sprite groups
