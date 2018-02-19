@@ -24,11 +24,26 @@ class Bullet(pygame.sprite.Sprite):
         self.target = target
        
 
-    def update(self):
+    def update(self, target):
         self.pos = self.pos - self.move_vec
-        self.rect.x = self.pos.x - self.radius
-        self.rect.y = self.pos.y - self.radius
-    
+
+        if self.pos.x < 0 or self.pos.x > target.get_width() or self.pos.y < 0 or self.pos.y > target.get_height():
+                Bullet.COUNT = Bullet.COUNT - 1
+                self.kill()
+        else:   
+            self.rect.x = self.pos.x - self.radius
+            self.rect.y = self.pos.y - self.radius
+
+    def collisions(self, target_group):
+        
+        hits = pygame.sprite.spritecollide(self, target_group, False, pygame.sprite.collide_circle)
+        if hits:
+            Bullet.COUNT = Bullet.COUNT - 1
+            self.kill()
+            return hits
+        else:
+            return False
+            
     def draw(self):
         self.target.blit(self.image, [self.pos.x, self.pos.y])
     

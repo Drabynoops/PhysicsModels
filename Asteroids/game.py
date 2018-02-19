@@ -2,7 +2,6 @@ import pygame
 import random
 
 from color import Color
-from coords import Coords
 from vec2d import Vec2d
 from asteroid import Asteroid
 from bullet import Bullet
@@ -31,8 +30,6 @@ class Game:
 
         self.draw_screen = self.screen.copy()
         self.draw_screen.fill(Color.BLACK)
-        self.screen_center = Vec2d(width/2, height/2)
-        self.coords = Coords(self.screen_center.copy(), 1, True)
         
         self.dt = 0.001
         self.state = self.play # The game state
@@ -77,7 +74,7 @@ class Game:
                             self.player.rotate_point_around_pivot(
                                 Vec2d(
                                     self.player.get_real_pos().x,
-                                    self.player.get_real_pos().y - self.player.rad
+                                    self.player.get_real_pos().y - self.player.radius
                                 ),
                                 self.player.get_real_pos(),
                                 self.player.rotation
@@ -107,18 +104,18 @@ class Game:
         self.check_asteroid_collisions(self.background_objects)
 
         for bullet in self.bullet_objects:
-            bullet.update()
-            if bullet.pos.x < 0 or bullet.pos.x > self.screen.get_width() or bullet.pos.y < 0 or bullet.pos.y > self.screen.get_height():
-                bullet.kill()
-                Bullet.COUNT = Bullet.COUNT - 1
-            else:
-                bullet.draw()
-                self.check_bullet_collision(bullet)
+            bullet.update(self.screen)
+            bullet.draw()
+            hits = bullet.collisions(self.asteroid_objects)
+            if hits:
+                for asteroid in hits:
+                    self.split_asteroid(asteroid)
 
         # Now, do your drawing.
         self.player.draw()
         if self.player.collision(self.asteroid_objects):
             #TODO: Add something that happens after the player collides
+            pass
 
         # Add game border
         pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
@@ -192,16 +189,7 @@ class Game:
                 target_asteroid.pos.y = -ASTEROID_WRAP_DISTANCE
 
     
-    # Check bullet + asteroid collision
-    def check_bullet_collision(self, bullet):
-        
-        hits = pygame.sprite.spritecollide(bullet, self.asteroid_objects, False, pygame.sprite.collide_circle)
-        if hits:
-            print('There are hits')
-            bullet.kill()
-            Bullet.COUNT = Bullet.COUNT - 1
-            for asteroid in hits:
-                self.split_asteroid(asteroid)
+
 
     # Checks to see if two asteroids are colliding
     def check_asteroid_collisions(self, asteroid_list):
