@@ -16,7 +16,7 @@ class Player(pygame.sprite.Sprite):
         self.min_y = 25
         self.max_x = target.get_width()
         self.max_y = target.get_height()
-        self.move_vec = Vec2d(0, 0)
+        self.mov_vec = Vec2d(0, 0)
 
         # dimensions
         self.rad = rad
@@ -27,7 +27,7 @@ class Player(pygame.sprite.Sprite):
         # movement variables
         self.speed = 0
         self.accel = 0.01
-        self.max_speed = 10
+        self.max_speed = 5
         self.rotation = 0
         
         # position variables
@@ -93,14 +93,16 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         k = pygame.key.get_pressed()
 
-        if k[pygame.K_UP]:
-            self.speed = self.speed + self.accel
-        if k[pygame.K_LEFT]:
-            self.rotation = self.rotation - 5
-        if k[pygame.K_DOWN]:
-            self.speed = self.speed - self.accel
         if k[pygame.K_RIGHT]:
            self.rotation = self.rotation + 5
+           self.speed = 0
+        if k[pygame.K_LEFT]:
+            self.rotation = self.rotation - 5
+            self.speed = 0
+        if k[pygame.K_UP]:
+            self.speed = self.speed + self.accel
+        if k[pygame.K_DOWN]:
+            self.speed = self.speed - self.accel
 
         if self.speed > self.max_speed:
             self.speed = self.max_speed
@@ -114,12 +116,15 @@ class Player(pygame.sprite.Sprite):
         return Vec2d(self.global_pos.x + self.local_pos.x, self.global_pos.y + self.local_pos.y)
 
     def __change_pos(self):
-        mov_vec = self.rotate_point_around_pivot(
+        new_mov_vec = self.rotate_point_around_pivot(
             Vec2d(0, 0 - self.speed),
             Vec2d(0, 0), self.rotation) 
         
-        self.global_pos.x = self.global_pos.x + mov_vec.x
-        self.global_pos.y = self.global_pos.y + mov_vec.y
+        if (self.mov_vec + new_mov_vec).get_length() <= self.max_speed:
+            self.mov_vec = self.mov_vec + new_mov_vec
+
+        self.global_pos.x = self.global_pos.x + self.mov_vec.x
+        self.global_pos.y = self.global_pos.y + self.mov_vec.y
 
         # wrap player
         real_pos = self.get_real_pos()
