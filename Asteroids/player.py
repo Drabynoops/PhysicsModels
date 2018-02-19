@@ -3,10 +3,11 @@ import math
 
 from color import Color
 from vec2d import Vec2d
+from bullet import Bullet
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, color, rad, target, pos=None, ):
+    def __init__(self, color, rad, target, pos=None):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
 
@@ -15,6 +16,7 @@ class Player(pygame.sprite.Sprite):
         self.min_y = 25
         self.max_x = target.get_width()
         self.max_y = target.get_height()
+        self.move_vec = Vec2d(0, 0)
 
         # dimensions
         self.rad = rad
@@ -72,21 +74,21 @@ class Player(pygame.sprite.Sprite):
     def rotate_point_around_pivot(self, point, pivot, angle):
         newPoint = point.copy()
         rad = angle * (math.pi / 180)
-        s = math.sin(rad);
-        c = math.cos(rad);
+        s = math.sin(rad)
+        c = math.cos(rad)
 
         # translate point back to origin:
-        newPoint.x -= pivot.x;
-        newPoint.y -= pivot.y;
+        newPoint.x -= pivot.x
+        newPoint.y -= pivot.y
         
         # rotate point
-        xnew = newPoint.x * c - newPoint.y * s;
-        ynew = newPoint.x * s + newPoint.y * c;
+        xnew = newPoint.x * c - newPoint.y * s
+        ynew = newPoint.x * s + newPoint.y * c
         
         # translate point back:
-        newPoint.x = xnew + pivot.x;
-        newPoint.y = ynew + pivot.y;
-        return newPoint;
+        newPoint.x = xnew + pivot.x
+        newPoint.y = ynew + pivot.y
+        return newPoint
     
     def update(self):
         k = pygame.key.get_pressed()
@@ -94,11 +96,11 @@ class Player(pygame.sprite.Sprite):
         if k[pygame.K_UP]:
             self.speed = self.speed + self.accel
         if k[pygame.K_LEFT]:
-            self.rotation = self.rotation - 1
+            self.rotation = self.rotation - 5
         if k[pygame.K_DOWN]:
             self.speed = self.speed - self.accel
         if k[pygame.K_RIGHT]:
-           self.rotation = self.rotation + 1
+           self.rotation = self.rotation + 5
 
         if self.speed > self.max_speed:
             self.speed = self.max_speed

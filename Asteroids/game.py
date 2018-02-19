@@ -5,6 +5,7 @@ from color import Color
 from coords import Coords
 from vec2d import Vec2d
 from asteroid import Asteroid
+from bullet import Bullet
 
 from player import Player
         
@@ -45,6 +46,7 @@ class Game:
         self.game_objects = pygame.sprite.Group()
         self.asteroid_objects = pygame.sprite.Group()
         self.background_objects = pygame.sprite.Group()
+        self.bullet_objects = pygame.sprite.Group()
         
         # Add asteroids
         self.populate_world_with_asteroids()
@@ -66,11 +68,28 @@ class Game:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: # If user clicked close
                 self.done = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and Bullet.COUNT < 5:
+                    Bullet.COUNT = Bullet.COUNT + 1
+                    new_bullet = Bullet(
+                            Color.WHITE,
+                            self.player.rotation,
+                            self.player.rotate_point_around_pivot(
+                                Vec2d(
+                                    self.player.get_real_pos().x,
+                                    self.player.get_real_pos().y - self.player.rad
+                                ),
+                                self.player.get_real_pos(),
+                                self.player.rotation
+                            ),
+                            self.screen
+                        )
+                    self.bullet_objects.add(new_bullet)
 
         # --- Drawing code should go here
         # First, clear the screen
         self.screen.fill(self.background_color) 
-        
+
         # Update and draw BACKGROUND OBJECTS
         for background_obj in self.background_objects:
             background_obj.update(self.dt)
@@ -81,10 +100,19 @@ class Game:
             obj.update(self.dt)
             obj.draw(self.screen)
         
+        # player collisions
         self.player.update()
         self.wrap_objects()
         self.check_asteroid_collisions(self.asteroid_objects)
         self.check_asteroid_collisions(self.background_objects)
+
+        for bullet in self.bullet_objects:
+            bullet.update()
+            if bullet.pos.x < 0 or bullet.pos.x > self.screen.get_width() or bullet.pos.y < 0 or bullet.pos.y > self.screen.get_height():
+                bullet.kill()
+                Bullet.COUNT = Bullet.COUNT - 1
+            else:
+                bullet.draw()
 
         # Now, do your drawing.
         self.player.draw()
