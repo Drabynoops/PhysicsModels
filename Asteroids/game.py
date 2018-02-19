@@ -19,6 +19,23 @@ LINE_COLOR_BACKGROUND = Color.GRAY_2
 LINE_THICKNESS = 2
 BORDER_THICKNESS = 25
 
+
+class Label:
+    # Constructor
+    def __init__(self, labelText, fontSize, vec):
+        self.position = vec
+        self.labelText = labelText
+        self.fontSize = fontSize
+        self.font = pygame.font.SysFont('Calibri', self.fontSize, True, False) # Gets a font (font, size, bold, italics)
+        self.text = self.font.render(self.labelText, True, LINE_COLOR) # Creates the text (text, anti-aliased, color)
+        
+    def draw(self, screen):           
+        offsetX = self.text.get_rect().width / 2
+        offsetY = self.text.get_rect().height / 2
+        screen.blit(self.text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
+
+
+
 class Game:
 
     def __init__(self, width, height):
@@ -35,12 +52,23 @@ class Game:
         self.coords = Coords(self.screen_center.copy(), 1, True)
         
         self.dt = 0.001
-        self.state = self.play # The game state
+        self.state = self.menu # The game state
         self.done = False
+        
+        # Menu Variables
+        title_pos = Vec2d(int(width / 2), int(height / 2))
+        self.title = Label("ASTEROIDS", 100, title_pos)
+        self.start_text = Label("Press SPACE to Start", 20, Vec2d(title_pos.x, title_pos.y + 50))
+        
+        # Fade Variables
+        self.fade_speed = 2
+        self.fade_value = 255
+        self.fade_screen = pygame.Surface([width, height])
+        self.fade_screen.set_alpha(self.fade_value)
 
         # Game variables
-        self.max_asteroid_count = 6
-        self.max_background_asteroid_count = 12
+        self.max_asteroid_count = 20
+        self.max_background_asteroid_count = 20
         
         # Create the sprite groups
         self.game_objects = pygame.sprite.Group()
@@ -62,6 +90,33 @@ class Game:
             self.state()
             
         pygame.quit()
+        
+    def menu(self):
+        # --- Main event loop
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: # If user clicked close
+                self.done = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    print("Starting game!")
+                    self.state = self.play
+
+        # --- Drawing code should go here
+        # First, clear the screen
+        self.screen.fill(self.background_color) 
+
+        self.title.draw(self.screen)
+        self.start_text.draw(self.screen)
+
+        # Add game border
+        pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
+        pygame.draw.rect(self.screen, LINE_COLOR, (BORDER_THICKNESS, BORDER_THICKNESS, self.width - (2 * BORDER_THICKNESS), self.height - (2 * BORDER_THICKNESS)), LINE_THICKNESS)
+        
+        # --- Update the screen with what we've drawn.
+        pygame.display.update()
+    
+        # This limits the loop to 60 frames per second
+        self.clock.tick(60)
         
     def play(self):
         # --- Main event loop
@@ -105,7 +160,7 @@ class Game:
         self.wrap_objects()
         self.check_asteroid_collisions(self.asteroid_objects)
         self.check_asteroid_collisions(self.background_objects)
-
+        
         for bullet in self.bullet_objects:
             bullet.update()
             if bullet.pos.x < 0 or bullet.pos.x > self.screen.get_width() or bullet.pos.y < 0 or bullet.pos.y > self.screen.get_height():
@@ -116,6 +171,12 @@ class Game:
 
         # Now, do your drawing.
         self.player.draw()
+        
+        # Screen Fade
+#        if self.fade_screen.get_alpha() > 0:
+#            self.screen.blit(self.fade_screen, (0, 0))
+#            self.fade_screen.set_alpha(self.fade_value)
+#            self.fade_value -= self.fade_speed
 
         # Add game border
         pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
@@ -193,17 +254,12 @@ class Game:
     def check_asteroid_collisions(self, asteroid_list):
         # For every asteroid in front layer... 
         for target_asteroid in asteroid_list:
-            # Make a list without that asteroid to check for collisions
-            trimmed_asteroid_objects = pygame.sprite.Group()
-            for other_asteroid in asteroid_list:
-                if other_asteroid != target_asteroid:
-                    trimmed_asteroid_objects.add(other_asteroid)
-            
             # Get a list of all other asteroids the target asteroid has collided with
-            hits = pygame.sprite.spritecollide(target_asteroid, trimmed_asteroid_objects, False, pygame.sprite.collide_circle)
+            hits = pygame.sprite.spritecollide(target_asteroid, asteroid_list, False, pygame.sprite.collide_circle)
             if hits:
                 for other in hits:
-                    target_asteroid.collide_with_asteroid(other)
+                    if other != target_asteroid:
+                        target_asteroid.collide_with_asteroid(other)
                     #self.split_asteroid(other)
 
 
