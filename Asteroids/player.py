@@ -7,7 +7,7 @@ from bullet import Bullet
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, color, rad, target, pos=None):
+    def __init__(self, color, radius, target, pos=None):
         # Call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
 
@@ -19,22 +19,22 @@ class Player(pygame.sprite.Sprite):
         self.mov_vec = Vec2d(0, 0)
 
         # dimensions
-        self.rad = rad
-        self.width = self.rad + self.rad
-        self.height = self.rad + self.rad
+        self.radius = radius
+        self.width = self.radius + self.radius
+        self.height = self.radius + self.radius
         self.color = color
 
         # movement variables
         self.speed = 0
-        self.accel = 0.01
-        self.max_speed = 5
+        self.accel = 0.001
+        self.max_speed = 3
         self.rotation = 0
         
         # position variables
         self.pos = pos if pos else Vec2d(0, 0)
-        self.local_pos = Vec2d(self.rad, self.rad)
-        self.global_pos = Vec2d(self.pos.x - self.rad,
-                            self.pos.y - self.rad)
+        self.local_pos = Vec2d(self.radius, self.radius)
+        self.global_pos = Vec2d(self.pos.x - self.radius,
+                            self.pos.y - self.radius)                         
 
         # player draw points
         self.p1 = Vec2d(self.width // 2, 0)
@@ -42,6 +42,8 @@ class Player(pygame.sprite.Sprite):
         self.p3 = Vec2d(self.width - 5, self.height - 5)
 
         self.draw_self()
+        # collision
+        self.rect = self.image.get_rect()   
 
     def draw_self(self):
         # Addition is cheaper than multiplication
@@ -50,8 +52,8 @@ class Player(pygame.sprite.Sprite):
         except:
             self.image = pygame.Surface(
                 [
-                    self.rad + self.rad, 
-                    self.rad + self.rad
+                    self.radius + self.radius, 
+                    self.radius + self.radius
                 ])
 
         new_p1 = self.rotate_point_around_pivot(self.p1, self.local_pos, self.rotation)
@@ -60,7 +62,7 @@ class Player(pygame.sprite.Sprite):
 
         pygame.draw.circle(self.image, self.color,
                         [self.local_pos.x, self.local_pos.y],
-                        self.rad, 1)
+                        self.radius, 1)
         pygame.draw.line(self.image, self.color,
                         [new_p1.x, new_p1.y],
                         [new_p2.x, new_p2.y])
@@ -73,9 +75,9 @@ class Player(pygame.sprite.Sprite):
 
     def rotate_point_around_pivot(self, point, pivot, angle):
         newPoint = point.copy()
-        rad = angle * (math.pi / 180)
-        s = math.sin(rad)
-        c = math.cos(rad)
+        radius = angle * (math.pi / 180)
+        s = math.sin(radius)
+        c = math.cos(radius)
 
         # translate point back to origin:
         newPoint.x -= pivot.x
@@ -138,6 +140,16 @@ class Player(pygame.sprite.Sprite):
             self.global_pos.y = self.min_y + self.local_pos.y
         elif real_pos.y < self.min_y:
             self.global_pos.y = self.max_y - self.local_pos.y
+        
+        self.rect.x = self.global_pos.x - self.radius
+        self.rect.y = self.global_pos.y - self.radius
 
     def draw(self):
         self.target.blit(self.image, [self.global_pos.x, self.global_pos.y])
+    
+    def collision(self, target_group):
+        hits = pygame.sprite.spritecollide(self, target_group, False, pygame.sprite.collide_circle)
+        if hits:
+            return True
+        else:
+            return False
