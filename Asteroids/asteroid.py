@@ -130,4 +130,3 @@ class Asteroid(pygame.sprite.Sprite):
         
         # To visualize the collider
         #pygame.draw.circle(screen, (0, 255, 0), [self.rect.x + self.radius, self.rect.y + self.radius], self.radius)
-        
