@@ -34,7 +34,6 @@ class Label:
         screen.blit(self.text, [self.position.x - offsetX, self.position.y - offsetY]) # Puts image of text on screen (textObj, location)
 
 
-
 class Game:
 
     def __init__(self, width, height):
@@ -47,6 +46,7 @@ class Game:
 
         self.draw_screen = self.screen.copy()
         self.draw_screen.fill(Color.BLACK)
+        self.end_screen = None
         
         self.dt = 0.001
         self.state = self.menu # The game state
@@ -56,7 +56,8 @@ class Game:
         title_pos = Vec2d(int(width / 2), int(height / 2))
         self.title = Label("ASTEROIDS", 100, title_pos)
         self.start_text = Label("Press SPACE to Start", 20, Vec2d(title_pos.x, title_pos.y + 50))
-        
+        self.end_text = Label("Press SPACE to return to menu", 20, Vec2d(title_pos.x, title_pos.y))
+
         # Fade Variables
         self.fade_speed = 2
         self.fade_value = 255
@@ -114,7 +115,31 @@ class Game:
     
         # This limits the loop to 60 frames per second
         self.clock.tick(60)
+
+    def continue_screen(self):
+        # --- Main event loop
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: # If user clicked close
+                self.done = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    print("Game ended!")
+                    self.state = self.menu
         
+        # --- Drawing code should go here
+        # First, clear the screen
+        self.screen.fill(self.background_color) 
+
+        self.screen.blit(self.end_screen, (0, 0))
+
+        self.end_text.draw(self.screen)
+
+        # --- Update the screen with what we've drawn.
+        pygame.display.update()
+
+        # This limits the loop to 60 frames per second
+        self.clock.tick(60)
+    
     def play(self):
         # --- Main event loop
         for event in pygame.event.get(): 
@@ -169,21 +194,16 @@ class Game:
         # Now, do your drawing.
         self.player.draw()
 
-        if self.player.collision(self.asteroid_objects):
-            #TODO: Add something that happens after the player collides
-            pass
-
-
-        # Screen Fade
-#        if self.fade_screen.get_alpha() > 0:
-#            self.screen.blit(self.fade_screen, (0, 0))
-#            self.fade_screen.set_alpha(self.fade_value)
-#            self.fade_value -= self.fade_speed
-
         # Add game border
         pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
         pygame.draw.rect(self.screen, LINE_COLOR, (BORDER_THICKNESS, BORDER_THICKNESS, self.width - (2 * BORDER_THICKNESS), self.height - (2 * BORDER_THICKNESS)), LINE_THICKNESS)
         
+        if self.player.collision(self.asteroid_objects):
+            #TODO: Add something that happens after the player collides
+            self.end_screen = self.screen.copy()
+            self.state = self.continue_screen
+            pass
+
         # --- Update the screen with what we've drawn.
         pygame.display.update()
     
