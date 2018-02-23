@@ -54,15 +54,9 @@ class Game:
         
         # Menu Variables
         title_pos = Vec2d(int(width / 2), int(height / 2))
-        self.title = Label("ASTEROIDS", 100, title_pos)
+        self.title = Label("ASTEROIDS", 80, title_pos)
         self.start_text = Label("Press SPACE to Start", 20, Vec2d(title_pos.x, title_pos.y + 50))
         
-        # Fade Variables
-        self.fade_speed = 2
-        self.fade_value = 255
-        self.fade_screen = pygame.Surface([width, height])
-        self.fade_screen.set_alpha(self.fade_value)
-
         # Game variables
         self.max_asteroid_count = 8
         self.max_background_asteroid_count = 20
@@ -72,11 +66,6 @@ class Game:
         self.asteroid_objects = pygame.sprite.Group()
         self.background_objects = pygame.sprite.Group()
         self.bullet_objects = pygame.sprite.Group()
-        
-        # Add asteroids
-        self.populate_world_with_asteroids()
-        
-        self.player = Player(Color.WHITE, 15, self.screen, Vec2d(50, 50))
 
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
@@ -96,6 +85,7 @@ class Game:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     print("Starting game!")
+                    self.reset_game()
                     self.state = self.play
 
         # --- Drawing code should go here
@@ -171,14 +161,8 @@ class Game:
 
         if self.player.collision(self.asteroid_objects):
             #TODO: Add something that happens after the player collides
+
             pass
-
-
-        # Screen Fade
-#        if self.fade_screen.get_alpha() > 0:
-#            self.screen.blit(self.fade_screen, (0, 0))
-#            self.fade_screen.set_alpha(self.fade_value)
-#            self.fade_value -= self.fade_speed
 
         # Add game border
         pygame.draw.rect(self.screen, self.background_color, (0, 0, self.width, self.height), 2 * BORDER_THICKNESS)
@@ -190,12 +174,19 @@ class Game:
         # This limits the loop to 60 frames per second
         self.clock.tick(60)
         
+    # Resets the game state
+    def reset_game(self):
+        self.populate_world_with_asteroids()
+        # Add player
+        self.player = Player(Color.WHITE, 15, self.screen, Vec2d(50, 50))
+        
     # Adds new asteroids if needed to keep the world full of life!
     def populate_world_with_asteroids(self):
-        #print("Asteroid Count: " , len(self.asteroid_objects))
+        self.asteroid_objects.empty()
         while len(self.asteroid_objects) < self.max_asteroid_count:
             self.create_random_asteroid()
 
+        self.background_objects.empty()
         while len(self.background_objects) < self.max_background_asteroid_count:
             self.create_random_background_asteroid()
         
