@@ -10,6 +10,8 @@ import random
 
 from color import Color
 from vec2d import Vec2d
+from particle_system import Particle, System
+
 
 class Simulation:
 

@@ -54,6 +54,10 @@ class Vec2d(object):
         self.x = other.x
         self.y = other.y
 
+    def zero(self):
+        self.x = 0
+        self.y = 0
+
     # String representaion (for debugging)
     def __repr__(self):
         return 'Vec2d(%s, %s)' % (self.x, self.y)
@@ -244,9 +248,11 @@ class Vec2d(object):
     # vectory functions
     def get_length_sqrd(self):
         return self.x**2 + self.y**2
+    mag2 = get_length_sqrd
 
     def get_length(self):
         return math.sqrt(self.x**2 + self.y**2)
+    mag = get_length
     def __setlength(self, value):
         length = self.get_length()
         self.x *= value/length
@@ -291,6 +297,7 @@ class Vec2d(object):
         if length != 0:
             return self/length
         return Vec2d(self)
+    hat = normalized
 
     def normalize_return_length(self): # in-place function
         length = self.length
