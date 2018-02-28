@@ -1,3 +1,5 @@
+import pygame
+
 class System:
 
     def __init__(self):
@@ -31,7 +33,7 @@ class System:
     def center_of_mass(self):
         num = 0
         denum = 0
-        for particle in Particle.system:
+        for particle in self.system:
             num = num + (particle.mass * particle.pos)
             denum = denum + particle.mass
         return num / denum
@@ -39,7 +41,7 @@ class System:
     def velocity_of_com(self):
         num = 0
         denum = 0
-        for particle in Particle.system:
+        for particle in self.system:
             num = num + particle.momentum()
             denum = denum + particle.mass
         return num / denum 
