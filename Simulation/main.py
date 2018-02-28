@@ -10,7 +10,7 @@ import random
 
 from color import Color
 from vec2d import Vec2d
-from label import UIButton, UILabel, UIButtonGroup, Anchor
+from ui_elements import UIButton, UILabel, UIButtonGroup, Anchor
 
 class Simulation:
 
