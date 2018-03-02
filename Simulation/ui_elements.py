@@ -235,11 +235,14 @@ class UIButtonGroup:
         
     # Checks to see if there is a new button that is being selected
     # (Supposed to be called on a mouse down event)
-    def update_selection(self):
+    def check_mouse_down(self):
         highlighted_button = self.get_button_under_mouse()
         if highlighted_button != None:
             self.set_active(highlighted_button)
             self.active_button.press_event()
+            return True
+        else:
+            return False
 
 
 

@@ -60,13 +60,14 @@ class Simulation:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: # If user clicked close
                 self.done = True
-            elif event.type == pygame.KEYDOWN:
+            elif event.type == pygame.KEYDOWN: 
                 print("Key down")
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 # Checks to see if any groups have any buttons highlighted
-                self.action_button_group.update_selection()
-                self.play_state_button_group.update_selection()
-                self.view_button_group.update_selection()
+                if self.action_group.check_mouse_down() or self.time_state_group.check_mouse_down() or self.view_group.check_mouse_down():
+                    print("Clicked a button!")
+                else: 
+                    print("Didn't click a button!")
                 
         # --- Drawing code should go here
         # First, clear the screen
@@ -74,9 +75,9 @@ class Simulation:
         
         # --- Draw UI Elements
         self.title.draw(self.screen)
-        self.action_button_group.draw(self.screen)
-        self.play_state_button_group.draw(self.screen)
-        self.view_button_group.draw(self.screen)
+        self.action_group.draw(self.screen)
+        self.time_state_group.draw(self.screen)
+        self.view_group.draw(self.screen)
         self.author_label.draw(self.screen)
 
         # --- Update the screen with what we've drawn.
@@ -169,22 +170,22 @@ class Simulation:
         # --- UI Button Groups -------------------
         
         # Group to hold the center view button
-        self.view_button_group = UIButtonGroup()
-        self.view_button_group.add(self.center_view_button)
-        self.view_button_group.set_active(self.center_view_button)
+        self.view_group = UIButtonGroup()
+        self.view_group.add(self.center_view_button)
+        self.view_group.set_active(self.center_view_button)
         
         # Group to hold the main action ability buttons
-        self.action_button_group = UIButtonGroup()
-        self.action_button_group.add(self.pointer_button)
-        self.action_button_group.add(self.add_button)
-        self.action_button_group.add(self.remove_button)
-        self.action_button_group.set_active(self.pointer_button)
+        self.action_group = UIButtonGroup()
+        self.action_group.add(self.pointer_button)
+        self.action_group.add(self.add_button)
+        self.action_group.add(self.remove_button)
+        self.action_group.set_active(self.pointer_button)
         
         # Group to hold the play and pause buttons
-        self.play_state_button_group = UIButtonGroup()
-        self.play_state_button_group.add(self.play_button)
-        self.play_state_button_group.add(self.pause_button)
-        self.play_state_button_group.set_active(self.play_button)
+        self.time_state_group = UIButtonGroup()
+        self.time_state_group.add(self.play_button)
+        self.time_state_group.add(self.pause_button)
+        self.time_state_group.set_active(self.play_button)
 
 def main():
     sim = Simulation(800, 600)
