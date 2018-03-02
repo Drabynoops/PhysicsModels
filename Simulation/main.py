@@ -38,11 +38,17 @@ class Simulation:
         self.done = False
         
         self.system = System
-
-        self.use_pointer()
         
-        # --- UI Elements -------------------
+        # Initialize the UI
         self.initialize_ui()
+        
+        # User interaction variables
+        self.interaction_type = InteractionType.POINTER # Initialize user interaction ability
+        self.paused = False
+        self.particle_radius = 20
+        self.highlighted_particle = None
+        self.vec_start = None
+        self.vel_vec = Vec2d(0, 0)
 
         # Create the sprite groups
         self.game_objects = pygame.sprite.Group()
@@ -59,28 +65,60 @@ class Simulation:
     
     def play(self):
         # --- Main event loop
+        mouse_pos = Vec2d(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
+        
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: # If user clicked close
                 self.done = True
             elif event.type == pygame.KEYDOWN: 
                 print("Key down")
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:    # --- MOUSE DOWN ---------
                 # Checks to see if any groups have any buttons highlighted
                 if self.action_group.check_mouse_down() or self.time_state_group.check_mouse_down() or self.view_group.check_mouse_down():
-                    print("Clicked a button!")
+                    #print("Clicked a button!")
+                    pass
                 else: 
-                    print("Didn't click a button!")
+                    #print("Clicked on screen!")
+                    self.vec_start = mouse_pos
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:      # --- MOUSE UP ---------
+                self.vec_start = None
                 
         # --- Drawing code should go here
-        # First, clear the screen
+        # Clear both screens
         self.screen.fill(self.background_color) 
         
+        
+        # ==================================================================
+        # INTERACTIONS                            |
+        # ========================================
+        # --- Adding particles
+        if self.interaction_type == InteractionType.ADD_PARTICLE:
+            pygame.draw.circle(self.screen, Color.RED, [mouse_pos.x, mouse_pos.y], self.particle_radius)
+            
+        # --- pointer
+        elif self.interaction_type == InteractionType.POINTER:
+            if self.vec_start != None:
+                pygame.draw.line(self.screen, Color.RED, [self.vec_start.x, self.vec_start.y], [mouse_pos.x, mouse_pos.y], 5)
+                self.vel_vec = mouse_pos - self.vec_start
+                
+        # --- Deleting particles
+        elif self.interaction_type == InteractionType.DELETE_PARTICLE:
+            pass
+        
+        # ==================================================================
+        
+        # --- Physics goes here
+        if not self.paused: 
+            # ... 
+            pass
+            
+            
         # --- Draw UI Elements
         self.title.draw(self.screen)
         self.action_group.draw(self.screen)
         self.time_state_group.draw(self.screen)
         self.view_group.draw(self.screen)
-        self.author_label.draw(self.screen)
+        self.author_label.draw(self.screen)        
 
         # --- Update the screen with what we've drawn.
         pygame.display.update()
@@ -93,25 +131,30 @@ class Simulation:
     
     # --- Events to be called by buttons! 
     def use_pointer(self):
-        print("Using the pointer tool...")
+        #print("Using the pointer tool...")
         self.interaction_type = InteractionType.POINTER
         
     def use_add(self):
-        print("Using the add tool...")
+        #print("Using the add tool...")
         self.interaction_type = InteractionType.ADD_PARTICLE
         
     def use_remove(self):
-        print("Using the remove tool...")
+        #print("Using the remove tool...")
         self.interaction_type = InteractionType.REMOVE_PARTICLE
         
     def center_view(self):
-        print("Centering view...")
+        #print("Centering view...")
+        pass
         
     def play_sim(self):
-        print("Playing the simulation...")
+        #print("Playing the simulation...")
+        self.paused = False
+        pass
         
     def pause_sim(self):
-        print("Pausing the simulation...")
+        #print("Pausing the simulation...")
+        self.paused = True
+        pass
     
     # Used to initialize the UI elements
     def initialize_ui(self):
