@@ -65,6 +65,7 @@ class UIButton:
     # Constructor
     def __init__(self, button_text, font_size, anchor, pos, size):     
         self.pressed = False
+        self.press_functions = []
         
         # Size Variables
         self.width = size.x
@@ -99,6 +100,15 @@ class UIButton:
         self.text_color_selected = text_color_selected
         self.button_color_unselected = button_color_unselected
         self.text_color_unselected = text_color_unselected
+
+    # Call all on press functions that have been added to the button        
+    def press_event(self):
+        for func in self.press_functions:
+            func()
+    
+    # Adds a new function to be called when pressed 
+    def add_event(self, func):
+        self.press_functions.append(func)
         
     # Draws the button as either pressed, highlighted, or neither
     def draw(self, screen):    
@@ -215,7 +225,8 @@ class UIButtonGroup:
             self.previous_button.pressed = False
         
         self.active_button = button
-        self.active_button.pressed = True
+        if len(self.buttons) != 1:
+            self.active_button.pressed = True
         
     # Loops through all of the buttons and calls the draw function on them
     def draw(self, screen):        
@@ -228,6 +239,7 @@ class UIButtonGroup:
         highlighted_button = self.get_button_under_mouse()
         if highlighted_button != None:
             self.set_active(highlighted_button)
+            self.active_button.press_event()
 
 
 

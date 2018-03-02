@@ -7,11 +7,17 @@ Created on Mon Feb 26 14:50:00 2018
 
 import pygame
 import random
+from enum import Enum
 
 from color import Color
 from vec2d import Vec2d
 from particle_system import Particle, System
 from ui_elements import UIButton, UILabel, UIButtonGroup, Anchor
+
+class InteractionType(Enum):
+    POINTER = 1, 
+    ADD_PARTICLE = 2, 
+    REMOVE_PARTICLE = 3
 
 class Simulation:
 
@@ -33,6 +39,8 @@ class Simulation:
         
         self.system = System
 
+        self.use_pointer()
+        
         # --- UI Elements -------------------
         self.initialize_ui()
 
@@ -46,7 +54,6 @@ class Simulation:
         # -------- Main Program Loop -----------\
         while not self.done:
             self.state()
-            
 
         pygame.quit()
     
@@ -58,8 +65,10 @@ class Simulation:
             elif event.type == pygame.KEYDOWN:
                 print("Key down")
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                # Checks to see if any groups have any buttons highlighted
                 self.action_button_group.update_selection()
                 self.play_state_button_group.update_selection()
+                self.view_button_group.update_selection()
                 
         # --- Drawing code should go here
         # First, clear the screen
@@ -69,7 +78,7 @@ class Simulation:
         self.title.draw(self.screen)
         self.action_button_group.draw(self.screen)
         self.play_state_button_group.draw(self.screen)
-        self.center_view_button.draw(self.screen)
+        self.view_button_group.draw(self.screen)
         self.author_label.draw(self.screen)
 
         # --- Update the screen with what we've drawn.
@@ -80,6 +89,28 @@ class Simulation:
         
     def run(self):
         pass
+    
+    # --- Events to be called by buttons! 
+    def use_pointer(self):
+        print("Using the pointer tool...")
+        self.interaction_type = InteractionType.POINTER
+        
+    def use_add(self):
+        print("Using the add tool...")
+        self.interaction_type = InteractionType.ADD_PARTICLE
+        
+    def use_remove(self):
+        print("Using the remove tool...")
+        self.interaction_type = InteractionType.REMOVE_PARTICLE
+        
+    def center_view(self):
+        print("Centering view...")
+        
+    def play_sim(self):
+        print("Playing the simulation...")
+        
+    def pause_sim(self):
+        print("Pausing the simulation...")
     
     # Used to initialize the UI elements
     def initialize_ui(self):
@@ -100,38 +131,49 @@ class Simulation:
             Vec2d(start_from_left, start_from_top + self.title.height + (0 * button_height) + (1 * button_spacing)),    # Position
             Vec2d(150, button_height))                                                                                  # Size
         self.pointer_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                              # Button Colors
+        self.pointer_button.add_event(self.use_pointer)                                                                 # Add event
         
         # Add Particle Button (In Action Group)
         self.add_button = UIButton("Add Particle", 16, Anchor.TOP_LEFT, 
             Vec2d(start_from_left, start_from_top + self.title.height + (1 * button_height) + (2 * button_spacing)),    # Position
             Vec2d(150, button_height))                                                                                  # Size
         self.add_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                                  # Button Colors
+        self.add_button.add_event(self.use_add)                                                                         # Add event
         
         # Remove Particle Button (In Action Group)
         self.remove_button = UIButton("Remove Particle", 16, Anchor.TOP_LEFT, 
             Vec2d(start_from_left, start_from_top + self.title.height + (2 * button_height) + (3 * button_spacing)),    # Position
             Vec2d(150, button_height))                                                                                  # Size
         self.remove_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                               # Button Colors
+        self.remove_button.add_event(self.use_remove)                                                                   # Add event
         
         # Play Button (In Play State Group)
         self.play_button = UIButton("Play", 16, Anchor.BOTTOM_LEFT, 
             Vec2d(start_from_left, self.height - self.author_label.height - button_spacing),                            # Position
             Vec2d(70, button_height))                                                                                   # Size
         self.play_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                                 # Button Colors
+        self.play_button.add_event(self.play_sim)                                                                    # Add event
         
         # Pause Button (In Play State Group)
         self.pause_button = UIButton("Pause", 16, Anchor.BOTTOM_LEFT, 
             Vec2d(start_from_left + button_spacing + 70, self.height - self.author_label.height - button_spacing),      # Position
             Vec2d(70, button_height))                                                                                   # Size
         self.pause_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                                # Button Colors
+        self.pause_button.add_event(self.pause_sim)                                                                   # Add event
         
         # Center View Button
         self.center_view_button = UIButton("Center View  [0]", 16, Anchor.BOTTOM_LEFT, 
             Vec2d(start_from_left, self.height - self.author_label.height - button_height - (2 * button_spacing)),      # Position
             Vec2d(150, button_height))                                                                                  # Size
         self.center_view_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                          # Button Colors
+        self.center_view_button.add_event(self.center_view)                                                             # Add event
         
         # --- UI Button Groups -------------------
+        
+        # Group to hold the center view button
+        self.view_button_group = UIButtonGroup()
+        self.view_button_group.add(self.center_view_button)
+        self.view_button_group.set_active(self.center_view_button)
         
         # Group to hold the main action ability buttons
         self.action_button_group = UIButtonGroup()
