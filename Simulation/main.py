@@ -37,6 +37,8 @@ class Simulation:
         self.state = self.play # The game state
         self.done = False
         
+        self.system = System
+
         self.use_pointer()
         
         # --- UI Elements -------------------
