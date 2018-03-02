@@ -31,6 +31,8 @@ class Simulation:
         self.state = self.play # The game state
         self.done = False
         
+        self.system = System
+
         # --- UI Elements -------------------
         self.initialize_ui()
 

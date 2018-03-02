@@ -5,7 +5,6 @@ class System:
     def __init__(self):
         self.system = []
         self.COUNT = 0
-        self.GRAVITY = 6.67408**(0 - 11)
         self.cur_time = pygame.time.get_ticks
         self.last_time = self.cur_time()
     
@@ -13,21 +12,12 @@ class System:
         particle.id = self.COUNT
         self.COUNT = self.COUNT + 1
         self.system.append(particle)
-    
-    def gravity_force(self, particle_one, particle_two):
-        dt = pygame.time.Clock.get_time() / 1000.0
-        #dt = (self.cur_time - self.last_time) / 1000.0
-        distance = particle_one.pos - particle_two.pos
-        force = (
-            (-1 * self.GRAVITY * particle_one.mass * particle_two.mass ) / distance.mag2()
-            ) * distance.hat() * dt
-        particle_one.force = particle_one.force + force
-        particle_two.force = particle_two.force - force
 
     def update(self):
         for i1 in range(len(self.system)):
             for i2 in range(i1):
-                    self.gravity_force(self.system[i1], self.system[i2])
+                    self.system[i1].gravity_force(self.system[i2])
+                    self.system[i2].gravity_force(self.system[i1])
         self.last_time = self.cur_time
 
     def center_of_mass(self):
@@ -45,6 +35,9 @@ class System:
             num = num + particle.momentum()
             denum = denum + particle.mass
         return num / denum 
+    
+    def draw(self, target):
+        pass
                     
     
 class Particle:
@@ -55,6 +48,7 @@ class Particle:
         self.radius = radius
         self.pos = pos
         self.velocity = 0
+        self.GRAVITY = 6.67408**(0 - 11)
     
     def __eq__(self, other):
         try:
@@ -67,6 +61,15 @@ class Particle:
                 raise TypeError
         except TypeError:
             print("Can not compare Particle and non-Particle")
+
+    def gravity_force(self, other):
+        dt = pygame.time.Clock.get_time() / 1000.0
+        #dt = (self.cur_time - self.last_time) / 1000.0
+        distance = (self.pos - other.pos).mag() - (self.radius + other.radius) 
+        force = (
+            (-1 * self.GRAVITY * self.mass * other.mass ) / distance.mag2()
+            ) * distance.hat() * dt
+        self.velocity = self.velocity + force
 
     def momentum(self):
         return self.mass * self.velocity
