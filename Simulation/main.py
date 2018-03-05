@@ -51,13 +51,12 @@ class Simulation:
         self.vel_vec = Vec2d(0, 0)
 
         # Test system
-        self.system.add(Particle(self.particle_radius, Vec2d(50, 50), self.particle_radius * 100000))
-        self.system.add(Particle(self.particle_radius, Vec2d(250, 50), self.particle_radius * 100000))
-        self.system.add(Particle(self.particle_radius, Vec2d(50, 250), self.particle_radius * 100000))
-        self.system.add(Particle(self.particle_radius, Vec2d(500, 500), self.particle_radius * 100000))
-        self.system.add(Particle(self.particle_radius, Vec2d(250, 250), self.particle_radius * 100000))
-        self.system.add(Particle(self.particle_radius, Vec2d(400, 700), self.particle_radius * 100000))
-        self.system.add(Particle(self.particle_radius, Vec2d(900, 75), self.particle_radius * 100000))
+        for i in range(20):
+            radius = random.randint(self.particle_radius, self.particle_radius * 3)
+            x = random.randint(0, self.width)
+            y = random.randint(0, self.height)
+            color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            self.system.add(Particle(radius, Vec2d(x,y),radius * 100000, color))
 
         # Create the sprite groups
         self.game_objects = pygame.sprite.Group()
@@ -111,7 +110,7 @@ class Simulation:
                 self.vel_vec = mouse_pos - self.vec_start
                 
         # --- Deleting particles
-        elif self.interaction_type == InteractionType.DELETE_PARTICLE:
+        elif self.interaction_type == InteractionType.REMOVE_PARTICLE:
             pass
     
     # if self.interaction_type == InteractionType.ADD_PARTICLE:
