@@ -12,6 +12,9 @@ class System:
         particle.id = self.COUNT
         self.COUNT = self.COUNT + 1
         self.system.append(particle)
+    
+    def remove(self, index):
+        del self.system[index]
 
     def update(self):
         for i1 in range(len(self.system)):
@@ -44,9 +47,9 @@ class System:
     
 class Particle:
 
-    def __init__(self, radius, pos, mass, color):
+    def __init__(self, radius, pos, color):
         self.id = None
-        self.mass = mass
+        self.mass = radius * radius * 1000
         self.radius = radius
         self.pos = pos
         self.velocity = 0
