@@ -82,13 +82,19 @@ class Simulation:
             elif event.type == pygame.KEYDOWN: 
                 print("Key down")
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:    # --- MOUSE DOWN ---------
-                # Checks to see if any groups have any buttons highlighted
+                # IF A BUTTON WAS CLICKED...
                 if self.action_group.check_mouse_down() or self.time_state_group.check_mouse_down() or self.view_group.check_mouse_down():
-                    #print("Clicked a button!")
                     pass
+                
+                # IF THE SCREEN WAS CLICKED...
                 else: 
-                    #print("Clicked on screen!")
-                    self.vec_start = mouse_pos
+                    if self.interaction_type == InteractionType.ADD_PARTICLE:
+                        self.add_particle()
+                    elif self.interaction_type == InteractionType.REMOVE_PARTICLE:
+                        self.remove_particle()
+                    elif self.interaction_type == InteractionType.POINTER:
+                        self.vec_start = mouse_pos
+                    
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:      # --- MOUSE UP ---------
                 self.vec_start = None
                 
@@ -111,7 +117,7 @@ class Simulation:
                 self.vel_vec = mouse_pos - self.vec_start
                 
         # --- Deleting particles
-        elif self.interaction_type == InteractionType.DELETE_PARTICLE:
+        elif self.interaction_type == InteractionType.REMOVE_PARTICLE:
             pass
     
     # if self.interaction_type == InteractionType.ADD_PARTICLE:
@@ -151,9 +157,15 @@ class Simulation:
         #print("Using the add tool...")
         self.interaction_type = InteractionType.ADD_PARTICLE
         
+    def add_particle(self):
+        print("Adding particle...")
+        
     def use_remove(self):
         #print("Using the remove tool...")
         self.interaction_type = InteractionType.REMOVE_PARTICLE
+        
+    def remove_particle(self):
+        print("Removing particle...")
         
     def center_view(self):
         #print("Centering view...")
