@@ -37,7 +37,7 @@ class Simulation:
         self.state = self.play # The game state
         self.done = False
         
-        self.system = System
+        self.system = System()
         
         # Initialize the UI
         self.initialize_ui()
@@ -49,6 +49,15 @@ class Simulation:
         self.highlighted_particle = None
         self.vec_start = None
         self.vel_vec = Vec2d(0, 0)
+
+        # Test system
+        self.system.add(Particle(self.particle_radius, Vec2d(50, 50), self.particle_radius * 100000))
+        self.system.add(Particle(self.particle_radius, Vec2d(250, 50), self.particle_radius * 100000))
+        self.system.add(Particle(self.particle_radius, Vec2d(50, 250), self.particle_radius * 100000))
+        self.system.add(Particle(self.particle_radius, Vec2d(500, 500), self.particle_radius * 100000))
+        self.system.add(Particle(self.particle_radius, Vec2d(250, 250), self.particle_radius * 100000))
+        self.system.add(Particle(self.particle_radius, Vec2d(400, 700), self.particle_radius * 100000))
+        self.system.add(Particle(self.particle_radius, Vec2d(900, 75), self.particle_radius * 100000))
 
         # Create the sprite groups
         self.game_objects = pygame.sprite.Group()
@@ -104,16 +113,20 @@ class Simulation:
         # --- Deleting particles
         elif self.interaction_type == InteractionType.DELETE_PARTICLE:
             pass
-        
+    
+    # if self.interaction_type == InteractionType.ADD_PARTICLE:
+    #                 new_particle = Particle(self.particle_radius, mouse_pos, 5)
+    #                 self.system.add(new_particle)
         # ==================================================================
         
         # --- Physics goes here
-        if not self.paused: 
-            # ... 
+        if not self.paused:
+            self.system.update()
             pass
             
             
         # --- Draw UI Elements
+        self.system.draw(self.screen)
         self.title.draw(self.screen)
         self.action_group.draw(self.screen)
         self.time_state_group.draw(self.screen)
