@@ -44,19 +44,19 @@ class System:
     
 class Particle:
 
-    def __init__(self, radius, pos, mass):
+    def __init__(self, radius, pos, mass, color):
         self.id = None
         self.mass = mass
         self.radius = radius
         self.pos = pos
         self.velocity = 0
         self.GRAVITY = 6.67408**(0 - 11)
-        self.last_time = pygame.time.get_ticks()
+        self.color = color
     
     def __eq__(self, other):
         try:
             if isinstance(other, Particle):
-                if self.id == other.id and self.radius == other.radius and self.mass == other.radius and self.pos == self.pos and self.force == self.force:
+                if self.id == other.id and self.radius == other.radius and self.mass == other.radius and self.pos == self.pos and self.velocity == self.velocity:
                     return True
                 else:
                     return False
@@ -66,18 +66,16 @@ class Particle:
             print("Can not compare Particle and non-Particle")
 
     def gravity_force(self, other):
-        cur_time = pygame.time.get_ticks()
-        # dt = (cur_time - self.last_time) / 1000.0
         dt = 1 / 60
-        self.last_time = cur_time
         distance = (self.pos - other.pos)
         if (distance.mag() - (self.radius + other.radius)) <= 0:
             # reverse gravity stuff
-            pass
-        force = (
-            (-1 * self.GRAVITY * self.mass * other.mass ) / distance.mag2()
-            ) * distance.hat() * dt
-        self.velocity = self.velocity + force
+            force = Vec2d(0, 0)
+        else:
+            force = (
+                (-1 * self.GRAVITY * self.mass * other.mass ) / distance.mag2()
+                ) * distance.hat() * dt
+            self.velocity = self.velocity + force
 
     def update(self):
         self.pos = self.pos + self.velocity
@@ -86,4 +84,4 @@ class Particle:
         return self.mass * self.velocity
 
     def draw(self, target):
-        pygame.draw.circle(target, Color.WHITE, (int(self.pos.x), int(self.pos.y)), self.radius)
+        pygame.draw.circle(target, self.color, (int(self.pos.x), int(self.pos.y)), self.radius)
