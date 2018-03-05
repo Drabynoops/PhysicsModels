@@ -120,9 +120,9 @@ class Simulation:
         elif self.interaction_type == InteractionType.REMOVE_PARTICLE:
             pass
     
-    # if self.interaction_type == InteractionType.ADD_PARTICLE:
-    #                 new_particle = Particle(self.particle_radius, mouse_pos, 5)
-    #                 self.system.add(new_particle)
+        # if self.interaction_type == InteractionType.ADD_PARTICLE:
+        #                 new_particle = Particle(self.particle_radius, mouse_pos, 5)
+        #                 self.system.add(new_particle)
         # ==================================================================
         
         # --- Physics goes here
@@ -137,7 +137,10 @@ class Simulation:
         self.action_group.draw(self.screen)
         self.time_state_group.draw(self.screen)
         self.view_group.draw(self.screen)
-        self.author_label.draw(self.screen)        
+        self.author_label.draw(self.screen)      
+        
+        self.radius_label.draw(self.screen)
+        self.radius_num_label.draw(self.screen)
 
         # --- Update the screen with what we've drawn.
         pygame.display.update()
@@ -192,6 +195,9 @@ class Simulation:
         # --- UI Labels -------------------
         self.title = UILabel("Gravity Simulation", 30, Color.WHITE, Anchor.TOP_LEFT, Vec2d(start_from_left, start_from_top))
         self.author_label = UILabel("Authors: Keenan Barber, Brendan Bard", 16, Color.WHITE, Anchor.BOTTOM_LEFT, Vec2d(start_from_left, self.height))
+        
+        self.radius_label = UILabel("Radius", 20, Color.WHITE, Anchor.BOTTOM_LEFT, Vec2d(start_from_left, self.height / 2))
+        self.radius_num_label = UILabel("10", 16, Color.WHITE, Anchor.BOTTOM_LEFT, Vec2d(start_from_left, (self.height / 2) + 30))
         
         # --- UI Buttons -------------------
         
