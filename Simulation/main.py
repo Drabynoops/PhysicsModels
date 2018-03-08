@@ -9,7 +9,7 @@ import pygame
 import random
 from enum import Enum
 
-from color import Color
+from color import Color, random_color
 from vec2d import Vec2d
 from particle_system import Particle, System
 from ui_elements import UIButton, UILabel, UIButtonGroup, Anchor
@@ -55,8 +55,8 @@ class Simulation:
             radius = random.randint(self.particle_radius, self.particle_radius * 3)
             x = random.randint(0, self.width)
             y = random.randint(0, self.height)
-            color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-            self.system.add(Particle(radius, Vec2d(x,y),radius * 100000, color))
+            color = random_color()
+            self.system.add(Particle(radius, Vec2d(x,y), color))
 
         # Create the sprite groups
         self.game_objects = pygame.sprite.Group()
@@ -88,9 +88,9 @@ class Simulation:
                 # IF THE SCREEN WAS CLICKED...
                 else: 
                     if self.interaction_type == InteractionType.ADD_PARTICLE:
-                        self.add_particle()
+                        self.add_particle(mouse_pos)
                     elif self.interaction_type == InteractionType.REMOVE_PARTICLE:
-                        self.remove_particle()
+                        self.remove_particle(mouse_pos)
                     elif self.interaction_type == InteractionType.POINTER:
                         self.vec_start = mouse_pos
                     
@@ -159,15 +159,22 @@ class Simulation:
         #print("Using the add tool...")
         self.interaction_type = InteractionType.ADD_PARTICLE
         
-    def add_particle(self):
+    def add_particle(self, position):
+        radius = random.randint(5, 50)
+        self.system.add(Particle(radius, position, random_color()))
         print("Adding particle...")
         
     def use_remove(self):
         #print("Using the remove tool...")
         self.interaction_type = InteractionType.REMOVE_PARTICLE
         
-    def remove_particle(self):
-        print("Removing particle...")
+    def remove_particle(self, position):
+        for index in range(len(self.system.system)):
+            distance = (position - self.system.system[index].pos).mag()
+            if distance < self.system.system[index].radius:
+                self.system.remove(index)
+                break
+        print("Removing particle...", len(self.system.system), " remain")
         
     def center_view(self):
         #print("Centering view...")
