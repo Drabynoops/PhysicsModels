@@ -113,7 +113,7 @@ class Simulation:
                     if self.time_state_group.get_active_button_text() == "Play":
                         self.play_sim()
                     
-                    if self.highlighted_particle != None:
+                    if isinstance(self.highlighted_particle, Particle):
                         vel_vec = (mouse_pos - self.highlighted_particle.pos) / 40
                         self.highlighted_particle.velocity = vel_vec
                         self.highlighted_particle = None
@@ -144,7 +144,7 @@ class Simulation:
             
         # --- pointer
         elif self.interaction_type == InteractionType.POINTER:
-            if self.highlighted_particle != None:
+            if isinstance(self.highlighted_particle, Particle):
                 pygame.draw.line(self.screen, Color.RED, [self.highlighted_particle.pos.x, self.highlighted_particle.pos.y], [mouse_pos.x, mouse_pos.y], 5)
                 
                 
