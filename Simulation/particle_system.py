@@ -24,6 +24,14 @@ class System:
         for particle in self.system:
             particle.update()
 
+    def center_system(self, width, height):
+        com = self.center_of_mass()
+        com_velocity = self.velocity_of_com()
+        for particle in self.system:
+            particle.velocity = particle.velocity - com_velocity
+            particle.pos = (particle.pos - com) + Vec2d(width // 2, height // 2)
+
+    
     def center_of_mass(self):
         num = 0
         denum = 0

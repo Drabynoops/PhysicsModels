@@ -51,12 +51,12 @@ class Simulation:
         self.vel_vec = Vec2d(0, 0)
 
         # Test system
-        for i in range(20):
-            radius = random.randint(self.particle_radius, self.particle_radius * 3)
-            x = random.randint(0, self.width)
-            y = random.randint(0, self.height)
-            color = random_color()
-            self.system.add(Particle(radius, Vec2d(x,y), color))
+        # for i in range(20):
+        #     radius = random.randint(self.particle_radius, self.particle_radius * 3)
+        #     x = random.randint(0, self.width)
+        #     y = random.randint(0, self.height)
+        #     color = random_color()
+        #     self.system.add(Particle(radius, Vec2d(x,y), color))
 
         # Create the sprite groups
         self.game_objects = pygame.sprite.Group()
@@ -175,6 +175,7 @@ class Simulation:
         
     def center_view(self):
         #print("Centering view...")
+        self.system.center_system(self.width, self.height)
         pass
         
     def play_sim(self):
