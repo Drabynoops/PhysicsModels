@@ -48,8 +48,6 @@ class Simulation:
         self.particle_radius = 20
         
         self.highlighted_particle = None
-        self.vec_start = Vec2d(0, 0)
-        self.vel_vec = Vec2d(0, 0)
 
         # Test system
         # for i in range(20):
@@ -106,9 +104,7 @@ class Simulation:
                             if distance < self.system.system[index].radius:
                                 self.highlighted_particle = self.system.get(index)
                                 break
-                            
-                        # Store the position of the target particle
-                        self.vec_start = self.highlighted_particle.pos
+
                     
             # --- MOUSE UP ---------
             elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:      
@@ -116,16 +112,12 @@ class Simulation:
                 if self.interaction_type == InteractionType.POINTER:
                     if self.time_state_group.get_active_button_text() == "Play":
                         self.play_sim()
-                    #self.vel_vec = (mouse_pos - self.vec_start) / 10
-                    pass 
-#                    for index in range(len(self.system.system)):
-#                        distance = (self.vec_start - self.system.system[index].pos).mag()
-#                        if distance < self.system.system[index].radius:
-#                            #self.system.get(index).velocity = self.vel_vec
-#                            print("Applying velocity: ", self.vel_vec)
-#                            break
-                        
-                    self.vec_start = None
+                    
+                    if self.highlighted_particle != None:
+                        vel_vec = (mouse_pos - self.highlighted_particle.pos) / 40
+                        self.highlighted_particle.velocity = vel_vec
+                        self.highlighted_particle = None
+
                 
                 
         # --- Drawing code should go here
@@ -152,9 +144,9 @@ class Simulation:
             
         # --- pointer
         elif self.interaction_type == InteractionType.POINTER:
-            if self.vec_start != None and self.highlighted_particle != None:
-                pygame.draw.line(self.screen, Color.RED, [self.vec_start.x, self.vec_start.y], [mouse_pos.x, mouse_pos.y], 5)
-                self.vel_vec = mouse_pos - self.vec_start
+            if self.highlighted_particle != None:
+                pygame.draw.line(self.screen, Color.RED, [self.highlighted_particle.pos.x, self.highlighted_particle.pos.y], [mouse_pos.x, mouse_pos.y], 5)
+                
                 
         # --- Deleting particles
         elif self.interaction_type == InteractionType.REMOVE_PARTICLE:
@@ -268,17 +260,17 @@ class Simulation:
             Vec2d(start_from_left, self.height - self.author_label.height - button_spacing),                            # Position
             Vec2d(70, button_height))                                                                                   # Size
         self.play_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                                 # Button Colors
-        self.play_button.add_event(self.play_sim)                                                                    # Add event
+        self.play_button.add_event(self.play_sim)                                                                       # Add event
         
         # Pause Button (In Play State Group)
         self.pause_button = UIButton("Pause", 16, Anchor.BOTTOM_LEFT, 
             Vec2d(start_from_left + button_spacing + 70, self.height - self.author_label.height - button_spacing),      # Position
             Vec2d(70, button_height))                                                                                   # Size
         self.pause_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                                # Button Colors
-        self.pause_button.add_event(self.pause_sim)                                                                   # Add event
+        self.pause_button.add_event(self.pause_sim)                                                                     # Add event
         
         # Center View Button
-        self.center_view_button = UIButton("Center View  [0]", 16, Anchor.BOTTOM_LEFT, 
+        self.center_view_button = UIButton("Center View", 16, Anchor.BOTTOM_LEFT, 
             Vec2d(start_from_left, self.height - self.author_label.height - button_height - (2 * button_spacing)),      # Position
             Vec2d(150, button_height))                                                                                  # Size
         self.center_view_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                          # Button Colors

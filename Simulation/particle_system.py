@@ -15,6 +15,9 @@ class System:
     
     def remove(self, index):
         del self.system[index]
+        
+    def get(self, index):
+        return self.system[index]
 
     def update(self):
         for i1 in range(len(self.system)):
@@ -33,12 +36,15 @@ class System:
 
     
     def center_of_mass(self):
-        num = 0
-        denum = 0
-        for particle in self.system:
-            num = num + (particle.mass * particle.pos)
-            denum = denum + particle.mass
-        return num / denum
+        if len(self.system) != 0:
+            num = 0
+            denum = 0
+            for particle in self.system:
+                num = num + (particle.mass * particle.pos)
+                denum = denum + particle.mass
+            return num / denum
+        else:
+            return Vec2d(0, 0)
     
     def velocity_of_com(self):
         num = 0
@@ -60,7 +66,7 @@ class Particle:
         self.mass = radius * radius * 1000
         self.radius = radius
         self.pos = pos
-        self.velocity = 0
+        self.velocity = Vec2d(0, 0)
         self.GRAVITY = 6.67408**(0 - 11)
         self.color = color
     
