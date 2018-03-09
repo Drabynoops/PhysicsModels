@@ -46,8 +46,9 @@ class Simulation:
         self.interaction_type = InteractionType.POINTER # Initialize user interaction ability
         self.paused = False
         self.particle_radius = 20
+        
         self.highlighted_particle = None
-        self.vec_start = None
+        self.vec_start = Vec2d(0, 0)
         self.vel_vec = Vec2d(0, 0)
 
         # Test system
@@ -80,7 +81,9 @@ class Simulation:
                 self.done = True
             elif event.type == pygame.KEYDOWN: 
                 print("Key down")
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:    # --- MOUSE DOWN ---------
+                
+            # --- MOUSE DOWN ---------
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:    
                 # IF A BUTTON WAS CLICKED...
                 if self.action_group.check_mouse_down() or self.time_state_group.check_mouse_down() or self.view_group.check_mouse_down():
                     pass
@@ -92,15 +95,53 @@ class Simulation:
                     elif self.interaction_type == InteractionType.REMOVE_PARTICLE:
                         self.remove_particle(mouse_pos)
                     elif self.interaction_type == InteractionType.POINTER:
-                        self.vec_start = mouse_pos
+                        
+                        # Pause the sim if it isn't already paused
+                        if self.time_state_group.get_active_button_text() == "Play":
+                            self.pause_sim()
+                            
+                        # Find the highlighted particle
+                        for index in range(len(self.system.system)):
+                            distance = (mouse_pos - self.system.system[index].pos).mag()
+                            if distance < self.system.system[index].radius:
+                                self.highlighted_particle = self.system.get(index)
+                                break
+                            
+                        # Store the position of the target particle
+                        self.vec_start = self.highlighted_particle.pos
                     
-            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:      # --- MOUSE UP ---------
-                self.vec_start = None
+            # --- MOUSE UP ---------
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:      
+                
+                if self.interaction_type == InteractionType.POINTER:
+                    if self.time_state_group.get_active_button_text() == "Play":
+                        self.play_sim()
+                    #self.vel_vec = (mouse_pos - self.vec_start) / 10
+                    pass 
+#                    for index in range(len(self.system.system)):
+#                        distance = (self.vec_start - self.system.system[index].pos).mag()
+#                        if distance < self.system.system[index].radius:
+#                            #self.system.get(index).velocity = self.vel_vec
+#                            print("Applying velocity: ", self.vel_vec)
+#                            break
+                        
+                    self.vec_start = None
+                
                 
         # --- Drawing code should go here
         # Clear both screens
         self.screen.fill(self.background_color) 
         
+        # --- Physics goes here
+        if not self.paused:
+            self.system.update()
+            pass  
+
+        # --- Draw the system of particles
+        self.system.draw(self.screen)
+        
+        # --- Draw the center of mass
+        pygame.draw.circle(self.screen, Color.RED, (int(self.system.center_of_mass().x), int(self.system.center_of_mass().y)), 4)      
         
         # ==================================================================
         # INTERACTIONS                            |
@@ -111,7 +152,7 @@ class Simulation:
             
         # --- pointer
         elif self.interaction_type == InteractionType.POINTER:
-            if self.vec_start != None:
+            if self.vec_start != None and self.highlighted_particle != None:
                 pygame.draw.line(self.screen, Color.RED, [self.vec_start.x, self.vec_start.y], [mouse_pos.x, mouse_pos.y], 5)
                 self.vel_vec = mouse_pos - self.vec_start
                 
@@ -123,15 +164,8 @@ class Simulation:
         #                 new_particle = Particle(self.particle_radius, mouse_pos, 5)
         #                 self.system.add(new_particle)
         # ==================================================================
-        
-        # --- Physics goes here
-        if not self.paused:
-            self.system.update()
-            pass
-            
             
         # --- Draw UI Elements
-        self.system.draw(self.screen)
         self.title.draw(self.screen)
         self.action_group.draw(self.screen)
         self.time_state_group.draw(self.screen)

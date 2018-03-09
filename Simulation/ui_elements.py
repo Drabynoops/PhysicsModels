@@ -227,6 +227,9 @@ class UIButtonGroup:
         self.active_button = button
         if len(self.buttons) != 1:
             self.active_button.pressed = True
+            
+    def get_active_button_text(self):
+        return self.active_button.button_text
         
     # Loops through all of the buttons and calls the draw function on them
     def draw(self, screen):        
