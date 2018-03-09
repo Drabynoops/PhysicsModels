@@ -39,13 +39,13 @@ class Simulation:
         
         self.system = System()
         
-        # Initialize the UI
-        self.initialize_ui()
-        
         # User interaction variables
         self.interaction_type = InteractionType.POINTER # Initialize user interaction ability
         self.paused = False
         self.particle_radius = 20
+        
+        # Initialize the UI
+        self.initialize_ui()
         
         self.highlighted_particle = None
 
@@ -83,7 +83,7 @@ class Simulation:
             # --- MOUSE DOWN ---------
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:    
                 # IF A BUTTON WAS CLICKED...
-                if self.action_group.check_mouse_down() or self.time_state_group.check_mouse_down() or self.view_group.check_mouse_down():
+                if self.action_group.check_mouse_down() or self.time_state_group.check_mouse_down() or self.view_group.check_mouse_down() or self.grow_group.check_mouse_down() or self.shrink_group.check_mouse_down():
                     pass
                 
                 # IF THE SCREEN WAS CLICKED...
@@ -166,6 +166,8 @@ class Simulation:
         
         self.radius_label.draw(self.screen)
         self.radius_num_label.draw(self.screen)
+        self.grow_group.draw(self.screen)
+        self.shrink_group.draw(self.screen)
 
         # --- Update the screen with what we've drawn.
         pygame.display.update()
@@ -185,9 +187,19 @@ class Simulation:
         #print("Using the add tool...")
         self.interaction_type = InteractionType.ADD_PARTICLE
         
+    def grow(self):
+        self.particle_radius += 5
+        self.radius_label.set_text("Radius: " + str(self.particle_radius))
+        
+    def shrink(self):
+        self.particle_radius -= 5
+        if self.particle_radius <= 5:
+            self.particle_radius = 10
+        self.radius_label.set_text("Radius: " + str(self.particle_radius))
+        
     def add_particle(self, position):
-        radius = random.randint(5, 50)
-        self.system.add(Particle(radius, position, random_color()))
+        #radius = random.randint(5, 50)
+        self.system.add(Particle(self.particle_radius, position, random_color()))
         print("Adding particle...")
         
     def use_remove(self):
@@ -195,7 +207,7 @@ class Simulation:
         self.interaction_type = InteractionType.REMOVE_PARTICLE
         
     def remove_particle(self, position):
-        for index in range(len(self.system.system)):
+        for index in range(len(self.system.system)-1, -1, -1): # Go through backwards
             distance = (position - self.system.system[index].pos).mag()
             if distance < self.system.system[index].radius:
                 self.system.remove(index)
@@ -229,8 +241,8 @@ class Simulation:
         self.title = UILabel("Gravity Simulation", 30, Color.WHITE, Anchor.TOP_LEFT, Vec2d(start_from_left, start_from_top))
         self.author_label = UILabel("Authors: Keenan Barber, Brendan Bard", 16, Color.WHITE, Anchor.BOTTOM_LEFT, Vec2d(start_from_left, self.height))
         
-        self.radius_label = UILabel("Radius", 20, Color.WHITE, Anchor.BOTTOM_LEFT, Vec2d(start_from_left, self.height / 2))
-        self.radius_num_label = UILabel("10", 16, Color.WHITE, Anchor.BOTTOM_LEFT, Vec2d(start_from_left, (self.height / 2) + 30))
+        self.radius_label = UILabel("Radius: " + str(self.particle_radius), 20, Color.WHITE, Anchor.BOTTOM_LEFT, Vec2d(start_from_left, self.height / 2))
+        self.radius_num_label = UILabel("", 16, Color.WHITE, Anchor.BOTTOM_LEFT, Vec2d(start_from_left, (self.height / 2) + 30))
         
         # --- UI Buttons -------------------
         
@@ -276,6 +288,20 @@ class Simulation:
         self.center_view_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                          # Button Colors
         self.center_view_button.add_event(self.center_view)                                                             # Add event
         
+        # Grow Button
+        self.grow_button = UIButton("+", 16, Anchor.BOTTOM_LEFT, 
+            Vec2d(start_from_left, (self.height / 2) + 30),                                                             # Position
+            Vec2d(40, button_height))                                                                                   # Size
+        self.grow_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                                 # Button Colors
+        self.grow_button.add_event(self.grow)                                                                           # Add event
+        
+        # Shrink Button
+        self.shrink_button = UIButton("-", 16, Anchor.BOTTOM_LEFT, 
+            Vec2d(start_from_left + 10 + 40, (self.height / 2) + 30),                                                   # Position
+            Vec2d(40, button_height))                                                                                   # Size
+        self.shrink_button.set_colors(Color.WHITE, Color.BLACK, Color.BLACK, Color.WHITE)                               # Button Colors
+        self.shrink_button.add_event(self.shrink)                                                                       # Add event
+        
         # --- UI Button Groups -------------------
         
         # Group to hold the center view button
@@ -295,6 +321,17 @@ class Simulation:
         self.time_state_group.add(self.play_button)
         self.time_state_group.add(self.pause_button)
         self.time_state_group.set_active(self.play_button)
+        
+        # Group to hold grow button
+        self.grow_group = UIButtonGroup()
+        self.grow_group.add(self.grow_button)
+        self.grow_group.set_active(self.grow_button)
+        
+        # Group to hold shrink button
+        self.shrink_group = UIButtonGroup()
+        self.shrink_group.add(self.shrink_button)
+        self.shrink_group.set_active(self.shrink_button)
+        
 
 def main():
     sim = Simulation(800, 600)

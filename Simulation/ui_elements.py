@@ -181,6 +181,10 @@ class UILabel:
         self.anchor = anchor_enum
         self.anchor_offset = get_anchor_offset(anchor_enum, self.width, self.height)
         
+    def set_text(self, str):
+        self.label_text = str
+        self.text = self.font.render(self.label_text, True, self.text_color) # Creates the text (text, anti-aliased, color)
+        
     # Sets the color of the text
     def set_color(self, text_color):
         self.text_color = text_color
