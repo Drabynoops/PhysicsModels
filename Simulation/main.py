@@ -99,7 +99,7 @@ class Simulation:
                             self.pause_sim()
                             
                         # Find the highlighted particle
-                        for index in range(len(self.system.system)):
+                        for index in range(len(self.system.system) - 1, -1, -1): # Goes backwards through array
                             distance = (mouse_pos - self.system.system[index].pos).mag()
                             if distance < self.system.system[index].radius:
                                 self.highlighted_particle = self.system.get(index)
