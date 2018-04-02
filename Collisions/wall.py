@@ -9,8 +9,9 @@ class Wall:
         self.pos1 = pos1
         self.pos2 = pos2
         self.position = Vec2d((self.pos1.x + self.pos2.x)/2, (self.pos1.y + self.pos2.y)/2)
+        magnitude = (pos1 - pos2).mag()
+        self.normal = Vec2d(self.position.x / magnitude, self.position.y / magnitude)
 
-        print(self.position)
         self.color = Color.WHITE
 
     def draw(self, target):

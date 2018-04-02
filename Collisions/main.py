@@ -29,8 +29,8 @@ class Game:
         self.build_game_objects()
 
     def build_game_objects(self):
-        self.game_objects.append(CollisionCircle(10, Vec2d(250, 250), 0))
-        self.game_objects.append(CollisionCircle(10, Vec2d(500, 250), 0))
+        self.game_objects.append(CollisionCircle(10, Vec2d(250, 250), Vec2d(0,0)))
+        self.game_objects.append(CollisionCircle(10, Vec2d(500, 250), Vec2d(0,0)))
         self.game_objects.append(Wall(Vec2d(0, 300), Vec2d(400, 600)))
         self.game_objects.append(Wall(Vec2d(400, 600), Vec2d(800, 300)))
     
