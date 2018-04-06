@@ -19,7 +19,7 @@ class Game:
         self.height = height
         self.screen = pygame.display.set_mode([width, height])
         self.background_color = Color.BLACK
-        self.gravity = Vec2d(0, 9.8)
+        self.gravity = Vec2d(0, 1000)
 
         self.draw_screen = self.screen.copy()
         self.draw_screen.fill(Color.BLACK)
@@ -38,10 +38,10 @@ class Game:
         self.game_objects.append(Wall(Vec2d(100, 200), Vec2d(1, 1), Color.WHITE))
     
     def generate_circles(self):
-        max_x = self.height / 2
-        min_x = 100 
-        min_y = -self.width / 2
-        max_y = self.width / 2
+        max_x = self.width / 2
+        min_x = -self.width / 2
+        min_y = 100
+        max_y = self.height / 2
         min_radius = 5
         max_radius = 25
         for i in range(5):
@@ -64,11 +64,12 @@ class Game:
         # First, clear the screen
         self.screen.fill(self.background_color)
 
+        
         for index in range(len(self.game_objects)):
             obj = self.game_objects[index]
         # Update velocity stuffs
             if obj.type == "circle":
-                obj.force = obj.force + (self.gravity * dt)
+                obj.force = self.gravity
                 obj.update(dt)
 
                 # Collision stuffs
@@ -76,14 +77,10 @@ class Game:
                     obj_2 = self.game_objects[index_2]
                     if obj.type == "circle" and obj_2.type == "circle":
                         obj.collide_with_circle(obj_2)
-                        obj.update(dt)
-                        obj_2.update(dt)
                     elif obj.type == "circle" and obj_2.type == "wall":
-                        obj.collide_with_wall(obj_2)  
-                        obj.update(dt)      
-        # Update stuff
-            obj.update(dt)
+                        obj.collide_with_wall(obj_2)     
         # Draw stuff
+        for obj in self.game_objects:
             obj.draw(self.screen, self.coords)
 
         # --- Update the screen with what we've drawn.

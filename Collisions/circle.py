@@ -17,7 +17,7 @@ class Circle:
         self.color = color
         self.force = Vec2d(0,0)
         self.type = "circle"
-        self.col_restituion = 0.0
+        self.col_restituion = 0.5
     
     def update_mom(self, dt):
         self.mom += self.force*dt
@@ -72,6 +72,9 @@ class Circle:
             if (v1 - v2).dot(normal) < 0:
                 self.set_mom(self.mom + collision_impulse + rotational_impulse)
                 other.set_mom(other.mom - collision_impulse - rotational_impulse)
+            return True
+        else:
+            return False
 
     def collide_with_wall(self, other):
         distance = -(self.pos - other.pos).dot(other.normal) - self.radius
@@ -84,13 +87,16 @@ class Circle:
             self.pos += (reduced_mass * distance) * normal
 
             impulse = -( 1 + self.col_restituion ) * reduced_mass * ( self.vel - other.vel ).dot( normal ) * normal
-            # max_friction = other.friction_coefficient * impulse
-            # normal_velocity = -impulse
-            # tangential_velocity = normal_velocity.perpendicular()
-            # friction = -( 1 * tangential_velocity.dot(normal.perpendicular()) ) * normal.perpendicular()
-            # if friction.mag2() > max_friction.mag2():
-            #     friction *= (other.friction_coefficient * impulse.mag()) / friction.mag()
+            max_friction = other.friction_coefficient * impulse
+            normal_velocity = -impulse
+            tangential_velocity = normal_velocity.perpendicular()
+            friction = -( 1 * tangential_velocity.dot(normal.perpendicular()) ) * normal.perpendicular()
+            if friction.mag2() > max_friction.mag2():
+                friction *= (other.friction_coefficient * impulse.mag()) / friction.mag()
             self.set_mom(self.mom + impulse)
+            return True
+        else:
+            return False
 
     def draw(self, screen, coords):
         pygame.draw.circle(screen, self.color, 
