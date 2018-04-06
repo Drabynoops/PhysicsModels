@@ -1,21 +1,62 @@
-import pygame
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Mar  7 15:52:54 2018
 
+@author: sinkovitsd
+"""
+import pygame
 from vec2d import Vec2d
-from color import Color
 
 class Wall:
-
-    def __init__(self, pos1, pos2):
-        self.pos1 = pos1
-        self.pos2 = pos2
-        self.position = Vec2d((self.pos1.x + self.pos2.x)/2, (self.pos1.y + self.pos2.y)/2)
-        magnitude = (pos1 - pos2).mag()
-        self.normal = Vec2d(self.position.x / magnitude, self.position.y / magnitude)
-
-        self.color = Color.WHITE
-
-    def draw(self, target):
-        pygame.draw.line(target, self.color, (self.pos1.x, self.pos1.y), (self.pos2.x, self.pos2.y))
+    def __init__(self, pos, normal, color, mass=1e99, vel=Vec2d(0,0)):
+        self.pos = pos.copy()
+        self.normal = normal.normalized() # makes a copy automatically
+        self.pos = pos.copy()
+        self.vel = vel.copy()
+        self.mass = mass
+        self.mom = self.vel*self.mass
+        self.color = color
+        self.force = Vec2d(0,0)
+        self.friction_coefficient = 1
+        self.type = "wall"
     
-    def update(self):
-        pass
+    def update_mom(self, dt):
+        self.mom += self.force*dt
+        self.update_vel()
+        
+    def set_vel(self, vel):
+        self.vel.copy_in(vel)
+        self.mom.copy_in(self.vel*self.mass)
+
+    def update_vel(self):
+        self.vel.copy_in(self.mom/self.mass)
+
+    def update_pos(self, dt):
+        self.pos += self.vel*dt
+
+    def update(self, dt):
+        self.update_mom(dt)
+        self.update_pos(dt)
+                
+    def draw(self, screen, coords):
+        pos = coords.pos_to_screen(self.pos)
+        normal = coords.unitvec_to_other(self.normal)
+        X = screen.get_width()-1
+        Y = screen.get_height()-1
+        perp = normal.perpendicular()
+        if perp.x == 0:
+            start = Vec2d(pos.x, 0)
+            end   = Vec2d(pos.x, Y)
+        elif perp.y == 0:
+            start = Vec2d(0, pos.y)
+            end   = Vec2d(X, pos.y)
+        else:
+            s = []
+            s.append((0-pos.x)/perp.x)                
+            s.append((0-pos.y)/perp.y)                
+            s.append((X-pos.x)/perp.x)                
+            s.append((Y-pos.y)/perp.y)
+            s.sort()
+            start = pos + perp*s[1]
+            end   = pos + perp*s[2]
+        pygame.draw.line(screen, self.color, start, end, 1)

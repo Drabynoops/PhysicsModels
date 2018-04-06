@@ -1,4 +1,5 @@
 from enum import Enum
+from random import randint
 
 class Color:
     BLACK    = (   0,   0,   0)

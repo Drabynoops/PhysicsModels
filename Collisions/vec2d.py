@@ -26,7 +26,7 @@ class Vec2d(object):
             self.y = y
             
     def int(self):
-        return [int(self.x), int(self.y)]
+        return [int((self.x + 0.5)//1), int((self.y + 0.5)//1)]
 
     def __len__(self):
         return 2
