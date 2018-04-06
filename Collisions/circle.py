@@ -86,14 +86,20 @@ class Circle:
             # Since reduced_mass = self.mass this means distance
             self.pos += (reduced_mass * distance) * normal
 
-            impulse = -( 1 + self.col_restituion ) * reduced_mass * ( self.vel - other.vel ).dot( normal ) * normal
-            max_friction = other.friction_coefficient * impulse
-            normal_velocity = -impulse
-            tangential_velocity = normal_velocity.perpendicular()
-            friction = -( 1 * tangential_velocity.dot(normal.perpendicular()) ) * normal.perpendicular()
-            if friction.mag2() > max_friction.mag2():
-                friction *= (other.friction_coefficient * impulse.mag()) / friction.mag()
-            self.set_mom(self.mom + impulse)
+            impulse = -(1 + self.col_restituion) * reduced_mass * (self.vel - other.vel).dot(normal) * normal
+            '''I have no idea what is going on here.
+               I only hope that this is correct.
+               Nothing seems to break so yea?
+            '''
+            velocity_normal = ((-normal.dot(self.vel)) / self.vel.mag2()) * self.vel #vn
+            velocity_tangential = ((-normal.perpendicular().dot(self.vel)) / self.vel.mag2()) * self.vel #vn
+            impulse_normal = -(1 + self.col_restituion) * reduced_mass * velocity_normal.mag() * normal #Jn
+            max_friction = other.friction_coefficient * impulse_normal
+            impulse_friction = -other.friction_coefficient * velocity_tangential.mag() * normal.perpendicular()
+            if impulse_friction.mag2() > max_friction.mag2():
+                impulse_friction *= (other.friction_coefficient * impulse_normal.mag()) / impulse_friction.mag()
+            '''End of the madness'''
+            self.set_mom(self.mom + impulse + impulse_friction)
             return True
         else:
             return False
