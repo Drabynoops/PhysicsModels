@@ -1,0 +1,83 @@
+-------------------------------------------------------------
+Units
+-------------------------------------------------------------
+*** Old ***
+pos = position
+m = mass
+R = radius
+mom = momentum
+*** New ***
+ang = angle
+ang_vel = angular_velocity
+moa = moment_of_inertia = 0.5 * m * R^2
+ang_mom = angular_momentum = moa * ang_vel
+torque
+
+------------------------------------------------------------
+Drawing the line
+------------------------------------------------------------
+start = pos
+end = pos + <R * cos(ang), R * sin(ang)>
+
+------------------------------------------------------------
+Update Momentum
+------------------------------------------------------------
+*** Params ***
+dt = delta_time
+*** Function ***
+ang_mom += torque * dt
+update_angular_velocity()
+
+-------------------------------------------------------------
+Update angular velocity
+-------------------------------------------------------------
+ang_vel = ang_mom / moa
+
+-------------------------------------------------------------
+Update position (angle)
+-------------------------------------------------------------
+*** Params ***
+dt
+*** Function ***
+ang = += ang_vel * dt
+
+-------------------------------------------------------------
+Impulse nonsense
+-------------------------------------------------------------
+*** Params ***
+col_res = collision_restitution
+normal
+co_fric = coefficient of friction
+*** Function ***
+obj1 = object 1
+obj2 = object 2
+tan = tangential = normal.perpendicular()
+vel_norm = velocity_normal = (obj1.vel - obj2.vel).dot(normal)
+vel_tan = velocity_tangential = (obj1.vel.mag - obj2.vel.mag).dot(tan) - (obj1.R * obj1.ang_vel) - (obj2.R * obj2.ang_vel)
+
+rm = reduced_mass = 1 / ( (1/obj1.m) + (1/obj2.m) )
+
+
+J_bounce = impulse_bounce = -(1 + col_res)  * rm * vel_norm
+
+reduced_mass_tangential = rm_tan = 1 / ( (1/obj1.m) + (obj1.R^2/moa) + (1/obj2.m) + (obj2.R^2/obj2.moa))
+
+J_friction = impulse_friction = -rm_tan*vel_tan
+
+if J_friction.mag() > co_fric * J_bounce.mag():
+  J_friction *= ( co_fric * J_bounce.mag() ) / J_friction.mag()
+
+J_total = total_impulse = J_bounce * normal + J_friction * tan
+
+pos_impulse = position of impulse = obj1.pos - obj1.R * normal
+
+obj1.impulse(J_total, pos_impulse)
+obj2.impulse(-J_total, pos_impulse)
+
+-------------------------------------------------------------
+impulse function
+-------------------------------------------------------------
+mom += J_total
+update_velocity()
+ang_mom += (pos_impulse - pos).cross(J_total)
+update_angular_velocity()
