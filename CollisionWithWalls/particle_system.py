@@ -134,18 +134,37 @@ class System:
     # Apply collision impulse force between two objects \
     # ---------------------------------------------------
     def collide(self, obj_1, obj_2):
-        reduced_mass = 1 / ( (1 / obj_1.mass) + (1 / obj_2.mass) )  # Reduced mass
         n_hat = (obj_1.pos - obj_2.pos).hat()                       # Normal vector
+        t_hat = n_hat.perpendicular()                               # Vector along the surface (perp of the normal)
 
         # Depenetrate the objects from each other
         overlap_amount = self.depenetrate_circle_circle(obj_1, obj_2)
 
-        # Calculate the impulse
-        impulse = (1 + self.coefficient_of_restitution) * reduced_mass * ( (obj_2.vel - obj_1.vel).dot(n_hat) )
-        if impulse > 0:
-            impulse = impulse * n_hat
-            obj_1.mom += impulse    # Apply the impulse to object 1
-            obj_2.mom -= impulse    # Apply the impulse to object 2
+        # Difference in velocity along the normal
+        v_n = (obj_1.vel - obj_2.vel).dot(n_hat)
+        
+        # Difference in velocity along the perpendicular of the normal
+        v_t =  (obj_1.vel - obj_2.vel).dot(t_hat) - (obj_1.radius * obj_2.angvel) - (obj_2.radius * obj_2.angvel)
+
+        # --- Bounce Impulse ----------
+        reduced_mass_bounce = 1 / ( (1 / obj_1.mass) + (1 / obj_2.mass) )  # Reduced mass
+        impulse_bounce = (1 + self.coefficient_of_restitution) * reduced_mass_bounce * v_n # * -1 ???
+        
+        # --- Friction Impulse --------
+        reduced_mass_friction = 1 / (           # !!! MIGHT HAVE ERROR !!!
+                (1 / obj_1.mass) + ((obj_1.radius * obj_1.radius) / obj_1.inertia) + 
+                (1 / obj_2.mass) + ((obj_2.radius * obj_2.radius) / obj_2.inertia) )
+        
+        impulse_friction = -1 * reduced_mass_friction * v_t     # Impulse
+        if impulse_friction.mag() > (self.coefficient_of_friction * impulse_bounce.mag()):
+            impulse_friction *= (reduced_mass_friction * impulse_bounce.mag() / impulse_friction.mag())
+        
+        # --- Overall Impulse ---------
+        impulse = (impulse_bounce * n_hat) + (impulse_friction * t_hat)
+        point_of_impulse = obj_1.pos - (obj_1.radius * n_hat)
+        
+        obj_1.impulse(impulse, point_of_impulse)
+        obj_2.impulse(-1 * impulse, point_of_impulse)
             
     # --------------------------------------------------
     # Apply collision impulse force from wall           \
