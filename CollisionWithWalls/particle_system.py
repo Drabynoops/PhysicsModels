@@ -6,6 +6,7 @@ import math
 import random
 
 from circle import Circle
+from rotating_circle import RotatingCircle
 from wall import Wall
 
 class System:
@@ -21,7 +22,7 @@ class System:
         self.coefficient_of_restitution = 0.8 #e
         
     def create_circle(self, radius, pos, vel):
-        new_circle = Circle(pos, vel, radius, radius, self.random_color())
+        new_circle = RotatingCircle(pos, vel, radius, radius, self.random_color(), self.random_color())
         self.system.append(new_circle)
         
         new_circle.id = self.COUNT
@@ -141,58 +142,72 @@ class System:
         overlap_amount = self.depenetrate_circle_circle(obj_1, obj_2)
 
         # Difference in velocity along the normal
-        v_n = (obj_1.vel - obj_2.vel).dot(n_hat)
+        v_n = (obj_2.vel - obj_1.vel).dot(n_hat)
         
         # Difference in velocity along the perpendicular of the normal
-        v_t =  (obj_1.vel - obj_2.vel).dot(t_hat) - (obj_1.radius * obj_2.angvel) - (obj_2.radius * obj_2.angvel)
+        v_t =  (obj_2.vel - obj_1.vel).dot(t_hat) - (obj_1.radius * obj_2.ang_vel) - (obj_2.radius * obj_2.ang_vel) # ISSUE WITH ORDERING?
 
         # --- Bounce Impulse ----------
         reduced_mass_bounce = 1 / ( (1 / obj_1.mass) + (1 / obj_2.mass) )  # Reduced mass
         impulse_bounce = (1 + self.coefficient_of_restitution) * reduced_mass_bounce * v_n # * -1 ???
         
         # --- Friction Impulse --------
-        reduced_mass_friction = 1 / (           # !!! MIGHT HAVE ERROR !!!
-                (1 / obj_1.mass) + ((obj_1.radius * obj_1.radius) / obj_1.inertia) + 
-                (1 / obj_2.mass) + ((obj_2.radius * obj_2.radius) / obj_2.inertia) )
-        
-        impulse_friction = -1 * reduced_mass_friction * v_t     # Impulse
-        if impulse_friction.mag() > (self.coefficient_of_friction * impulse_bounce.mag()):
-            impulse_friction *= (reduced_mass_friction * impulse_bounce.mag() / impulse_friction.mag())
+#        reduced_mass_friction = 1 / (           # !!! MIGHT HAVE ERROR !!!
+#                (1 / obj_1.mass) + ((obj_1.radius * obj_1.radius) / obj_1.inertia) + 
+#                (1 / obj_2.mass) + ((obj_2.radius * obj_2.radius) / obj_2.inertia) )
+#        
+#        impulse_friction = -1 * reduced_mass_friction * v_t     # Impulse
+#        if impulse_friction > (self.coefficient_of_friction * impulse_bounce):
+#            impulse_friction *= (reduced_mass_friction * impulse_bounce / impulse_friction)
         
         # --- Overall Impulse ---------
-        impulse = (impulse_bounce * n_hat) + (impulse_friction * t_hat)
+        impulse = (impulse_bounce * n_hat)# + (impulse_friction * t_hat)
         point_of_impulse = obj_1.pos - (obj_1.radius * n_hat)
         
         obj_1.impulse(impulse, point_of_impulse)
         obj_2.impulse(-1 * impulse, point_of_impulse)
-            
+        
+        
     # --------------------------------------------------
     # Apply collision impulse force from wall           \
     # ---------------------------------------------------
     def collide_with_wall(self, obj, wall):
+        n_hat = wall.normal                                         # Normal vector
+        t_hat = n_hat.perpendicular()                               # Vector along the surface (perp of the normal)
+        
         reduced_mass = obj.mass                                     # Reduced mass
 
         # Depenetrate the objects from each other
         overlap_amount = self.depenetrate_circle_wall(obj, wall)
         
-        # Calculate the impulse
-        impulse = -1 * (1 + self.coefficient_of_restitution) * reduced_mass * obj.vel.dot(wall.normal) * wall.normal
-        obj.mom += impulse    # Apply the impulse to object 
+        # Difference in velocity along the normal
+        v_n = (obj.vel - wall.vel).dot(n_hat)
         
-        # Calculate friction impulse
-        t = wall.normal.perpendicular()
-        v_t = ((obj.vel.dot(t)) / t.mag2()) * t                     # Proj of v onto t
+        # Difference in velocity along the perpendicular of the normal (One of the below equations is right...)
+        #v_t =  (obj.vel - wall.vel).dot(t_hat) - (obj.radius * obj.ang_vel)
+        v_t = ((obj.vel.dot(t_hat)) / t_hat.mag2()) * t_hat 
+                
+        # --- Bounce Impulse ----------
+        reduced_mass_bounce = obj.mass  # Reduced mass
+        impulse_bounce = -1 * (1 + self.coefficient_of_restitution) * reduced_mass_bounce * v_n # * -1 ???
         
-        impulse_friction = -1 * self.coefficient_of_friction * v_t
+        # --- Friction Impulse --------
+        reduced_mass_friction = 1 / (           # !!! MIGHT HAVE ERROR !!!
+                (1 / obj.mass) + ((obj.radius * obj.radius) / obj.inertia) )
+#        
+        impulse_friction = -1 * reduced_mass_friction * v_t     # Impulse
+        impulse_friction = 0
+#        if impulse_friction > (self.coefficient_of_friction * impulse_bounce):
+#            impulse_friction *= (reduced_mass_friction * impulse_bounce / impulse_friction)
         
-        # some kind of check?
-        if impulse_friction.mag() > (self.coefficient_of_friction * impulse.mag()):
-            pass
-            #impulse_friction = impulse_friction.dot()
+        # --- Overall Impulse ---------
+        point_of_impulse = obj.pos - (obj.radius * n_hat)
+#        
+        impulse = (impulse_bounce * n_hat) + (impulse_friction * t_hat)
+        obj.impulse(impulse, point_of_impulse)
         
-        obj.mom += impulse_friction
+
             
-        
     # --------------------------------------------------
     # Detect collision between a circle and a rectangle \
     # ---------------------------------------------------
