@@ -59,4 +59,4 @@ class Wall:
             s.sort()
             start = pos + perp*s[1]
             end   = pos + perp*s[2]
-        pygame.draw.line(screen, self.color, start, end, 1)
+        pygame.draw.line(screen, self.color, start, end, 4)
