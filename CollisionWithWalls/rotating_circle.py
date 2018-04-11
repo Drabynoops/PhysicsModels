@@ -66,6 +66,6 @@ class RotatingCircle(Circle):
         super().draw(target, coords)
         endpoint = self.pos + Vec2d(self.radius * math.cos(self.angle), self.radius * math.sin(self.angle))
         pygame.draw.line(target, self.linecolor, coords.pos_to_screen(self.pos).int(), 
-                         coords.pos_to_screen(endpoint).int())
+                         coords.pos_to_screen(endpoint).int(), 4)
         
         
