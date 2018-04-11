@@ -152,16 +152,16 @@ class System:
         impulse_bounce = (1 + self.coefficient_of_restitution) * reduced_mass_bounce * v_n # * -1 ???
         
         # --- Friction Impulse --------
-#        reduced_mass_friction = 1 / (           # !!! MIGHT HAVE ERROR !!!
-#                (1 / obj_1.mass) + ((obj_1.radius * obj_1.radius) / obj_1.inertia) + 
-#                (1 / obj_2.mass) + ((obj_2.radius * obj_2.radius) / obj_2.inertia) )
+        reduced_mass_friction = 1 / (           # !!! MIGHT HAVE ERROR !!!
+                (1 / obj_1.mass) + (obj_1.inertia / (obj_1.radius * obj_1.radius)) + 
+                (1 / obj_2.mass) + (obj_2.inertia / (obj_2.radius * obj_2.radius)) )
 #        
-#        impulse_friction = -1 * reduced_mass_friction * v_t     # Impulse
-#        if impulse_friction > (self.coefficient_of_friction * impulse_bounce):
-#            impulse_friction *= (reduced_mass_friction * impulse_bounce / impulse_friction)
+        impulse_friction = -1 * reduced_mass_friction * v_t     # Impulse
+        if impulse_friction > (self.coefficient_of_friction * impulse_bounce):
+            impulse_friction *= (reduced_mass_friction * impulse_bounce / impulse_friction)
         
         # --- Overall Impulse ---------
-        impulse = (impulse_bounce * n_hat)# + (impulse_friction * t_hat)
+        impulse = (impulse_bounce * n_hat)# + (impulse_friction * t_hat) # SOMETHING IS WRONG WITH FRICTION!!!!!!!!!!!!!!!!
         point_of_impulse = obj_1.pos - (obj_1.radius * n_hat)
         
         obj_1.impulse(impulse, point_of_impulse)
@@ -184,8 +184,7 @@ class System:
         v_n = (obj.vel - wall.vel).dot(n_hat)
         
         # Difference in velocity along the perpendicular of the normal (One of the below equations is right...)
-        #v_t =  (obj.vel - wall.vel).dot(t_hat) - (obj.radius * obj.ang_vel)
-        v_t = ((obj.vel.dot(t_hat)) / t_hat.mag2()) * t_hat 
+        v_t =  (obj.vel - wall.vel).dot(t_hat) - (obj.radius * obj.ang_vel)
                 
         # --- Bounce Impulse ----------
         reduced_mass_bounce = obj.mass  # Reduced mass
@@ -194,9 +193,9 @@ class System:
         # --- Friction Impulse --------
         reduced_mass_friction = 1 / (           # !!! MIGHT HAVE ERROR !!!
                 (1 / obj.mass) + ((obj.radius * obj.radius) / obj.inertia) )
-#        
+
         impulse_friction = -1 * reduced_mass_friction * v_t     # Impulse
-        impulse_friction = 0
+        
 #        if impulse_friction > (self.coefficient_of_friction * impulse_bounce):
 #            impulse_friction *= (reduced_mass_friction * impulse_bounce / impulse_friction)
         
