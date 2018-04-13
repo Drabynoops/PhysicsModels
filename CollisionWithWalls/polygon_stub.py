@@ -31,10 +31,11 @@ class Polygon:
         center = Vec2d(0,0)
         for i in range(len(pp)):
             #> area of triangle, and add to total area
-            a = pp[i].cross(pp[i-1])/2
-            self.area += a
+            area_triangle = pp[i].cross(pp[i-1])/2
+            self.area += area_triangle
             #> moment of triange about vertex
             #> add center of mass of triange to center of mass of shape
+            center += area_triangle * (pp[i] + pp[i-1]) / 3
             pass
         center *= 1/self.area
         self.mass = density*self.area
