@@ -54,8 +54,8 @@ class Simulation:
         self.system.create_wall(Vec2d(test, -test), Vec2d(-1, 1))
         
         # Add circles!
-        rand_circle_count = 15
-        rand_circle_min_radius = 1
+        rand_circle_count = 10
+        rand_circle_min_radius = 3
         rand_circle_max_radius = 5
         for x in range(0, rand_circle_count):
             rand_radius = random.randint(rand_circle_min_radius,rand_circle_max_radius)

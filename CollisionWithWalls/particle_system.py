@@ -164,7 +164,7 @@ class System:
         impulse = (impulse_bounce * n_hat) + (impulse_friction * t_hat) # SOMETHING IS WRONG WITH FRICTION!!!!!!!!!!!!!!!!
         point_of_impulse = obj_1.pos - (obj_1.radius * n_hat)
         
-        obj_1.impulse(impulse, point_of_impulse)
+        obj_1.impulse(1 * impulse, point_of_impulse)
         obj_2.impulse(-1 * impulse, point_of_impulse)
         
         
@@ -196,8 +196,8 @@ class System:
 
         impulse_friction = -1 * reduced_mass_friction * v_t     # Impulse
         
-#        if impulse_friction > (self.coefficient_of_friction * impulse_bounce):
-#            impulse_friction *= (reduced_mass_friction * impulse_bounce / impulse_friction)
+        if impulse_friction > (self.coefficient_of_friction * impulse_bounce):
+            impulse_friction *= (self.coefficient_of_friction * impulse_bounce / impulse_friction)
         
         # --- Overall Impulse ---------
         point_of_impulse = obj.pos - (obj.radius * n_hat)
