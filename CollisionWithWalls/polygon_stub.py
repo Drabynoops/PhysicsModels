@@ -70,10 +70,10 @@ class Polygon:
         # Calculate rotated points and normals
         self.points = []
         for p in self.origpoints:
-            self.points.append(None)
+            self.points.append(Vec2d(0, 0))
         self.normals = []
         for n in self.orignormals:
-            self.normals.append(None)
+            self.normals.append(Vec2d(0, 0))
         self.update_points_normals()
                 
         self.mom = self.mass*self.vel
@@ -142,4 +142,27 @@ class Polygon:
                 n = coords.unitvec_to_other(self.normals[i])
                 p = (points[i] + points[i-1])/2
                 pygame.draw.line(screen, (0,0,0), p, p + length*n)
+                
+                
+    def check_collision(self, other, result=[]):
+        result.clear() # See polygon_collision_test.py in check_collision()
+        overlap = 1e99
+        if other.type == "polygon":            
+            """ Self supplies the vertices.  Other provides the sides (walls).
+                For each wall, find the point that penetrates the MOST, 
+                and record the magnitude of penetration.  If for one wall, 
+                no point penetrates, there is no overlap; return False.
+                Otherwise, find which wall is LEAST penetrated, and pass back,
+                via result.extend(), the overlap, point and normal involved; 
+                return True. """
+            for i in range(len(other.normals)):
+                # Fill in
+                pass
+                for j in range(len(self.points)):
+                    # Fill in
+                    pass
+            result.extend([self, other, overlap, normal, point])
+            return True
+
+    
     
