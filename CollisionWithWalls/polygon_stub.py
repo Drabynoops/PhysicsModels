@@ -49,6 +49,12 @@ class Polygon:
         self.pos += center
         
         #> Shift moment to be about center of mass (parallel axis theorem)
+        #   o Calculate the moment for each triangle and put the sum of them all into moment_shape
+        moment_shape = 0;
+        
+        # ...
+        
+        self.moment = moment_shape - self.mass * self.pos.mag2() # Parallel Axis Theorem
 
         print("moment =", self.moment)
         #print(pp)
