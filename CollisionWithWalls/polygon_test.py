@@ -7,7 +7,7 @@ Created on Fri Oct 27 13:56:44 2017
 import pygame
 from vec2d import Vec2d
 from coords import Coords
-from polygon import Polygon
+from polygon_stub import Polygon
 from math import sqrt, acos, degrees, sin, cos
 from random import uniform, randint, random
 

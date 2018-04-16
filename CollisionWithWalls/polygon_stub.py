@@ -117,19 +117,7 @@ class Polygon:
         if point is not None:
             self.angmom += (point - self.pos).cross(imp)  
             self.update_angvel()
-    """ NOT USED DON'T NEED (can delete)
-    def draw(self, screen, coords):
-        # Draw polygon
-        for i, p in enumerate(self.points):
-            self.scaledpoints[i].copy_in(coords.pos_to_screen(self.pos + p))
-        #print(self.scaledpoints)
-        pygame.draw.polygon(screen, self.color, self.scaledpoints)
-        for i in range(len(self.scaledpoints)):
-            length = 50
-            n = coords.unitvec_to_other(self.normals[i])
-            p = (self.scaledpoints[i] + self.scaledpoints[i-1])/2
-            pygame.draw.line(screen, (0,0,0), p, p + length*n)
-    """
+
     def draw(self, screen, coords):
         # Draw polygon
         points = []
