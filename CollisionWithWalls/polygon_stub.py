@@ -18,6 +18,7 @@ class Polygon:
         self.angvel = angvel
         self.force = Vec2d(0,0)
         self.torque = 0
+        self.density = density
 
         # Set origpoints
         self.origpoints = []
@@ -28,13 +29,15 @@ class Polygon:
         # Tally area, moment, and center of mass
         self.area = 0
         self.moment = 0
+        moment_shape = 0
         center = Vec2d(0,0)
         for i in range(len(pp)):
-            #> area of triangle, and add to total area
+            # TODO area of triangle, and add to total area
             area_triangle = pp[i].cross(pp[i-1])/2
             self.area += area_triangle
-            #> moment of triange about vertex
-            #> add center of mass of triange to center of mass of shape
+            # TODO moment of triange about vertex
+            moment_shape += (1/6) * self.density * area_triangle * (pp[i].mag() + pp[i-1].mag() + pp[i-1].dot(pp[i]))
+            # TODO add center of mass of triange to center of mass of shape
             center += area_triangle * (pp[i] + pp[i-1]) / 3
             pass
         center *= 1/self.area
@@ -48,13 +51,9 @@ class Polygon:
             p -= center
         self.pos += center
         
-        #> Shift moment to be about center of mass (parallel axis theorem)
+        #TODO Shift moment to be about center of mass (parallel axis theorem)
         #   o Calculate the moment for each triangle and put the sum of them all into moment_shape
-        moment_shape = 0;
-        
-        # ...
-        
-        self.moment = moment_shape - self.mass * self.pos.mag2() # Parallel Axis Theorem
+        self.moment = moment_shape - self.mass * center.mag2() # Parallel Axis Theorem
 
         print("moment =", self.moment)
         #print(pp)
@@ -62,16 +61,22 @@ class Polygon:
         # Recalculate moment around the center of mass as a check
         moment = 0
         for i in range(len(pp)):
-            #> same as above loop to tally moment of each triangle about vertex
+            # TODO same as above loop to tally moment of each triangle about vertex
+            # TODO area of triangle, and add to total area
+            area_triangle = pp[i].cross(pp[i-1])/2
+            # TODO moment of triange about vertex
+            moment += (1/6) * self.density * area_triangle * (pp[i].mag() + pp[i-1].mag() + pp[i-1].dot(pp[i]))
             pass
         print("moment =", moment)
         
         # Calculate normals to each points
         self.orignormals = []
         for i in range(len(pp)):
-            #> calculate normal here and append to orignormals
+            #TODO calculate normal here and append to orignormals
+            normal = (pp[i-1] - pp[i]).perpendicular_normal()
+            self.orignormals.append(normal)
             pass
-        #print("orignormals =", self.orignormals)
+        print("orignormals =", self.orignormals)
         
         # Calculate rotated points and normals
         self.points = []
@@ -111,7 +116,13 @@ class Polygon:
     def update_points_normals(self):
         c = cos(self.angle)
         s = sin(self.angle)
-        #> use s and c to calculate points and normals rotated
+        for point in self.points:
+            point.x = point.x * c - point.y * s
+            point.y = point.y * c - point.x * s
+        for i in range(len(pp)):
+            normal = (pp[i-1] - pp[i]).perpendicular_normal()
+            self.normals[i] = normal
+        #TODO use s and c to calculate points and normals rotated
 
     def update(self, dt):
         self.update_mom(dt)
@@ -150,10 +161,10 @@ class Polygon:
                 via result.extend(), the overlap, point and normal involved; 
                 return True. """
             for i in range(len(other.normals)):
-                # Fill in
+                # TODO Fill in
                 pass
                 for j in range(len(self.points)):
-                    # Fill in
+                    # TODO Fill in
                     pass
             result.extend([self, other, overlap, normal, point])
             return True
