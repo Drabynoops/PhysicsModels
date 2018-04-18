@@ -19,13 +19,14 @@ class Polygon:
         self.force = Vec2d(0,0)
         self.torque = 0
         self.density = density
+        self.type = "polygon"
 
         # Set origpoints
         self.origpoints = []
         for p in points:
             self.origpoints.append(p.copy())
         pp = self.origpoints # pp as an alternate label for this function
-
+        print('Points', points)
         # Tally area, moment, and center of mass
         self.area = 0
         self.moment = 0
@@ -33,7 +34,7 @@ class Polygon:
         center = Vec2d(0,0)
         for i in range(len(pp)):
             # TODO area of triangle, and add to total area
-            area_triangle = pp[i].cross(pp[i-1])/2
+            area_triangle = pp[i-1].cross(pp[i])/2
             self.area += area_triangle
             # TODO moment of triange about vertex
             moment_shape += (1/6) * self.density * area_triangle * (pp[i].mag() + pp[i-1].mag() + pp[i-1].dot(pp[i]))
@@ -63,7 +64,7 @@ class Polygon:
         for i in range(len(pp)):
             # TODO same as above loop to tally moment of each triangle about vertex
             # TODO area of triangle, and add to total area
-            area_triangle = pp[i].cross(pp[i-1])/2
+            area_triangle = pp[i-1].cross(pp[i])/2
             # TODO moment of triange about vertex
             moment += (1/6) * self.density * area_triangle * (pp[i].mag() + pp[i-1].mag() + pp[i-1].dot(pp[i]))
             pass
@@ -89,8 +90,8 @@ class Polygon:
                 
         self.mom = self.mass*self.vel
         self.angmom = self.moment*self.angvel
-        #print("points =", self.points)
-        #print("normals =", self.normals)
+        print("points =", self.points)
+        print("normals =", self.normals)
         
     def update_mom(self, dt):
         self.mom += self.force*dt
@@ -116,11 +117,13 @@ class Polygon:
     def update_points_normals(self):
         c = cos(self.angle)
         s = sin(self.angle)
-        for point in self.points:
-            point.x = point.x * c - point.y * s
-            point.y = point.y * c - point.x * s
-        for i in range(len(pp)):
-            normal = (pp[i-1] - pp[i]).perpendicular_normal()
+        for i in range(len(self.origpoints)):
+            point = Vec2d(0,0)
+            point.x = self.origpoints[i].x * c - self.origpoints[i].y * s
+            point.y = self.origpoints[i].y * c - self.origpoints[i].x * s
+            self.points[i] = point
+        for i in range(len(self.points)):
+            normal = (self.points[i-1] - self.points[i]).perpendicular_normal()
             self.normals[i] = normal
         #TODO use s and c to calculate points and normals rotated
 
