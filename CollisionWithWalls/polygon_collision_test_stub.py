@@ -7,7 +7,7 @@ Created on Fri Oct 27 13:56:44 2017
 import pygame
 from vec2d import Vec2d
 from coords import Coords
-from polygon import Polygon
+from polygon_stub import Polygon
 from math import sqrt, acos, degrees, sin, cos
 from random import uniform, randint, random
 
@@ -77,6 +77,11 @@ def check_collision(a, b, result=[]):
                 result.extend(result1)
                 return True
                 """
+        if result1[2] < result2[2]:
+            result.extend(result1)
+        else:
+            result.extend(result2)
+        return True
     return False       
 
 def main():
@@ -161,6 +166,8 @@ def main():
                              coords.pos_to_screen(point + overlap*normal).int())
             # Separate objects accoring to position
             """ Move obj1 overlap distance in the direction of normal. """
+            obj1.pos += (overlap * normal)
+            obj1.update_points_normals()
               
         # --- Update the screen with what we've drawn.
         pygame.display.update()

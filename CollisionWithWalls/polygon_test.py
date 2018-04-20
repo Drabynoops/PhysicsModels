@@ -90,10 +90,10 @@ def main():
     area = length*height
     objects.append(Polygon(Vec2d(0,-1), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1))
     print("moment =", area/12*(length**2 + height**2))
-    #objects.append(Polygon(Vec2d(0,1), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 1))
-    #objects.append(Polygon(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0, -0.4))
-    #objects.append(Polygon(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0, 2))
-    #objects.append(Polygon(Vec2d(0,0), Vec2d(0,0), 1, points, BLACK, 0, -1.5))
+    objects.append(Polygon(Vec2d(0,1), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 1))
+    objects.append(Polygon(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0, -0.4))
+    objects.append(Polygon(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0, 2))
+    objects.append(Polygon(Vec2d(0,0), Vec2d(0,0), 1, points, BLACK, 0, -1.5))
     # -------- Main Program Loop -----------\
     frame_rate = 60
     n_per_frame = 1

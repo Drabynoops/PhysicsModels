@@ -5,7 +5,7 @@ Created on Thu Apr 12 14:26:03 2018
 @author: sinkovitsd
 """
 
-from math import sin, cos, degrees
+from math import sin, cos, degrees, radians
 from vec2d import Vec2d
 import pygame
 
@@ -26,7 +26,7 @@ class Polygon:
         for p in points:
             self.origpoints.append(p.copy())
         pp = self.origpoints # pp as an alternate label for this function
-        print('Points', points)
+        # print('Points', points)
         # Tally area, moment, and center of mass
         self.area = 0
         self.moment = 0
@@ -57,7 +57,6 @@ class Polygon:
         self.moment = moment_shape - self.mass * center.mag2() # Parallel Axis Theorem
 
         print("moment =", self.moment)
-        #print(pp)
 
         # Recalculate moment around the center of mass as a check
         moment = 0
@@ -76,7 +75,6 @@ class Polygon:
             #TODO calculate normal here and append to orignormals
             normal = (pp[i-1] - pp[i]).perpendicular_normal()
             self.orignormals.append(normal)
-            pass
         print("orignormals =", self.orignormals)
         
         # Calculate rotated points and normals
@@ -120,7 +118,7 @@ class Polygon:
         for i in range(len(self.origpoints)):
             point = Vec2d(0,0)
             point.x = self.origpoints[i].x * c - self.origpoints[i].y * s
-            point.y = self.origpoints[i].y * c - self.origpoints[i].x * s
+            point.y = self.origpoints[i].y * c + self.origpoints[i].x * s
             self.points[i] = point
         for i in range(len(self.points)):
             normal = (self.points[i-1] - self.points[i]).perpendicular_normal()
@@ -155,6 +153,7 @@ class Polygon:
     def check_collision(self, other, result=[]):
         result.clear() # See polygon_collision_test.py in check_collision()
         overlap = 1e99
+        collision_normal = Vec2d(0,0)
         if other.type == "polygon":            
             """ Self supplies the vertices.  Other provides the sides (walls).
                 For each wall, find the point that penetrates the MOST, 
@@ -164,12 +163,26 @@ class Polygon:
                 via result.extend(), the overlap, point and normal involved; 
                 return True. """
             for i in range(len(other.normals)):
-                # TODO Fill in
-                pass
+                max_d = -1e99
+                max_j = -1
+                n_hat = Vec2d(0, 0)
+                r_other = other.pos + other.points[i]
+                normal = other.normals[i]
                 for j in range(len(self.points)):
-                    # TODO Fill in
-                    pass
-            result.extend([self, other, overlap, normal, point])
+                    r_self = self.pos + self.points[j]
+                    distance = (r_other - r_self).dot(normal)
+                    if distance > max_d:
+                        max_d = distance
+                        max_j = j
+                        n_hat = normal
+                if max_d < overlap:
+                    if max_d <= 0.1:
+                        return False
+                    else:
+                        overlap = max_d
+                        point = self.pos + self.points[max_j]
+                        collision_normal = n_hat# TODO This is wrong? Which normal is it?
+            result.extend([self, other, overlap, collision_normal, point])
             return True
 
     
