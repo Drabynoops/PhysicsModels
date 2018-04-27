@@ -9,7 +9,7 @@ from vec2d import Vec2d
 from coords import Coords
 from polygon_stub import Polygon
 from wall import Wall
-from math import sqrt, acos, degrees, sin, cos
+from math import sqrt, acos, degrees, sin, cos, abs
 from random import uniform, randint, random
 
 # Define some colors
@@ -76,25 +76,57 @@ def check_collision(a, b, result=[]):
     return False       
 
 def resolve_collision(result):
-    (a, b, d, n, pt) = result
+    (obj_1, obj_2, overlap, n, pt) = result
+    t = n.perpendicular()
     e = 0.7
     mu = 0.4
-    m = a.mass*b.mass/(a.mass + b.mass) # reduced mass
+    reduced_mass = obj_1.mass*obj_2.mass/(obj_1.mass + obj_2.mass) # reduced mass
     
     # depenetrate
 
     # distance vectors
+    r1 = pt - obj_1.pos # (point of collision - position of object)
+    r1n = r1.dot(n)
+    r1t = r1.dot(t)
+    
+    r2 = pt - obj_2.pos # ...
+    r2n = r2.dot(n)
+    r2t = r2.dot(t)
     
     # relative velocity of points in contact
     # target velocity change (delta v)
     
+    v_rel = obj_1.vel + (obj_1.angvel * r1.perpendicular()) - (obj_2.vel + (obj_2.angvel * r2.perpendicular()))
+    
+    delta_Vn = -1 * (1 + e) * v_rel.dot(n)
+    delta_Vt = -1 * v_rel.dot(t)
+    
     # matrix [[A B][C D]] [Jn Jt]T = [dvn dvt]T
+    A = (1 / obj_1.mass) + ((r1t * r1t) / obj_1.moment) + (1 / obj_2.mass) + ((r2t * r2t) / obj_2.moment)
+    B = (-1 * (r1n * r1t) / obj_1.moment) * (-1 * (r2n * r2t) / obj_2.moment)
+    C = (-1 * (r1n * r1t) / obj_1.moment) * (-1 * (r2n * r2t) / obj_2.moment)
+    D = (1 / obj_1.mass) + ((r1n * r1n) / obj_1.moment) + (1 / obj_2.mass) + ((r2n * r2n) / obj_2.moment)
     
     # Solve matrix equation
         # check if friction is strong enough to prevent slipping
+        
+    if Jn > 0: # If greater than zero, it shouldn't be colliding
+        
+        Jn = (1 / (A*D - B*C)) * (D*delta_Vn - B*delta_Vt)
+        Jt = (1 / (A*D - B*C)) * (-C*delta_Vn + A*delta_Vt)
+        
+        if abs(Jt) > mu * Jn: # If Jt is too string, recalculate for sliding
+            # ...
+
+            s = 1 if Jt > 0 else -1
+            
+            Jt = s * mu * Jn
+            Jn = 
+        
+        
     J = Jn*n + Jt*t
-    a.impulse( J, pt)
-    b.impulse(-J, pt)
+    obj_1.impulse( J, pt)
+    obj_2.impulse(-J, pt)
  
 def main():
     pygame.init()
