@@ -9,13 +9,15 @@ from vec2d import Vec2d
 
 class Wall:
     def __init__(self, pos, normal, color, mass=1e99, vel=Vec2d(0,0)):
-        self.id = 0
         self.pos = pos.copy()
         self.normal = normal.normalized() # makes a copy automatically
         self.pos = pos.copy()
         self.vel = vel.copy()
         self.mass = mass
         self.mom = self.vel*self.mass
+        self.angvel = 0
+        self.angmom = 0
+        self.moment = 1e99
         self.color = color
         self.force = Vec2d(0,0)
         self.type = "wall"
@@ -38,6 +40,13 @@ class Wall:
         self.update_mom(dt)
         self.update_pos(dt)
                 
+    def impulse(self, imp, point=None):
+        self.mom += imp
+        self.update_vel()
+
+    def nudge(self, nudge, point=None):
+        pass
+
     def draw(self, screen, coords):
         pos = coords.pos_to_screen(self.pos)
         normal = coords.unitvec_to_other(self.normal)
@@ -59,4 +68,12 @@ class Wall:
             s.sort()
             start = pos + perp*s[1]
             end   = pos + perp*s[2]
-        pygame.draw.line(screen, self.color, start, end, 4)
+        pygame.draw.line(screen, self.color, start, end, 1)
+    
+    def check_collision(self, other, result=[]):
+        if other.type == "polygon":
+            result.extend([self, other, 1e99, None, None])
+            return True
+        elif other.type == "wall":
+            return False
+        

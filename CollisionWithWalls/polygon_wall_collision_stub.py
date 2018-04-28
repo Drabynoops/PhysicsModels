@@ -9,7 +9,7 @@ from vec2d import Vec2d
 from coords import Coords
 from polygon_stub import Polygon
 from wall import Wall
-from math import sqrt, acos, degrees, sin, cos, abs
+from math import sqrt, acos, degrees, sin, cos
 from random import uniform, randint, random
 
 # Define some colors
@@ -83,13 +83,15 @@ def resolve_collision(result):
     reduced_mass = obj_1.mass*obj_2.mass/(obj_1.mass + obj_2.mass) # reduced mass
     
     # depenetrate
+    obj_1.pos += (overlap * n)
+    obj_1.update_points_normals()
 
     # distance vectors
     r1 = pt - obj_1.pos # (point of collision - position of object)
     r1n = r1.dot(n)
     r1t = r1.dot(t)
     
-    r2 = pt - obj_2.pos # ...
+    r2 = pt - obj_2.pos 
     r2n = r2.dot(n)
     r2t = r2.dot(t)
     
@@ -110,18 +112,22 @@ def resolve_collision(result):
     # Solve matrix equation
         # check if friction is strong enough to prevent slipping
         
-    if Jn > 0: # If greater than zero, it shouldn't be colliding
+    if delta_Vn > 0: # If greater than zero, it shouldn't be colliding
         
         Jn = (1 / (A*D - B*C)) * (D*delta_Vn - B*delta_Vt)
         Jt = (1 / (A*D - B*C)) * (-C*delta_Vn + A*delta_Vt)
         
         if abs(Jt) > mu * Jn: # If Jt is too string, recalculate for sliding
-            # ...
-
             s = 1 if Jt > 0 else -1
             
             Jt = s * mu * Jn
-            Jn = 
+            
+            A = (1 / obj_1.mass) + ((r1t * r1t) / obj_1.moment) + (1 / obj_2.mass) + ((r2t * r2t) / obj_2.moment)
+            B = (-1 * (r1n * r1t) / obj_1.moment) * (-1 * (r2n * r2t) / obj_2.moment)
+            C = -s * mu
+            D = 1
+            
+            Jn = (1 / (A*D - B*C)) * (D*delta_Vn)
         
         
     J = Jn*n + Jt*t
