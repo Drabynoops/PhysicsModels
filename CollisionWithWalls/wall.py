@@ -10,8 +10,8 @@ from vec2d import Vec2d
 class Wall:
     def __init__(self, pos, normal, color, mass=1e99, vel=Vec2d(0,0)):
         self.pos = pos.copy()
-        self.normal = normal.normalized() # makes a copy automatically
-        self.pos = pos.copy()
+        self.normals = [normal.normalized()] # makes a copy automatically
+        self.points = [Vec2d(0,0)]
         self.vel = vel.copy()
         self.mass = mass
         self.mom = self.vel*self.mass
@@ -49,7 +49,7 @@ class Wall:
 
     def draw(self, screen, coords):
         pos = coords.pos_to_screen(self.pos)
-        normal = coords.unitvec_to_other(self.normal)
+        normal = coords.unitvec_to_other(self.normals[0])
         X = screen.get_width()-1
         Y = screen.get_height()-1
         perp = normal.perpendicular()

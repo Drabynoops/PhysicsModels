@@ -70,6 +70,8 @@ def check_collision(a, b, result=[]):
         #print(b.color, result2[2:])
         if result1[2] < result2[2]: # compare overlaps, which is smaller
             result.extend(result1)
+            print("Results:")
+            print(result)
         else:
             result.extend(result2)
         return True
@@ -78,8 +80,8 @@ def check_collision(a, b, result=[]):
 def resolve_collision(result):
     (obj_1, obj_2, overlap, n, pt) = result
     t = n.perpendicular()
-    e = 0.7
-    mu = 0.4
+    e = 1.0
+    mu = 0.0
     reduced_mass = obj_1.mass*obj_2.mass/(obj_1.mass + obj_2.mass) # reduced mass
     
     # depenetrate
@@ -129,10 +131,9 @@ def resolve_collision(result):
             
             Jn = (1 / (A*D - B*C)) * (D*delta_Vn)
         
-        
-    J = Jn*n + Jt*t
-    obj_1.impulse( J, pt)
-    obj_2.impulse(-J, pt)
+            J = Jn*n + Jt*t
+            obj_1.impulse( J, pt)
+            obj_2.impulse(-J, pt)
  
 def main():
     pygame.init()
@@ -165,15 +166,15 @@ def main():
     length = 2
     height = 1
     area = length*height
-    objects.append(Polygon(Vec2d(0,-1), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1))
-    objects.append(Polygon(Vec2d(-0.5,1), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 1))
+    objects.append(Polygon(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1))
+    objects.append(Polygon(Vec2d(-0.5,3), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 1))
     objects.append(Polygon(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0, -0.4))
     objects.append(Polygon(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0, 2))
     
     # Walls
     objects.append(Wall(Vec2d(-1,-3), Vec2d(1,1), BLACK))
     objects.append(Wall(Vec2d(-1,-3), Vec2d(-1,2), BLACK))
-    objects.append(Wall(Vec2d(-1,-3), Vec2d(0,1), BLACK))
+    objects.append(Wall(Vec2d(-1,-4), Vec2d(0,1), BLACK))
 
     # -------- Main Program Loop -----------\
     frame_rate = 60
