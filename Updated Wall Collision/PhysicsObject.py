@@ -92,7 +92,6 @@ class PhysicsObject(Polygon):
     self.mom += imp
     self.update_vel()
     if point is not None:
-      print("Impulse!")
       self.angmom += (point - self.pos).cross(imp)
       self.update_angvel()
 

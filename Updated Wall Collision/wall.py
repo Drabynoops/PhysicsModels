@@ -6,47 +6,22 @@ Created on Wed Mar  7 15:52:54 2018
 """
 import pygame
 from vec2d import Vec2d
+from KinematicObject import KinematicObject
 
-class Wall:
-    def __init__(self, pos, normal, color, mass=1e99, vel=Vec2d(0,0)):
-        self.pos = pos.copy()
+class Wall(KinematicObject):
+    def __init__(self, pos, normal, color, e=0, mu=0):
+        # pos, vel, density, points, color, e=0, mu=0, angle=0, angvel=0
+        super().__init__(pos, Vec2d(0,0), 1, [Vec2d(0,0)], color, e, mu)
         self.normals = [normal.normalized()] # makes a copy automatically
-        self.points = [Vec2d(0,0)]
-        self.vel = vel.copy()
-        self.mass = mass
-        self.mom = self.vel*self.mass
-        self.angvel = 0
-        self.angmom = 0
+        self.mass = 1e99
         self.moment = 1e99
-        self.color = color
-        self.force = Vec2d(0,0)
         self.type = "wall"
+        self.e = e
+        self.mu = mu
+
+    def calculate_area(self):
+        return 1e99
     
-    def update_mom(self, dt):
-        self.mom += self.force*dt
-        self.update_vel()
-        
-    def set_vel(self, vel):
-        self.vel.copy_in(vel)
-        self.mom.copy_in(self.vel*self.mass)
-
-    def update_vel(self):
-        self.vel.copy_in(self.mom/self.mass)
-
-    def update_pos(self, dt):
-        self.pos += self.vel*dt
-
-    def update(self, dt):
-        self.update_mom(dt)
-        self.update_pos(dt)
-                
-    def impulse(self, imp, point=None):
-        self.mom += imp
-        self.update_vel()
-
-    def nudge(self, nudge, point=None):
-        pass
-
     def draw(self, screen, coords):
         pos = coords.pos_to_screen(self.pos)
         normal = coords.unitvec_to_other(self.normals[0])
@@ -68,12 +43,4 @@ class Wall:
             s.sort()
             start = pos + perp*s[1]
             end   = pos + perp*s[2]
-        pygame.draw.line(screen, self.color, start, end, 1)
-    
-    def check_collision(self, other, result=[]):
-        if other.type == "polygon":
-            result.extend([self, other, 1e99, None, None])
-            return True
-        elif other.type == "wall":
-            return False
-        
+        pygame.draw.line(screen, self.color, start, end, 1)        

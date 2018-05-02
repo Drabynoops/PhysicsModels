@@ -21,9 +21,9 @@ def game_settings():
   return [
     pygame.display.set_mode([width,height]),
     Coords(screen_center.copy(), 1, True),
-    100,
-    60,
-    1,
+    100, # zoom
+    60, # frame rate
+    1, # n per frame
     0.5 # Playback speed
   ]
 
@@ -32,15 +32,16 @@ def create_objects():
   length = 2
   height = 1
 
-  objects.append(CollisionObject(Vec2d(1,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1))
+  objects.append(CollisionObject(Vec2d(1,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1, 0.3, 0.8))
 #  objects.append(CollisionObject(Vec2d(-0.5,3), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 1))
 #  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0, -0.4))
 #  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0, 2))
   
   # Walls
-  objects.append(Wall(Vec2d(-1,-3), Vec2d(1,1), BLACK))
-  objects.append(Wall(Vec2d(-1,-3), Vec2d(-1,2), BLACK))
-  objects.append(Wall(Vec2d(-1,-4), Vec2d(0,1), BLACK))
+  #pos, normal, color, e=0, mu=0
+  objects.append(Wall(Vec2d(-1,-3), Vec2d(1,1), BLACK, 0.3, 0.7))
+  objects.append(Wall(Vec2d(-1,-3), Vec2d(-1,2), BLACK, 0.3, 0.7))
+  objects.append(Wall(Vec2d(-1,-4), Vec2d(0,1), BLACK, 0.3, 0.7))
 
   return objects
 
@@ -99,8 +100,8 @@ def resolve_collision(result):
     (obj_1, obj_2, overlap, n, pt) = result
     n = n.hat()
     t = n.perpendicular()
-    e = 0.0
-    mu = 1.0
+    e = obj_2.e
+    mu = obj_2.mu
     reduced_mass = obj_1.mass*obj_2.mass/(obj_1.mass + obj_2.mass) # reduced mass
     
     # depenetrate
