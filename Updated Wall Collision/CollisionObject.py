@@ -31,7 +31,7 @@ class CollisionObject(PhysicsObject):
             max_j = j
             n_hat = normal
         if max_d < overlap:
-          if max_d <= 0.1:
+          if max_d <= 0.0001:
             return False
           else:
             overlap = max_d

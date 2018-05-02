@@ -92,12 +92,14 @@ class PhysicsObject(Polygon):
     self.mom += imp
     self.update_vel()
     if point is not None:
+      print("Impulse!")
       self.angmom += (point - self.pos).cross(imp)
       self.update_angvel()
 
   def draw(self, screen, coords):
     super().draw(screen, coords)
     points = self.create_draw_points(coords)
+    pygame.draw.circle(screen, (0,0,0), coords.pos_to_screen(self.pos).int(), 3)
     if True:
       for i in range(len(points)):
         length = 50

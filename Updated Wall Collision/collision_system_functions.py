@@ -24,7 +24,7 @@ def game_settings():
     100,
     60,
     1,
-    1
+    0.5 # Playback speed
   ]
 
 def create_objects():
@@ -32,10 +32,10 @@ def create_objects():
   length = 2
   height = 1
 
-  objects.append(CollisionObject(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1))
-  objects.append(CollisionObject(Vec2d(-0.5,3), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 1))
-  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0, -0.4))
-  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0, 2))
+  objects.append(CollisionObject(Vec2d(1,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1))
+#  objects.append(CollisionObject(Vec2d(-0.5,3), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 1))
+#  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0, -0.4))
+#  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0, 2))
   
   # Walls
   objects.append(Wall(Vec2d(-1,-3), Vec2d(1,1), BLACK))
@@ -97,9 +97,10 @@ def check_collision(a, b, result=[]):
 
 def resolve_collision(result):
     (obj_1, obj_2, overlap, n, pt) = result
+    n = n.hat()
     t = n.perpendicular()
-    e = 1.0
-    mu = 0.0
+    e = 0.0
+    mu = 1.0
     reduced_mass = obj_1.mass*obj_2.mass/(obj_1.mass + obj_2.mass) # reduced mass
     
     # depenetrate
@@ -118,7 +119,7 @@ def resolve_collision(result):
     # relative velocity of points in contact
     # target velocity change (delta v)
     
-    v_rel = obj_1.vel + (obj_1.angvel * r1.perpendicular()) - (obj_2.vel + (obj_2.angvel * r2.perpendicular()))
+    v_rel = (obj_1.vel + (obj_1.angvel * r1.perpendicular())) - (obj_2.vel + (obj_2.angvel * r2.perpendicular()))
     
     delta_Vn = -1 * (1 + e) * v_rel.dot(n)
     delta_Vt = -1 * v_rel.dot(t)
@@ -149,6 +150,6 @@ def resolve_collision(result):
             
             Jn = (1 / (A*D - B*C)) * (D*delta_Vn)
         
-            J = Jn*n + Jt*t
-            obj_1.impulse( J, pt)
-            obj_2.impulse(-J, pt)
+        J = Jn*n + Jt*t
+        obj_1.impulse( J, pt)
+        obj_2.impulse(-J, pt)
