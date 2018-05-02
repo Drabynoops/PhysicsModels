@@ -9,7 +9,7 @@ class CollisionObject(PhysicsObject):
     result.clear() # See polygon_collision_test.py in check_collision()
     overlap = 1e99
     collision_normal = Vec2d(0,0)
-    if other.type == "polygon":            
+    if other.type == "polygon" or other.type == "wall":            
       """ Self supplies the vertices.  Other provides the sides (walls).
           For each wall, find the point that penetrates the MOST, 
           and record the magnitude of penetration.  If for one wall, 
@@ -37,5 +37,6 @@ class CollisionObject(PhysicsObject):
             overlap = max_d
             point = self.pos + self.points[max_j]
             collision_normal = n_hat# TODO This is wrong? Which normal is it?
+                  
       result.extend([self, other, overlap, collision_normal, point])
       return True

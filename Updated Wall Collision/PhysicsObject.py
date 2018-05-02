@@ -34,7 +34,7 @@ class PhysicsObject(Polygon):
     center = self.get_center()
     moment_shape = 0
     for i in range(len(self.orig_points)):
-      area_triangle = self.orig_points[i-1].cross(self.orig_points) / 2
+      area_triangle = self.orig_points[i-1].cross(self.orig_points[i]) / 2
       moment_shape += (1/6) * self.density * area_triangle * (self.orig_points[i].mag() + self.orig_points[i-1].mag() + self.orig_points[i-1].dot(self.orig_points[i]))
     moment = moment_shape - self.mass * center.mag2() # Parallel Axis Theorem
     return moment
