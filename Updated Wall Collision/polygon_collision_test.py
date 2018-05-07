@@ -10,6 +10,7 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from math import sqrt, acos, degrees, sin, cos
 from random import uniform, randint, random
+from KinematicObject import KinematicObject
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -106,7 +107,7 @@ def main():
               )
     zero = Vec2d(0,0)
     objects.append(CollisionObject(zero, zero, 1, make_polygon(1.5,5,0,1.5), RED))
-    objects.append(CollisionObject(zero, zero, 1, make_polygon(2,3,0,0.5), BLUE))
+    objects.append(KinematicObject(zero, zero, 1, make_polygon(2,3,0,0.5), BLUE)) 
     # -------- Main Program Loop -----------\
     seconds_per_frame = 0.5
     frame_rate = 1/seconds_per_frame

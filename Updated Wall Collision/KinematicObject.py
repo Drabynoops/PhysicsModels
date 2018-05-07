@@ -11,10 +11,3 @@ class KinematicObject(CollisionObject):
   
   def impulse(self, imp, pt):
     pass
-
-  def check_collision(self, other, result=[]):
-    if other.type == "polygon":
-      result.extend([self, other, 1e99, None, None])
-      return True
-    else:
-      return False

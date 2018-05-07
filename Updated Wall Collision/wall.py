@@ -21,6 +21,13 @@ class Wall(KinematicObject):
 
     def calculate_area(self):
         return 1e99
+      
+    def check_collision(self, other, result=[]):
+      if other.type == "polygon" or other.type == "kinematic":
+        result.extend([self, other, 1e99, None, None])
+        return True
+      else:
+        return False
     
     def draw(self, screen, coords):
         pos = coords.pos_to_screen(self.pos)

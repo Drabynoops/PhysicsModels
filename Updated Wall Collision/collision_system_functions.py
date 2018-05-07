@@ -5,6 +5,8 @@ from vec2d import Vec2d
 from wall import Wall
 from coords import Coords
 from CollisionObject import CollisionObject
+from KinematicObject import KinematicObject
+from Trigger import Trigger
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -32,8 +34,15 @@ def create_objects():
   length = 2
   height = 1
 
-  objects.append(CollisionObject(Vec2d(1,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1, 0.3, 0.8))
-#  objects.append(CollisionObject(Vec2d(-0.5,3), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 1))
+  objects.append(CollisionObject(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1, 0.3, 0.8))
+  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1, -0.1, 1.0))
+  
+  trigger_1 = Trigger(Vec2d(-1,-3), make_rectangle(length, height), BLUE)
+  trigger_1.set_callback(trigger_1.test_callback)
+  
+  objects.append(trigger_1)
+  
+#  objects.append(KinematicObject(Vec2d(0.5,0), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 0.1, -0.2, 0))
 #  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0, -0.4))
 #  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0, 2))
   
@@ -93,6 +102,21 @@ def check_collision(a, b, result=[]):
             result.extend(result1)
         else:
             result.extend(result2)
+            
+        if result[0].type == "trigger":
+          result[0].callback()
+          return False
+        
+        elif result[1].type == "trigger":
+          result[1].callback()
+          return False
+            
+        if (result[0].type == "kinematic"):
+          temp = result[0]
+          result[0] = result[1]
+          result[1] = temp
+          result[3] = result[3] * -1
+          
         return True
     return False       
 
