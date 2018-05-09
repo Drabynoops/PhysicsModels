@@ -2,11 +2,11 @@ from PhysicsObject import PhysicsObject
 from vec2d import Vec2d
 
 class CollisionObject(PhysicsObject):
-  def __init__(self, pos, vel, density, points, color, e=0, mu=0, angle=0, angvel=0):
-    super().__init__(pos, vel, density, points, color, angle, angvel)
+  def __init__(self, pos, vel, density, points, color, e=0, mu=0, angle=0, angvel=0, com_shift=True):
+    super().__init__(pos, vel, density, points, color, angle, angvel, com_shift)
     self.e = e
     self.mu = mu
-
+    
   
   def check_collision(self, other, result=[]):
     result.clear() # See polygon_collision_test.py in check_collision()
@@ -34,7 +34,7 @@ class CollisionObject(PhysicsObject):
           max_j = j
           n_hat = normal
       if max_d < overlap:
-        if max_d <= 0.0001:
+        if max_d <= 0.0000:
           return False
         else:
           overlap = max_d

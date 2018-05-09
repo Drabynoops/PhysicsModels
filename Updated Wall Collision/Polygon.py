@@ -8,7 +8,6 @@ class Polygon:
     self.color = color
     self.angle = angle
     self.type = "polygon"
-
     self.orig_points = self.create_orig_points(points)
     self.points = self.initialize_points(len(self.orig_points))
 

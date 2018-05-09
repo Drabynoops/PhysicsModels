@@ -16,6 +16,9 @@ RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 GRAY     = ( 127, 127, 127)
 
+def random_color():
+  return (randint(0,255), randint(0,255), randint(0,255))
+
 def game_settings():
   width = 800
   height = 600
@@ -26,7 +29,7 @@ def game_settings():
     100, # zoom
     60, # frame rate
     1, # n per frame
-    0.5 # Playback speed
+    1 # Playback speed
   ]
 
 def create_objects():
@@ -34,17 +37,33 @@ def create_objects():
   length = 2
   height = 1
 
-  objects.append(CollisionObject(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1, 0.3, 0.8))
-  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, -1, -0.1, 1.0))
+  objects.append(CollisionObject(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, 1, 0.3, 0.8))
+  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_rectangle(4, height), GRAY, 0, 1, 0.2))
   
-  trigger_1 = Trigger(Vec2d(-1,-3), make_rectangle(length, height), BLUE)
-  trigger_1.set_callback(trigger_1.test_callback)
+#  objects.append(KinematicObject(Vec2d(0.5,0), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0.3, 0.8, -0.2, 0))
+#  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0.3, 0.8))
+#  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0.3, 0.8))
   
-  objects.append(trigger_1)
-  
-#  objects.append(KinematicObject(Vec2d(0.5,0), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0, 0.1, -0.2, 0))
-#  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0, -0.4))
-#  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0, 2))
+  # Walls
+  #pos, normal, color, e=0, mu=0
+  objects.append(Wall(Vec2d(-1,-3), Vec2d(1,1), BLACK, 0.3, 0.7))
+  objects.append(Wall(Vec2d(-1,-3), Vec2d(-1,2), BLACK, 0.3, 0.7))
+  objects.append(Wall(Vec2d(-1,-4), Vec2d(0,1), BLACK, 0.3, 0.7))
+
+  return objects
+
+def create_pinball_objects():
+  objects = []
+  length = 2
+  height = 1
+
+  objects.append(CollisionObject(Vec2d(0,0), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, 1, 0.3, 0.8))
+  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_right_triangle(-45, 0.5), RED, 0, 1, 0))
+  objects.append(KinematicObject(Vec2d(-1,0), Vec2d(0,0), 1, make_right_triangle(45, 0.5), GREEN, 0, 1, 0))
+
+#  objects.append(KinematicObject(Vec2d(0.5,0), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0.3, 0.8, -0.2, 0))
+#  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0.3, 0.8))
+#  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0.3, 0.8))
   
   # Walls
   #pos, normal, color, e=0, mu=0
@@ -55,16 +74,54 @@ def create_objects():
   return objects
 
 def random_color():
-    return (randint(0,255), randint(0,255), randint(0,255))
+  return (randint(0,255), randint(0,255), randint(0,255))
 
 def random_bright_color():
-    i = randint(0,2)
-    d = randint(1,2)
-    c = int(256*random()**0.5)
-    color = [0,0,0]
-    color[i] = 255
-    color[(i+d)%3] = c
-    return color
+  i = randint(0,2)
+  d = randint(1,2)
+  c = int(256*random()**0.5)
+  color = [0,0,0]
+  color[i] = 255
+  color[(i+d)%3] = c
+  return color
+  
+def make_right_triangle(hypot_angle, width=1, point_offset=Vec2d(0, 0)):
+  
+  if hypot_angle >= 90 or hypot_angle <= -90:
+    return ()
+  
+  facing_right = True if hypot_angle < 0 else False
+  direction = -1 if facing_right else 1
+  hypot_angle = abs(hypot_angle)
+  
+  deg2rad = (3.1415 / 180)
+  x_unit_circle = cos(hypot_angle * deg2rad)
+  y_unit_circle = sin(hypot_angle * deg2rad)
+#  print("Triangle:", x_unit_circle, ",", y_unit_circle)
+  
+  y_val = width * (y_unit_circle / x_unit_circle) # Similar triangles
+  
+  points = (Vec2d(-width / 2, 0),
+            Vec2d(+width / 2, 0),
+            Vec2d((-width/2) * direction, y_val)
+            )
+  
+  auto_offset = Vec2d(direction*(width/2), 0)
+  for p in points:
+    p += point_offset + auto_offset
+
+  return points
+  
+def make_flipper(angle=0, scale=1):
+  points = (Vec2d(-1.5,-0.25),
+            Vec2d(+1,-0.25),
+            Vec2d(+1.25,0.0),
+            Vec2d(+1.25,0.25),
+            Vec2d(+1,+0.5),
+            Vec2d(-1.75,+0.25),
+            )
+  
+  return points
 
 def make_polygon(radius, n, angle=0, factor=1, axis=Vec2d(1,0)):
     axis = axis.normalized()
@@ -80,7 +137,7 @@ def make_rectangle(length, height, angle=0):
     points = (Vec2d(-0.5,-0.5),
               Vec2d(+0.5,-0.5),
               Vec2d(+0.5,+0.5),
-              Vec2d(-0.5,+0.5),
+              Vec2d(-0.5,+0.5)
               )
     c = cos(angle)
     s = sin(angle)
@@ -92,7 +149,7 @@ def make_rectangle(length, height, angle=0):
         p.x = x
         p.y = y
     return points
-        
+  
 def check_collision(a, b, result=[]):
     result.clear()
     result1 = []
@@ -176,5 +233,6 @@ def resolve_collision(result):
             Jn = (1 / (A*D - B*C)) * (D*delta_Vn)
         
         J = Jn*n + Jt*t
+
         obj_1.impulse( J, pt)
         obj_2.impulse(-J, pt)

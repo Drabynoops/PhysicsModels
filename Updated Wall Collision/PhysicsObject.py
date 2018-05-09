@@ -3,18 +3,21 @@ from vec2d import Vec2d
 import pygame
 
 class PhysicsObject(Polygon):
-  def __init__(self, pos, vel, density, points, color, angle=0, angvel=0):
+  def __init__(self, pos, vel, density, points, color, angle=0, angvel=0, com_shift=True):
     super().__init__(pos, points, color, angle)
+    
     self.density = density
     self.vel = vel
     self.angvel = angvel
     self.force = Vec2d(0, 0)
     self.torque = 0
-
+    
     self.area = self.calculate_area()
     self.mass = self.density * self.area
     self.moment = self.calculate_moment()
-    self.shift_around_center_of_mass()
+    
+    if com_shift:
+      self.shift_around_center_of_mass()
 
     self.orig_normals = self.calculate_normals(self.orig_points)
     self.initialize_normals(len(self.orig_normals))
@@ -22,6 +25,8 @@ class PhysicsObject(Polygon):
     self.update_points_normals()
     self.mom = self.mass * self.vel
     self.angmom  = self.moment * self.angvel
+    
+    
 
   def calculate_area(self):
     area = 0
