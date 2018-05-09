@@ -130,7 +130,7 @@ class Interpolation:
   @staticmethod
   def in_elastic_big(t, b, c, d):
     t /= d
-    ts =  * t
+    ts = t * t
     tc = ts * t
     return b + c * (56 * tc * ts + -105 * ts * ts + 60 * tc + -10 * ts)
   
