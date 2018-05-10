@@ -7,8 +7,6 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from KinematicObject import KinematicObject
 from Trigger import Trigger
-from Flipper import Flipper
-from Bumper import Bumper
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -18,11 +16,18 @@ RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 GRAY     = ( 127, 127, 127)
 
+THEME_COLOR_1 = (74, 172, 214)
+THEME_COLOR_2 = (55, 130, 163)
+THEME_COLOR_DETAILS = WHITE
+
+BOARD_WIDTH = 300
+BOARD_PADDING = 10
+
 def random_color():
   return (randint(0,255), randint(0,255), randint(0,255))
 
 def game_settings():
-  width = 500
+  width = 800
   height = 750
   screen_center = Vec2d(width/2, height/2)
   return [
@@ -54,6 +59,48 @@ def create_objects():
 
   return objects
 
+def create_plinko_board():
+  objects = []
+  length = 2
+  height = 1
+
+#  objects.append(CollisionObject(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, 1, 0.3, 0.8))
+#  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_right_triangle(-45, 0.5), RED, 0, 1, 0))
+
+  # Walls (pos, normal, color, e=0, mu=0)
+  
+#  PEG_COUNT = 10
+#  PEG_ROWS = 4
+#  peg_start_x = -3.5
+#  peg_spacing = 4.5 / PEG_COUNT
+#  for x in range(0, PEG_COUNT + 1):
+#    for y in range(0, PEG_ROWS):
+#      
+#      if (x + y) % 2 == 0: # Even
+#        
+#      else: # Odd
+#        
+#      
+#    # Peg
+#    objects.append(KinematicObject(Vec2d(peg_start_x + (x * peg_spacing),0), Vec2d(0,0), 0.2, make_polygon(1,10,0,1,Vec2d(1,0),0.1), RED, 0, 1, 0))
+  
+  # Right Ramp
+  objects.append(KinematicObject(Vec2d(1,-3), Vec2d(0,0), 1, make_right_triangle(-45, 1.0), GRAY, 0, 1, 0))
+  # Left Ramp
+  objects.append(KinematicObject(Vec2d(-3.5,-3), Vec2d(0,0), 1, make_right_triangle(45, 1.0), GRAY, 0, 1, 0))
+  
+  
+  # Left Wall
+  objects.append(Wall(Vec2d(-3.5, 0), Vec2d(1, 0), BLACK, 0.3, 0.7))
+  # Right Wall
+  objects.append(Wall(Vec2d(1.0, 0), Vec2d(-1, 0), BLACK, 0.3, 0.7))
+  # Top Wall
+  objects.append(Wall(Vec2d(0,2.5), Vec2d(0,-1), BLACK, 0.3, 0.7))
+  # Bottom Wall
+#  objects.append(Wall(Vec2d(0,-3.75), Vec2d(0,1), BLACK, 0.3, 0.7))
+
+  return objects
+
 def create_pinball_objects():
   objects = []
   length = 2
@@ -63,10 +110,8 @@ def create_pinball_objects():
 #  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_right_triangle(-45, 0.5), RED, 0, 1, 0))
 #  objects.append(KinematicObject(Vec2d(-1,0), Vec2d(0,0), 1, make_right_triangle(45, 0.5), GREEN, 0, 1, 0))
 
-  objects.append(Bumper(50, Vec2d(1,0), Vec2d(0,0), 1, make_rectangle(length, height), RED, 3, 0, 0))
+#  objects.append(Bumper(50, Vec2d(1,0), Vec2d(0,0), 1, make_rectangle(length, height), RED, 3, 0, 0))
   # objects.append(KinematicObject(Vec2d(-1,0), Vec2d(0,0), 1, make_right_triangle(45, 0.5), GREEN, 0, 1, 0))
-
-
 #  objects.append(KinematicObject(Vec2d(0.5,0), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0.3, 0.8, -0.2, 0))
 #  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0.3, 0.8))
 #  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0.3, 0.8))
@@ -134,7 +179,7 @@ def make_flipper(angle=0, scale=1):
   
   return points
 
-def make_polygon(radius, n, angle=0, factor=1, axis=Vec2d(1,0)):
+def make_polygon(radius, n, angle=0, factor=1, axis=Vec2d(1,0), scale=1):
     axis = axis.normalized()
     vec = Vec2d(0, -radius).rotated(180/n+angle)
     p = []
@@ -142,6 +187,10 @@ def make_polygon(radius, n, angle=0, factor=1, axis=Vec2d(1,0)):
         v = vec.rotated(360*i/n)
         v += v.dot(axis)*(factor-1)*axis
         p.append(v)
+        
+    for point in p:
+      point *= scale
+    
     return p
 
 def make_rectangle(length, height, angle=0):
