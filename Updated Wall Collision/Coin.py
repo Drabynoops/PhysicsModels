@@ -16,13 +16,13 @@ class Coin(CollisionObject):
       super().update(dt)
     else:
       mouse_pos = self.coords.pos_to_coords(Vec2d(pygame.mouse.get_pos()))
-      print(mouse_pos.x)
+#      print(mouse_pos.x)
       if mouse_pos.x > 1:
         mouse_pos.x = 0.75
       elif mouse_pos.x < -3.25:
         mouse_pos.x = -3.25
       mouse_pos.y = 2
-      print(mouse_pos)
+#      print(mouse_pos)
       self.pos = mouse_pos
   
   def draw(self, screen, coords):

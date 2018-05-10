@@ -45,17 +45,20 @@ def main():
     TextElement(font_style_1, Vec2d(2.25, 1.5), "SCORE", 0.5, 0.5), 
     
     TextElement(font_style_3, Vec2d(1.2, 0.5), "ATTEMPTS LEFT:", 0.0, 0.5),
-    TextElement(font_style_2, Vec2d(3.3, 0.5), "00", 1.0, 0.5),
+    TextElement(font_style_2, Vec2d(3.3, 0.5), "00", 1.0, 0.5), # 6
     
     TextElement(font_style_3, Vec2d(1.2, 0.0), "COINS DROPPED:", 0.0, 0.5),
-    TextElement(font_style_2, Vec2d(3.3, 0.0), "00", 1.0, 0.5),
+    TextElement(font_style_2, Vec2d(3.3, 0.0), "00", 1.0, 0.5), # 8
   ]
+  
+  ui_elements[5].setText(str(left))
+  ui_elements[7].setText(str(attempts))
 
   # Create initial objects
   objects = create_plinko_board(reset_coin)
   details = create_plinko_details()
   
-  coin = Coin(make_circle(32, 0.125), coords)
+  coin = Coin(make_circle(32, 0.13), coords)
   objects.append(coin)
 
   # Interpolation Array
@@ -89,6 +92,8 @@ def main():
             coin.drop = True
             attempts += 1
             left -= 1
+            ui_elements[5].setText(str(left))
+            ui_elements[7].setText(str(attempts))
 
       elif event.type == pygame.KEYDOWN: 
         if event.key == pygame.K_ESCAPE:

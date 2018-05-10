@@ -86,7 +86,7 @@ def create_plinko_board(trigger_callback):
         # Peg
         objects.append(KinematicObject(
             Vec2d(peg_start_x + (x * peg_spacing), peg_max_y - (y * peg_spacing)), # Pos
-            Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 3, -0.5, 0)) # Other...
+            Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.15), PEG_COLOR, 3, -0.5, 0)) # Other...
   
       else: # Odd
         pass
