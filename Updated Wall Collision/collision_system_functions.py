@@ -7,7 +7,11 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from KinematicObject import KinematicObject
 from Trigger import Trigger
+<<<<<<< HEAD
 from Flipper import Flipper
+=======
+from Bumper import Bumper
+>>>>>>> fbdfd00522b07e96681a6350dbb96cb84c0a30a7
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -21,8 +25,8 @@ def random_color():
   return (randint(0,255), randint(0,255), randint(0,255))
 
 def game_settings():
-  width = 800
-  height = 600
+  width = 500
+  height = 750
   screen_center = Vec2d(width/2, height/2)
   return [
     pygame.display.set_mode([width,height]),
@@ -62,15 +66,24 @@ def create_pinball_objects():
 #  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_right_triangle(-45, 0.5), RED, 0, 1, 0))
 #  objects.append(KinematicObject(Vec2d(-1,0), Vec2d(0,0), 1, make_right_triangle(45, 0.5), GREEN, 0, 1, 0))
 
+  objects.append(Bumper(50, Vec2d(1,0), Vec2d(0,0), 1, make_rectangle(length, height), RED, 3, 0, 0))
+  # objects.append(KinematicObject(Vec2d(-1,0), Vec2d(0,0), 1, make_right_triangle(45, 0.5), GREEN, 0, 1, 0))
+
+
 #  objects.append(KinematicObject(Vec2d(0.5,0), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0.3, 0.8, -0.2, 0))
 #  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0.3, 0.8))
 #  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0.3, 0.8))
   
   # Walls
   #pos, normal, color, e=0, mu=0
-  objects.append(Wall(Vec2d(-1,-3), Vec2d(1,1), BLACK, 0.3, 0.7))
-  objects.append(Wall(Vec2d(-1,-3), Vec2d(-1,2), BLACK, 0.3, 0.7))
-  objects.append(Wall(Vec2d(-1,-4), Vec2d(0,1), BLACK, 0.3, 0.7))
+  # Left Wall
+  objects.append(Wall(Vec2d(-2.5, 0), Vec2d(1, 0), BLACK, 0.3, 0.7))
+  # Right Wall
+  objects.append(Wall(Vec2d(2.5, 0), Vec2d(-1, 0), BLACK, 0.3, 0.7))
+  # Top Wall
+  objects.append(Wall(Vec2d(0,3.75), Vec2d(0,-1), BLACK, 0.3, 0.7))
+  # Bottom Wall
+  objects.append(Wall(Vec2d(0,-3.75), Vec2d(0,1), BLACK, 0.3, 0.7))
 
   return objects
 

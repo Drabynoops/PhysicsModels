@@ -10,6 +10,7 @@ from vec2d import Vec2d
 from collision_system_functions import game_settings, create_objects, create_pinball_objects, check_collision, resolve_collision, WHITE
 from TextElement import TextElement
 from Interpolation import Interpolation, test_callback, update_interpolation_list
+from Bumper import Bumper
 
 def main():
   pygame.init()
@@ -18,6 +19,9 @@ def main():
   (screen, coords, zoom, frame_rate, n_per_frame, playback_speed) = game_settings()
   coords.zoom_at_coords(Vec2d(0,0), zoom) 
   
+  # Score
+  score = 0
+
   # Used to manage how fast the screen updates
   clock = pygame.time.Clock()
   
@@ -89,6 +93,11 @@ def main():
           for i1 in range(len(objects)):
             for i2 in range(i1):
               if check_collision(objects[i1], objects[i2], result):
+                if type(objects[i1]) == Bumper:
+                  score = score + objects[i1].score
+                elif type(objects[i2]) == Bumper:
+                  score = score + objects[i2].score
+                print(score)
                 resolve_collision(result)
                 collided = True
           if not collided: # if all collisions resolved, then we're done
