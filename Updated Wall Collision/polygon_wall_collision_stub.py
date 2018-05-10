@@ -6,10 +6,11 @@ Created on Fri Oct 27 13:56:44 2017
 """
 import pygame
 from vec2d import Vec2d
-from collision_system_functions import create_plinko_board, game_settings, create_objects, check_collision, resolve_collision, WHITE, BLACK, make_circle
+from collision_system_functions import create_plinko_board, create_plinko_details, game_settings, create_objects, check_collision, resolve_collision, WHITE, BLACK, make_circle
 from TextElement import TextElement
 from Interpolation import Interpolation, test_callback, update_interpolation_list
 from Coin import Coin
+from Polygon import Polygon
 
 def main():
   def reset_coin(coin, trigger):
@@ -52,6 +53,7 @@ def main():
 
   # Create initial objects
   objects = create_plinko_board(reset_coin)
+  details = create_plinko_details()
   
   coin = Coin(make_circle(32, 0.125), coords)
   objects.append(coin)
@@ -132,12 +134,13 @@ def main():
       obj.draw(screen, coords) # draw object to screen
       
     # Draw details
-#    for detail in details:
-#      detail.draw(screen, coords) # draw object to screen
+    for detail in details:
+      detail.draw(screen, coords) # draw object to screen
 
     # UI
     for i in range(len(ui_elements)):
       ui_elements[i].draw(screen, coords)
+      
 
     # --- Update the screen with what we've drawn.
     pygame.display.update()

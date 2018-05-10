@@ -7,11 +7,8 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from KinematicObject import KinematicObject
 from Trigger import Trigger
-<<<<<<< HEAD
 from Polygon import Polygon
-=======
 from Coin import Coin
->>>>>>> 355935d7ec659c1918c39234bbe0c6e84dc12f19
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -66,6 +63,14 @@ def create_objects():
 
   return objects
 
+
+def create_plinko_details():
+  objects = []
+
+#  objects.append(Polygon(Vec2d(0, 0), make_rectangle(10000, 10000), (255, 0, 0)))
+
+  return objects
+
 def create_plinko_board(trigger_callback):
   objects = []
 
@@ -81,27 +86,22 @@ def create_plinko_board(trigger_callback):
         # Peg
         objects.append(KinematicObject(
             Vec2d(peg_start_x + (x * peg_spacing), peg_max_y - (y * peg_spacing)), # Pos
-<<<<<<< HEAD
-            Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 1.0, 0.0, 0)) # Other...
-=======
             Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 3, -0.5, 0)) # Other...
->>>>>>> 355935d7ec659c1918c39234bbe0c6e84dc12f19
   
       else: # Odd
         pass
-      
-<<<<<<< HEAD
-  # TESTING
-  objects.append(CollisionObject(
-        Vec2d(0, 2), Vec2d(0,0), 10, make_polygon(1,20,0,1,Vec2d(1,0),0.2), GREEN, 1.0, 0.0, 0)) # Other...
-  objects.append(KinematicObject(Vec2d(0,0.5), Vec2d(0,0), 1, make_rectangle(1, 0.5), GRAY, 1, 0.0, 0.3, 0.8))
 
-=======
-  trigger = Trigger(Vec2d(-1, -4), make_rectangle(3.5, 1), BLUE)
-  trigger.set_callback(trigger_callback)
->>>>>>> 355935d7ec659c1918c39234bbe0c6e84dc12f19
 
-  objects.append(trigger)
+  TRIGGER_COUNT = 5
+  TRIGGER_START_X = -2.2
+  trigger_spacing = 1.9 / TRIGGER_COUNT
+  
+  for x in range(0, TRIGGER_COUNT + 1):
+    trigger = Trigger(Vec2d(TRIGGER_START_X + (x * trigger_spacing), -3.2), make_rectangle(0.25, 0.25), BLUE)
+#    print("Trigger", Vec2d(TRIGGER_START_X + (x * trigger_spacing), -3.0) )
+    trigger.set_callback(trigger_callback)
+    objects.append(trigger)
+    
   # Right Ramp
   objects.append(KinematicObject(Vec2d(1,-3), Vec2d(0,0), 1, make_right_triangle(-45, 1.0), GRAY, 0, 1, 0))
   # Left Ramp

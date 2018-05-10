@@ -9,7 +9,7 @@ class Coin(CollisionObject):
     super().__init__(Vec2d(-1.5,2), Vec2d(0,0), 10, points, (255, 255, 0))
     self.drop = False
     self.coords = coords
-    self.type = "coin"
+#    self.type = "coin"
 
   def update(self, dt):
     if self.drop:

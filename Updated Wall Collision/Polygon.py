@@ -3,7 +3,7 @@ from vec2d import Vec2d
 import pygame
 
 class Polygon:
-  def __init__(self, pos, points, color, angle):
+  def __init__(self, pos, points, color, angle=0):
     self.pos = pos
     self.color = color
     self.angle = angle
@@ -34,6 +34,8 @@ class Polygon:
   
   def draw(self, screen, coords):
     points = self.create_draw_points(coords)
+#    for p in points:
+#      pygame.draw.circle(screen, (0,255,0), (int(p.x), int(p.y)), 4)
     pygame.draw.polygon(screen, self.color, points)
   
   def create_draw_points(self, coords):
