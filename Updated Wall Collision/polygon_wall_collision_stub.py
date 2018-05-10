@@ -7,10 +7,10 @@ Created on Fri Oct 27 13:56:44 2017
 import pygame
 import asyncio
 from vec2d import Vec2d
-from collision_system_functions import game_settings, create_objects, create_pinball_objects, check_collision, resolve_collision, WHITE
+from collision_system_functions import make_rectangle, make_circle, BLACK, game_settings, create_objects, create_pinball_objects, check_collision, resolve_collision, WHITE
 from TextElement import TextElement
 from Interpolation import Interpolation, test_callback, update_interpolation_list
-from Bumper import Bumper
+from Coin import Coin
 
 def main():
   pygame.init()
@@ -36,11 +36,15 @@ def main():
 
   # Create initial objects
   objects = create_pinball_objects()
-  
-  # Interpolation Array
-  interpolations = []
-  # Test Interpolation
-  interpolations.append(Interpolation(Interpolation.linear_equation, 0, 5, test_callback, None, 5.0))
+
+  coin = Coin(make_circle(32, 0.125), coords)
+  # coin = Coin(make_rectangle(0.25, 0.25), coords)
+  objects.append(coin)
+
+  # # Interpolation Array
+  # interpolations = []
+  # # Test Interpolation
+  # interpolations.append(Interpolation(Interpolation.linear_equation, 0, 5, test_callback, None, 5.0))
 
   # -------- Main Program Loop -----------\
   dt = playback_speed/frame_rate/n_per_frame
@@ -62,7 +66,10 @@ def main():
         done = True
         paused = True
       elif event.type == pygame.MOUSEBUTTONDOWN:
-        paused = False
+        if paused:
+          paused = False
+        else:
+          coin.drop = True
       elif event.type == pygame.KEYDOWN: 
         if event.key == pygame.K_ESCAPE:
           done = True
@@ -74,8 +81,8 @@ def main():
     
     if not paused:
       
-      # Update the existing interpolations
-      update_interpolation_list(interpolations, dt)
+      # # Update the existing interpolations
+      # update_interpolation_list(interpolations, dt)
       
       for N in range(n_per_frame):
         # Physics
@@ -93,11 +100,6 @@ def main():
           for i1 in range(len(objects)):
             for i2 in range(i1):
               if check_collision(objects[i1], objects[i2], result):
-                if type(objects[i1]) == Bumper:
-                  score = score + objects[i1].score
-                elif type(objects[i2]) == Bumper:
-                  score = score + objects[i2].score
-                print(score)
                 resolve_collision(result)
                 collided = True
           if not collided: # if all collisions resolved, then we're done
@@ -105,6 +107,7 @@ def main():
  
     # Drawing
     screen.fill(WHITE) # wipe the screen
+    pygame.draw.line(screen, BLACK, coords.pos_to_screen(Vec2d(-3, 2)), coords.pos_to_screen(Vec2d(3, 2)), 3)
     for obj in objects:
       obj.draw(screen, coords) # draw object to screen
 

@@ -7,7 +7,7 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from KinematicObject import KinematicObject
 from Trigger import Trigger
-from Bumper import Bumper
+from Coin import Coin
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -21,8 +21,8 @@ def random_color():
   return (randint(0,255), randint(0,255), randint(0,255))
 
 def game_settings():
-  width = 500
-  height = 750
+  width = 800
+  height = 600
   screen_center = Vec2d(width/2, height/2)
   return [
     pygame.display.set_mode([width,height]),
@@ -57,25 +57,18 @@ def create_pinball_objects():
   objects = []
   length = 2
   height = 1
-
-  objects.append(CollisionObject(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, 1, 0.3, 0.8))
-  objects.append(Bumper(50, Vec2d(1,0), Vec2d(0,0), 1, make_rectangle(length, height), RED, 3, 0, 0))
+  # objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_right_triangle(-45, 0.5), RED, 0, 1, 0))
   # objects.append(KinematicObject(Vec2d(-1,0), Vec2d(0,0), 1, make_right_triangle(45, 0.5), GREEN, 0, 1, 0))
-
+  # objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_rectangle(4, height), GRAY, 0, 1, 0.2))
 #  objects.append(KinematicObject(Vec2d(0.5,0), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0.3, 0.8, -0.2, 0))
 #  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0.3, 0.8))
 #  objects.append(CollisionObject(Vec2d(-1,0), Vec2d(0,0), 1, make_polygon(1,3,0,0.5), GREEN, 0.3, 0.8))
   
   # Walls
   #pos, normal, color, e=0, mu=0
-  # Left Wall
-  objects.append(Wall(Vec2d(-2.5, 0), Vec2d(1, 0), BLACK, 0.3, 0.7))
-  # Right Wall
-  objects.append(Wall(Vec2d(2.5, 0), Vec2d(-1, 0), BLACK, 0.3, 0.7))
-  # Top Wall
-  objects.append(Wall(Vec2d(0,3.75), Vec2d(0,-1), BLACK, 0.3, 0.7))
-  # Bottom Wall
-  objects.append(Wall(Vec2d(0,-3.75), Vec2d(0,1), BLACK, 0.3, 0.7))
+  objects.append(Wall(Vec2d(-3, 0), Vec2d(1, 0), BLACK, 0.7, 0.3))
+  objects.append(Wall(Vec2d(3, 0), Vec2d(-1, 0), BLACK, 0.7, 0.3))
+  objects.append(Wall(Vec2d(0, -3), Vec2d(0, 1), BLACK, 0.3, 0.7))
 
   return objects
 
@@ -90,7 +83,18 @@ def random_bright_color():
   color[i] = 255
   color[(i+d)%3] = c
   return color
+
+def make_circle(num_points, radius):
+  points = []
+
+  base_vector = Vec2d(radius, 0)
+  degree_diff = 360 / num_points
+
+  for i in range(num_points):
+    points.append(base_vector.rotated(degree_diff * i))
   
+  return points  
+
 def make_right_triangle(hypot_angle, width=1, point_offset=Vec2d(0, 0)):
   
   if hypot_angle >= 90 or hypot_angle <= -90:
