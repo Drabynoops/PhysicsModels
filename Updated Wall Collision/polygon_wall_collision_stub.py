@@ -26,8 +26,8 @@ def main():
   
   # Create UI...
   ui_elements = [
-#    TextElement(font_style_1, Vec2d(0, 2.5), "Pinball"), 
-#    TextElement(font_style_2, Vec2d(0, 2.3), "Game Thing")
+    TextElement(font_style_1, Vec2d(0, 2.5), "Pinball"), 
+    TextElement(font_style_2, Vec2d(0, 2.3), "Game Thing")
   ]
 
   # Create initial objects

@@ -7,6 +7,7 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from KinematicObject import KinematicObject
 from Trigger import Trigger
+from Flipper import Flipper
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -57,9 +58,9 @@ def create_pinball_objects():
   length = 2
   height = 1
 
-  objects.append(CollisionObject(Vec2d(0,0), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, 1, 0.3, 0.8))
-  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_right_triangle(-45, 0.5), RED, 0, 1, 0))
-  objects.append(KinematicObject(Vec2d(-1,0), Vec2d(0,0), 1, make_right_triangle(45, 0.5), GREEN, 0, 1, 0))
+  objects.append(CollisionObject(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, 1, 0.3, 0.8))
+#  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_right_triangle(-45, 0.5), RED, 0, 1, 0))
+#  objects.append(KinematicObject(Vec2d(-1,0), Vec2d(0,0), 1, make_right_triangle(45, 0.5), GREEN, 0, 1, 0))
 
 #  objects.append(KinematicObject(Vec2d(0.5,0), Vec2d(0,0), 1, make_polygon(0.2,4,0,10), RED, 0.3, 0.8, -0.2, 0))
 #  objects.append(CollisionObject(Vec2d(1,0), Vec2d(0,0), 1, make_polygon(0.3,7,0,3), BLUE, 0.3, 0.8))
