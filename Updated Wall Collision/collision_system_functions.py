@@ -64,6 +64,7 @@ def create_objects():
   return objects
 
 
+# Create objects required for plinko
 def create_plinko_details():
   objects = []
 
@@ -71,6 +72,7 @@ def create_plinko_details():
 
   return objects
 
+# Create objects required for plinko
 def create_plinko_board(trigger_callback):
   objects = []
 
@@ -86,7 +88,7 @@ def create_plinko_board(trigger_callback):
         # Peg
         objects.append(KinematicObject(
             Vec2d(peg_start_x + (x * peg_spacing), peg_max_y - (y * peg_spacing)), # Pos
-            Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.15), PEG_COLOR, 3, -0.5, 0)) # Other...
+            Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.15), PEG_COLOR, 3, -0.2, 0)) # Other...
   
       else: # Odd
         pass
@@ -97,15 +99,15 @@ def create_plinko_board(trigger_callback):
   trigger_spacing = 1.9 / TRIGGER_COUNT
   
   for x in range(0, TRIGGER_COUNT + 1):
-    trigger = Trigger(Vec2d(TRIGGER_START_X + (x * trigger_spacing), -3.2), make_rectangle(0.25, 0.25), BLUE)
+    trigger = Trigger(Vec2d(TRIGGER_START_X + (x * trigger_spacing), -3.2), make_rectangle(0.3, 0.3), BLUE)
 #    print("Trigger", Vec2d(TRIGGER_START_X + (x * trigger_spacing), -3.0) )
     trigger.set_callback(trigger_callback)
     objects.append(trigger)
     
   # Right Ramp
-  objects.append(KinematicObject(Vec2d(1,-3), Vec2d(0,0), 1, make_right_triangle(-45, 1.0), GRAY, 0, 1, 0))
+  objects.append(KinematicObject(Vec2d(1,-3), Vec2d(0,0), 1, make_right_triangle(-45, 1.0), GRAY, 1.0, 0.3, 0))
   # Left Ramp
-  objects.append(KinematicObject(Vec2d(-3.5,-3), Vec2d(0,0), 1, make_right_triangle(45, 1.0), GRAY, 0, 1, 0))
+  objects.append(KinematicObject(Vec2d(-3.5,-3), Vec2d(0,0), 1, make_right_triangle(45, 1.0), GRAY, 1.0, 0.3, 0))
   
   
   # Left Wall
@@ -120,13 +122,7 @@ def create_plinko_board(trigger_callback):
   return objects
 
 
-def create_plinko_board_details():
-  details = []
-
-  details.append(Polygon(Vec2d(0,0), make_right_triangle(-45, 1.0), RED))
-
-  return details
-
+# Create objects required for pinball
 def create_pinball_objects():
   objects = []
   length = 2

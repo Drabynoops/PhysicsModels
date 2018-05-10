@@ -103,7 +103,7 @@ class PhysicsObject(Polygon):
   def draw(self, screen, coords):
     super().draw(screen, coords)
     points = self.create_draw_points(coords)
-    pygame.draw.circle(screen, (0,0,0), coords.pos_to_screen(self.pos).int(), 3)
+#    pygame.draw.circle(screen, (0,0,0), coords.pos_to_screen(self.pos).int(), 3)
     if True:
       for i in range(len(points)):
         length = 50

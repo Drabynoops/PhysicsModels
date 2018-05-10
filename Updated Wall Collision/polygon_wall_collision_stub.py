@@ -14,8 +14,13 @@ from Polygon import Polygon
 
 def main():
   def reset_coin(coin, trigger):
+    if trigger.color != (255, 0, 0): # Wasn't already hit
+      pass
     trigger.color = (255, 0, 0) #Red
     coin.reset()
+    
+  def increment(var):
+    var += 1
 
   pygame.init()
  
@@ -26,7 +31,7 @@ def main():
   # Score
   score = 0
   attempts = 0
-  left = 5
+  left = 6
 
   # Used to manage how fast the screen updates
   clock = pygame.time.Clock()
@@ -72,6 +77,8 @@ def main():
   paused = True
   max_collisions = 1
   result = []
+  
+  
   while not done:
     # --- Handle Input ------
     # Update to coords...
@@ -146,6 +153,17 @@ def main():
     for i in range(len(ui_elements)):
       ui_elements[i].draw(screen, coords)
       
+
+    # Calculate amount of triggers hit
+    hits = 0
+    for i in range(0, len(objects)):
+      if objects[i].type == "trigger":
+        if objects[i].color == (255, 0, 0):
+          hits += 1
+        else:
+          pass
+    score = hits
+    ui_elements[2].setText(str(score))
 
     # --- Update the screen with what we've drawn.
     pygame.display.update()
