@@ -6,7 +6,7 @@ Created on Fri Oct 27 13:56:44 2017
 """
 import pygame
 from vec2d import Vec2d
-from collision_system_functions import game_settings, create_objects, , check_collision, resolve_collision, WHITE, make_circle
+from collision_system_functions import create_plinko_board, game_settings, create_objects, check_collision, resolve_collision, WHITE, BLACK, make_circle
 from TextElement import TextElement
 from Interpolation import Interpolation, test_callback, update_interpolation_list
 from Coin import Coin
@@ -20,6 +20,8 @@ def main():
   
   # Score
   score = 0
+  attempts = 5
+  left = 0
 
   # Used to manage how fast the screen updates
   clock = pygame.time.Clock()
@@ -48,7 +50,6 @@ def main():
   objects = create_plinko_board()
   
   coin = Coin(make_circle(32, 0.125), coords)
-  # coin = Coin(make_rectangle(0.25, 0.25), coords)
   objects.append(coin)
 
   # Interpolation Array
@@ -80,6 +81,7 @@ def main():
           paused = False
         else:
           coin.drop = True
+          
       elif event.type == pygame.KEYDOWN: 
         if event.key == pygame.K_ESCAPE:
           done = True
@@ -117,7 +119,7 @@ def main():
  
     # Drawing
     screen.fill(WHITE) # wipe the screen
-    pygame.draw.line(screen, BLACK, coords.pos_to_screen(Vec2d(-3, 2)), coords.pos_to_screen(Vec2d(3, 2)), 3)
+    pygame.draw.line(screen, BLACK, coords.pos_to_screen(Vec2d(-3.5, 2)), coords.pos_to_screen(Vec2d(1, 2)), 3)
     for obj in objects:
       obj.draw(screen, coords) # draw object to screen
 
@@ -132,6 +134,8 @@ def main():
     clock.tick(frame_rate)
       
   pygame.quit()
+
+def change_score():
 
 if __name__ == "__main__":
     try:
