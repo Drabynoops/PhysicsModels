@@ -7,6 +7,7 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from KinematicObject import KinematicObject
 from Trigger import Trigger
+from Polygon import Polygon
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -76,11 +77,16 @@ def create_plinko_board():
         # Peg
         objects.append(KinematicObject(
             Vec2d(peg_start_x + (x * peg_spacing), peg_max_y - (y * peg_spacing)), # Pos
-            Vec2d(0,0), 0.2, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 0, 1, 0)) # Other...
+            Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 1.0, 0.0, 0)) # Other...
   
       else: # Odd
         pass
       
+  # TESTING
+  objects.append(CollisionObject(
+        Vec2d(0, 2), Vec2d(0,0), 10, make_polygon(1,20,0,1,Vec2d(1,0),0.2), GREEN, 1.0, 0.0, 0)) # Other...
+  objects.append(KinematicObject(Vec2d(0,0.5), Vec2d(0,0), 1, make_rectangle(1, 0.5), GRAY, 1, 0.0, 0.3, 0.8))
+
 
   # Right Ramp
   objects.append(KinematicObject(Vec2d(1,-3), Vec2d(0,0), 1, make_right_triangle(-45, 1.0), GRAY, 0, 1, 0))
@@ -95,9 +101,17 @@ def create_plinko_board():
   # Top Wall
   objects.append(Wall(Vec2d(0,2.5), Vec2d(0,-1), BLACK, 0.3, 0.7))
   # Bottom Wall
-#  objects.append(Wall(Vec2d(0,-3.75), Vec2d(0,1), BLACK, 0.3, 0.7))
+#  objects.append(Wall(Vec2d(0,-3.75), Vec2d(0,1), BLACK, 0.3, 0.7))  
 
   return objects
+
+
+def create_plinko_board_details():
+  details = []
+
+  details.append(Polygon(Vec2d(0,0), make_right_triangle(-45, 1.0), RED))
+
+  return details
 
 def create_pinball_objects():
   objects = []

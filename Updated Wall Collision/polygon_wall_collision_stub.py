@@ -6,10 +6,11 @@ Created on Fri Oct 27 13:56:44 2017
 """
 import pygame
 from vec2d import Vec2d
-from collision_system_functions import game_settings, create_objects, create_plinko_board, check_collision, resolve_collision, WHITE
+from collision_system_functions import game_settings, create_objects, create_plinko_board, create_plinko_board_details, check_collision, resolve_collision, WHITE
 from TextElement import TextElement
 from Interpolation import Interpolation, test_callback, update_interpolation_list
 from Bumper import Bumper
+from Polygon import Polygon
 
 def main():
   pygame.init()
@@ -46,6 +47,8 @@ def main():
 
   # Create initial objects
   objects = create_plinko_board()
+
+  details = create_plinko_board_details()
   
   # Interpolation Array
   interpolations = []
@@ -115,8 +118,21 @@ def main():
  
     # Drawing
     screen.fill(WHITE) # wipe the screen
+    
+    # Draw objects
     for obj in objects:
       obj.draw(screen, coords) # draw object to screen
+      
+    # Draw details
+    for detail in details:
+      detail.draw(screen, coords) # draw object to screen
+      
+    ply = Polygon(Vec2d(0,0), (Vec2d(-0.5,-0.5),
+              Vec2d(+0.5,-0.5),
+              Vec2d(+0.5,+0.5),
+              Vec2d(-0.5,+0.5)
+              ), (255, 0, 0))
+    ply.draw(screen, coords)
 
     # UI
     for i in range(len(ui_elements)):
