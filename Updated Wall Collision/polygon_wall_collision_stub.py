@@ -5,9 +5,8 @@ Created on Fri Oct 27 13:56:44 2017
 @author: sinkovitsd
 """
 import pygame
-import asyncio
 from vec2d import Vec2d
-from collision_system_functions import make_rectangle, make_circle, BLACK, game_settings, create_objects, create_pinball_objects, check_collision, resolve_collision, WHITE
+from collision_system_functions import game_settings, create_objects, , check_collision, resolve_collision, WHITE, make_circle
 from TextElement import TextElement
 from Interpolation import Interpolation, test_callback, update_interpolation_list
 from Coin import Coin
@@ -25,26 +24,37 @@ def main():
   # Used to manage how fast the screen updates
   clock = pygame.time.Clock()
   
-  font_style_1 = pygame.font.SysFont('Calibri', 25, True, False) # (font, size, bold, italics)
-  font_style_2 = pygame.font.SysFont('Calibri', 16, False, False) # (font, size, bold, italics)
+  font_style_1 = pygame.font.SysFont('Calibri', 40, True, False) # (font, size, bold, italics)
+  font_style_2 = pygame.font.SysFont('Calibri', 60, False, False) # (font, size, bold, italics)
+  font_style_3 = pygame.font.SysFont('Calibri', 16, True, False) # (font, size, bold, italics)
+  font_style_4 = pygame.font.SysFont('Calibri', 16, False, False) # (font, size, bold, italics)
   
   # Create UI...
   ui_elements = [
-#    TextElement(font_style_1, Vec2d(0, 2.5), "Pinball"), 
-#    TextElement(font_style_2, Vec2d(0, 2.3), "Game Thing")
+    TextElement(font_style_1, Vec2d(-3, 3.2), "Plinko", 0.0, 0.5), 
+    TextElement(font_style_4, Vec2d(-3, 2.9), "Keenan Barber & Brendan Bard", 0.0, 0.5), 
+    
+    TextElement(font_style_2, Vec2d(2.25, 2.0), "000", 0.5, 0.5), 
+    TextElement(font_style_1, Vec2d(2.25, 1.5), "SCORE", 0.5, 0.5), 
+    
+    TextElement(font_style_3, Vec2d(1.2, 0.5), "ATTEMPTS LEFT:", 0.0, 0.5),
+    TextElement(font_style_2, Vec2d(3.3, 0.5), "00", 1.0, 0.5),
+    
+    TextElement(font_style_3, Vec2d(1.2, 0.0), "COINS DROPPED:", 0.0, 0.5),
+    TextElement(font_style_2, Vec2d(3.3, 0.0), "00", 1.0, 0.5),
   ]
 
   # Create initial objects
-  objects = create_pinball_objects()
-
+  objects = create_plinko_board()
+  
   coin = Coin(make_circle(32, 0.125), coords)
   # coin = Coin(make_rectangle(0.25, 0.25), coords)
   objects.append(coin)
 
-  # # Interpolation Array
-  # interpolations = []
-  # # Test Interpolation
-  # interpolations.append(Interpolation(Interpolation.linear_equation, 0, 5, test_callback, None, 5.0))
+  # Interpolation Array
+  interpolations = []
+  # Test Interpolation
+  interpolations.append(Interpolation(Interpolation.linear_equation, 0, 5, test_callback, None, 5.0))
 
   # -------- Main Program Loop -----------\
   dt = playback_speed/frame_rate/n_per_frame
