@@ -7,11 +7,8 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from KinematicObject import KinematicObject
 from Trigger import Trigger
-<<<<<<< HEAD
 from Flipper import Flipper
-=======
 from Bumper import Bumper
->>>>>>> fbdfd00522b07e96681a6350dbb96cb84c0a30a7
 
 # Define some colors
 BLACK    = (   0,   0,   0)
