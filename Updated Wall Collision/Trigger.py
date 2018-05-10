@@ -14,7 +14,8 @@ class Trigger(KinematicObject):
     super().__init__(pos, Vec2d(0, 0), 0.0, points, color, 0, 0, angle, 0)
     self.type = "trigger"
     self.callback_func = None
-        
+    self.active = True
+
   def callback(self):
     if self.callback_func != None:
       self.callback_func()

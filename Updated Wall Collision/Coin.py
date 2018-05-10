@@ -6,9 +6,10 @@ import pygame
 class Coin(CollisionObject):
 
   def __init__(self, points, coords):
-    super().__init__(Vec2d(-1.5,2), Vec2d(0,0), 5, points, (255, 255, 0))
+    super().__init__(Vec2d(-1.5,2), Vec2d(0,0), 10, points, (255, 255, 0))
     self.drop = False
     self.coords = coords
+    self.type = "coin"
 
   def update(self, dt):
     if self.drop:
@@ -31,3 +32,7 @@ class Coin(CollisionObject):
   
   def reset(self):
     self.drop = False
+    self.vel = Vec2d(0,0)
+    self.mom = Vec2d(0,0)
+    self.ang_mom = Vec2d(0,0)
+    self.angle = 0

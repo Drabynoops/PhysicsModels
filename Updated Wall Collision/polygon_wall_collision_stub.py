@@ -12,6 +12,10 @@ from Interpolation import Interpolation, test_callback, update_interpolation_lis
 from Coin import Coin
 
 def main():
+  def reset_coin(coin, trigger):
+    trigger.color = (255, 0, 0) #Red
+    coin.reset()
+
   pygame.init()
  
   # Get all basic game settings
@@ -20,8 +24,8 @@ def main():
   
   # Score
   score = 0
-  attempts = 5
-  left = 0
+  attempts = 0
+  left = 5
 
   # Used to manage how fast the screen updates
   clock = pygame.time.Clock()
@@ -36,7 +40,7 @@ def main():
     TextElement(font_style_1, Vec2d(-3, 3.2), "Plinko", 0.0, 0.5), 
     TextElement(font_style_4, Vec2d(-3, 2.9), "Keenan Barber & Brendan Bard", 0.0, 0.5), 
     
-    TextElement(font_style_2, Vec2d(2.25, 2.0), "000", 0.5, 0.5), 
+    TextElement(font_style_2, Vec2d(2.25, 2.0), str(score), 0.5, 0.5), 
     TextElement(font_style_1, Vec2d(2.25, 1.5), "SCORE", 0.5, 0.5), 
     
     TextElement(font_style_3, Vec2d(1.2, 0.5), "ATTEMPTS LEFT:", 0.0, 0.5),
@@ -47,7 +51,7 @@ def main():
   ]
 
   # Create initial objects
-  objects = create_plinko_board()
+  objects = create_plinko_board(reset_coin)
   
   coin = Coin(make_circle(32, 0.125), coords)
   objects.append(coin)
@@ -64,7 +68,6 @@ def main():
   max_collisions = 1
   result = []
   while not done:
-    
     # --- Handle Input ------
     # Update to coords...
 #    mouse_pos = Vec2d(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
@@ -81,7 +84,9 @@ def main():
           paused = False
         else:
           coin.drop = True
-          
+          attempts += 1
+          left -= 1
+
       elif event.type == pygame.KEYDOWN: 
         if event.key == pygame.K_ESCAPE:
           done = True
@@ -134,8 +139,6 @@ def main():
     clock.tick(frame_rate)
       
   pygame.quit()
-
-def change_score():
 
 if __name__ == "__main__":
     try:

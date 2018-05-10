@@ -62,7 +62,7 @@ def create_objects():
 
   return objects
 
-def create_plinko_board():
+def create_plinko_board(trigger_callback):
   objects = []
 
   PEG_COUNT = 6
@@ -77,12 +77,15 @@ def create_plinko_board():
         # Peg
         objects.append(KinematicObject(
             Vec2d(peg_start_x + (x * peg_spacing), peg_max_y - (y * peg_spacing)), # Pos
-            Vec2d(0,0), 0.2, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 0, 1, 0)) # Other...
+            Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 3, -0.5, 0)) # Other...
   
       else: # Odd
         pass
       
+  trigger = Trigger(Vec2d(-1, -4), make_rectangle(3.5, 1), BLUE)
+  trigger.set_callback(trigger_callback)
 
+  objects.append(trigger)
   # Right Ramp
   objects.append(KinematicObject(Vec2d(1,-3), Vec2d(0,0), 1, make_right_triangle(-45, 1.0), GRAY, 0, 1, 0))
   # Left Ramp
@@ -226,11 +229,11 @@ def check_collision(a, b, result=[]):
             result.extend(result2)
             
         if result[0].type == "trigger":
-          result[0].callback()
+          result[0].callback(result[1], result[0])
           return False
         
         elif result[1].type == "trigger":
-          result[1].callback()
+          result[1].callback(result[0], result[1])
           return False
             
         if (result[0].type == "kinematic"):
