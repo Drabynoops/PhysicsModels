@@ -109,4 +109,4 @@ class PhysicsObject(Polygon):
         length = 50
         n = coords.unitvec_to_other(self.normals[i])
         p = (points[i] + points[i-1])/2
-        pygame.draw.line(screen, (0,0,0), p, p + length*n)
+#        pygame.draw.line(screen, (0,0,0), p, p + length*n)

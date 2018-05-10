@@ -20,6 +20,8 @@ THEME_COLOR_1 = (74, 172, 214)
 THEME_COLOR_2 = (55, 130, 163)
 THEME_COLOR_DETAILS = WHITE
 
+PEG_COLOR = RED
+
 BOARD_WIDTH = 300
 BOARD_PADDING = 10
 
@@ -61,29 +63,25 @@ def create_objects():
 
 def create_plinko_board():
   objects = []
-  length = 2
-  height = 1
 
-#  objects.append(CollisionObject(Vec2d(0,2), Vec2d(0,0), 1, make_rectangle(length, height), GRAY, 0, 1, 0.3, 0.8))
-#  objects.append(KinematicObject(Vec2d(1,0), Vec2d(0,0), 1, make_right_triangle(-45, 0.5), RED, 0, 1, 0))
+  PEG_COUNT = 6
+  PEG_ROWS = 4
+  peg_start_x = -3
+  peg_max_y = 0
+  peg_spacing = 3.5 / PEG_COUNT
+  for x in range(0, PEG_COUNT + 1):
+    for y in range(0, PEG_ROWS):
+      
+      if (x + y) % 2 == 0: # Even
+        # Peg
+        objects.append(KinematicObject(
+            Vec2d(peg_start_x + (x * peg_spacing), peg_max_y - (y * peg_spacing)), # Pos
+            Vec2d(0,0), 0.2, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 0, 1, 0)) # Other...
+  
+      else: # Odd
+        pass
+      
 
-  # Walls (pos, normal, color, e=0, mu=0)
-  
-#  PEG_COUNT = 10
-#  PEG_ROWS = 4
-#  peg_start_x = -3.5
-#  peg_spacing = 4.5 / PEG_COUNT
-#  for x in range(0, PEG_COUNT + 1):
-#    for y in range(0, PEG_ROWS):
-#      
-#      if (x + y) % 2 == 0: # Even
-#        
-#      else: # Odd
-#        
-#      
-#    # Peg
-#    objects.append(KinematicObject(Vec2d(peg_start_x + (x * peg_spacing),0), Vec2d(0,0), 0.2, make_polygon(1,10,0,1,Vec2d(1,0),0.1), RED, 0, 1, 0))
-  
   # Right Ramp
   objects.append(KinematicObject(Vec2d(1,-3), Vec2d(0,0), 1, make_right_triangle(-45, 1.0), GRAY, 0, 1, 0))
   # Left Ramp
