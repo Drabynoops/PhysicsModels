@@ -83,9 +83,10 @@ def main():
         if paused:
           paused = False
         else:
-          coin.drop = True
-          attempts += 1
-          left -= 1
+          if coin.drop == False:
+            coin.drop = True
+            attempts += 1
+            left -= 1
 
       elif event.type == pygame.KEYDOWN: 
         if event.key == pygame.K_ESCAPE:
@@ -137,6 +138,9 @@ def main():
     
     # This limits the loop to the specified frame rate
     clock.tick(frame_rate)
+
+    if left < 0:
+      done = True
       
   pygame.quit()
 
