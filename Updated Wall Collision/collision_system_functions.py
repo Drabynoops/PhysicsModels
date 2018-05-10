@@ -7,7 +7,11 @@ from coords import Coords
 from CollisionObject import CollisionObject
 from KinematicObject import KinematicObject
 from Trigger import Trigger
+<<<<<<< HEAD
 from Polygon import Polygon
+=======
+from Coin import Coin
+>>>>>>> 355935d7ec659c1918c39234bbe0c6e84dc12f19
 
 # Define some colors
 BLACK    = (   0,   0,   0)
@@ -62,7 +66,7 @@ def create_objects():
 
   return objects
 
-def create_plinko_board():
+def create_plinko_board(trigger_callback):
   objects = []
 
   PEG_COUNT = 6
@@ -77,17 +81,27 @@ def create_plinko_board():
         # Peg
         objects.append(KinematicObject(
             Vec2d(peg_start_x + (x * peg_spacing), peg_max_y - (y * peg_spacing)), # Pos
+<<<<<<< HEAD
             Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 1.0, 0.0, 0)) # Other...
+=======
+            Vec2d(0,0), 5, make_polygon(1,10,0,1,Vec2d(1,0),0.1), PEG_COLOR, 3, -0.5, 0)) # Other...
+>>>>>>> 355935d7ec659c1918c39234bbe0c6e84dc12f19
   
       else: # Odd
         pass
       
+<<<<<<< HEAD
   # TESTING
   objects.append(CollisionObject(
         Vec2d(0, 2), Vec2d(0,0), 10, make_polygon(1,20,0,1,Vec2d(1,0),0.2), GREEN, 1.0, 0.0, 0)) # Other...
   objects.append(KinematicObject(Vec2d(0,0.5), Vec2d(0,0), 1, make_rectangle(1, 0.5), GRAY, 1, 0.0, 0.3, 0.8))
 
+=======
+  trigger = Trigger(Vec2d(-1, -4), make_rectangle(3.5, 1), BLUE)
+  trigger.set_callback(trigger_callback)
+>>>>>>> 355935d7ec659c1918c39234bbe0c6e84dc12f19
 
+  objects.append(trigger)
   # Right Ramp
   objects.append(KinematicObject(Vec2d(1,-3), Vec2d(0,0), 1, make_right_triangle(-45, 1.0), GRAY, 0, 1, 0))
   # Left Ramp
@@ -130,14 +144,9 @@ def create_pinball_objects():
   
   # Walls
   #pos, normal, color, e=0, mu=0
-  # Left Wall
-  objects.append(Wall(Vec2d(-2.5, 0), Vec2d(1, 0), BLACK, 0.3, 0.7))
-  # Right Wall
-  objects.append(Wall(Vec2d(2.5, 0), Vec2d(-1, 0), BLACK, 0.3, 0.7))
-  # Top Wall
-  objects.append(Wall(Vec2d(0,3.75), Vec2d(0,-1), BLACK, 0.3, 0.7))
-  # Bottom Wall
-  objects.append(Wall(Vec2d(0,-3.75), Vec2d(0,1), BLACK, 0.3, 0.7))
+  objects.append(Wall(Vec2d(-3, 0), Vec2d(1, 0), BLACK, 0.7, 0.3))
+  objects.append(Wall(Vec2d(3, 0), Vec2d(-1, 0), BLACK, 0.7, 0.3))
+  objects.append(Wall(Vec2d(0, -3), Vec2d(0, 1), BLACK, 0.3, 0.7))
 
   return objects
 
@@ -152,7 +161,18 @@ def random_bright_color():
   color[i] = 255
   color[(i+d)%3] = c
   return color
+
+def make_circle(num_points, radius):
+  points = []
+
+  base_vector = Vec2d(radius, 0)
+  degree_diff = 360 / num_points
+
+  for i in range(num_points):
+    points.append(base_vector.rotated(degree_diff * i))
   
+  return points  
+
 def make_right_triangle(hypot_angle, width=1, point_offset=Vec2d(0, 0)):
   
   if hypot_angle >= 90 or hypot_angle <= -90:
@@ -233,11 +253,11 @@ def check_collision(a, b, result=[]):
             result.extend(result2)
             
         if result[0].type == "trigger":
-          result[0].callback()
+          result[0].callback(result[1], result[0])
           return False
         
         elif result[1].type == "trigger":
-          result[1].callback()
+          result[1].callback(result[0], result[1])
           return False
             
         if (result[0].type == "kinematic"):
